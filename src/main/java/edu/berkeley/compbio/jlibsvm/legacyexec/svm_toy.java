@@ -483,7 +483,7 @@ public class svm_toy extends Applet
 
 			if (svm instanceof BinaryClassificationSVM && prob.getNumLabels() > 2)
 				{
-				svm = new MultiClassificationSVM((BinaryClassificationSVM) svm);
+				svm = new MultiClassificationSVM((BinaryClassificationSVM) svm, Byte.class);
 				}
 			// build model & classify
 			SolutionModel model = svm.train(prob);
@@ -518,10 +518,10 @@ public class svm_toy extends Applet
 								{
 								d = (Byte) o;
 								}
-						else
-							{
-							throw new SvmException("Don't know how to plot label of type " + o.getClass());
-							}
+							else
+								{
+								throw new SvmException("Don't know how to plot label of type " + o.getClass());
+								}
 						}
 					else
 						{

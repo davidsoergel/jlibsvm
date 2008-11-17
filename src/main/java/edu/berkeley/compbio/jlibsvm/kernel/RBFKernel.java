@@ -223,7 +223,7 @@ public class RBFKernel extends GammaKernel
 	private static final float explicitFloatSumOptimized(final SvmPoint x, final SvmPoint y)
 		{
 		float sum = 0;
-		// making final local copies helps performance??
+		// making final local copies may help performance??
 		final int[] xIndexes = x.indexes;
 		final int xlen = xIndexes.length;
 		final int[] yIndexes = y.indexes;

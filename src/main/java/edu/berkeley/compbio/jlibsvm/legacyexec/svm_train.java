@@ -6,12 +6,10 @@ import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.SvmPoint;
 import edu.berkeley.compbio.jlibsvm.SvmProblem;
-import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
-import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblem;
+import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
+import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.C_SVC;
 import edu.berkeley.compbio.jlibsvm.binary.Nu_SVC;
-import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
-import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
 import edu.berkeley.compbio.jlibsvm.kernel.GammaKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.kernel.LinearKernel;
@@ -19,21 +17,23 @@ import edu.berkeley.compbio.jlibsvm.kernel.PolynomialKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.PrecomputedKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.RBFKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.SigmoidKernel;
+import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblem;
+import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.oneclass.OneClassSVC;
 import edu.berkeley.compbio.jlibsvm.regression.EpsilonSVR;
 import edu.berkeley.compbio.jlibsvm.regression.Nu_SVR;
-import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionProblem;
+import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.Set;
-import java.util.HashSet;
 
-class svm_train
+public class svm_train
 	{
 	KernelFunction kernel;
 	SVM svm;
@@ -97,8 +97,8 @@ class svm_train
 			{
 			for (i = 0; i < problem.examples.length; i++)
 				{
-				Float y = (Float)problem.getTargetValue(i);
-				Float v = (Float)target[i];
+				Float y = (Float) problem.getTargetValue(i);
+				Float v = (Float) target[i];
 				total_error += (v - y) * (v - y);
 				sumv += v;
 				sumy += y;
@@ -135,7 +135,7 @@ class svm_train
 
 		if (svm instanceof BinaryClassificationSVM && problem.getNumLabels() > 2)
 			{
-			svm = new MultiClassificationSVM((BinaryClassificationSVM) svm);
+			svm = new MultiClassificationSVM((BinaryClassificationSVM) svm, String.class);
 			}
 
 		if (error_msg != null)
@@ -380,7 +380,6 @@ class svm_train
 			}
 
 
-
 		// build problem
 		if (svm instanceof RegressionSVM)
 			{
@@ -400,7 +399,7 @@ class svm_train
 				}
 			else
 				{
-				problem = new MultiClassProblem<Integer>(Integer.class, vy.size());
+				problem = new MultiClassProblem<String>(String.class, vy.size());
 				}
 
 			for (int i = 0; i < vy.size(); i++)

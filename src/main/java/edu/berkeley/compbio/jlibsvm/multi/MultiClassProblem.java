@@ -46,7 +46,7 @@ public class MultiClassProblem<T extends Comparable> extends SvmProblem<T, Multi
 		{
 		try
 			{
-			putTargetValue(i, (T) type.getConstructor(Float.class).newInstance(x));
+			putTargetValue(i, (T) type.getConstructor(String.class).newInstance(x.toString()));
 			}
 		catch (Exception e)
 			{

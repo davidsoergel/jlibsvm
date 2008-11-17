@@ -6,7 +6,6 @@ import edu.berkeley.compbio.jlibsvm.SvmPoint;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 
 import java.util.Iterator;
-import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -22,7 +21,7 @@ public abstract class RegressionSVM extends SVM<Float, RegressionProblem>
 	public abstract RegressionModel train(RegressionProblem problem);
 
 	@Override
-	public Type getGenericType()
+	public Class getLabelClass()
 		{
 		return Float.class; // ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 		}
@@ -52,6 +51,7 @@ public abstract class RegressionSVM extends SVM<Float, RegressionProblem>
 		return result;
 		}
 
+	private final float SQRT_2 = (float) Math.sqrt(2);
 
 	// Return parameter of a Laplace distribution
 	protected float laplaceParameter(RegressionProblem problem)
@@ -73,7 +73,8 @@ public abstract class RegressionSVM extends SVM<Float, RegressionProblem>
 			mae += Math.abs(ymv[i]);
 			}
 		mae /= problem.examples.length;
-		float std = (float) Math.sqrt(2 * mae * mae);  // PERF
+		//float std = (float) Math.sqrt(2 * mae * mae);  // PERF
+		float std = SQRT_2 * mae;
 		int count = 0;
 		mae = 0;
 		for (i = 0; i < problem.examples.length; i++)

@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringBufferInputStream;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -92,12 +93,12 @@ public abstract class SolutionModel extends SvmContext
 
 		//if (param.weights != null)
 		//	{
-			fp.writeBytes("label");
-			for (Object i : param.getWeights().keySet())  // note these are in insertion order
-				{
-				fp.writeBytes(" " + i);
-				}
-			fp.writeBytes("\n");
+		fp.writeBytes("label");
+		for (Object i : param.getWeights().keySet())  // note these are in insertion order
+			{
+			fp.writeBytes(" " + i);
+			}
+		fp.writeBytes("\n");
 		//	}
 		}
 
@@ -107,7 +108,8 @@ public abstract class SolutionModel extends SvmContext
 			{
 			BufferedReader fp = new BufferedReader(new FileReader(model_file_name));
 			Properties props = new Properties();
-	//		props.load(new StringReader(readUpToSVs(fp))));  //** java 1.6 only
+			//props.load(new StringReader(readUpToSVs(fp))));  // java 1.6 only
+			props.load(new StringBufferInputStream(readUpToSVs(fp)));
 
 			// first figure out which model type it is
 			Class c = Class.forName(props.getProperty("svm_type"));

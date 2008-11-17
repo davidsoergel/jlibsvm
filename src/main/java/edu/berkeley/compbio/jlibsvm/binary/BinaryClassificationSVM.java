@@ -9,7 +9,6 @@ import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 
 import java.util.Iterator;
 import java.util.List;
-import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -197,7 +196,7 @@ public abstract class BinaryClassificationSVM extends SVM<Boolean, BinaryClassif
 		}
 
 	@Override
-	public Type getGenericType()
+	public Class getLabelClass()
 		{
 		return Boolean.class; // ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 		}
@@ -363,7 +362,7 @@ public abstract class BinaryClassificationSVM extends SVM<Boolean, BinaryClassif
 
 		// Initial Point and Initial Fun Value
 		A = 0.0f;
-		B = (float) Math.log((prior0 + 1.0f) / (prior1 + 1.0f)); // PERF
+		B = (float) Math.log((prior0 + 1.0f) / (prior1 + 1.0f)); // PERF use approximateLog?
 		float fval = 0.0f;
 
 		for (int i = 0; i < l; i++)
@@ -404,13 +403,15 @@ public abstract class BinaryClassificationSVM extends SVM<Boolean, BinaryClassif
 
 				if (fApB >= 0)
 					{
-					p = Math.exp(-fApB) / (1.0f + Math.exp(-fApB));
-					q = 1.0f / (1.0f + Math.exp(-fApB));
+					final double expfApB = Math.exp(-fApB);
+					p = expfApB / (1.0f + expfApB);
+					q = 1.0f / (1.0f + expfApB);
 					}
 				else
 					{
-					p = 1.0f / (1.0f + Math.exp(fApB));
-					q = Math.exp(fApB) / (1.0f + Math.exp(fApB));
+					final double expfApB = Math.exp(fApB);
+					p = 1.0f / (1.0f + expfApB);
+					q = expfApB / (1.0f + expfApB);
 					}
 				d2 = (float) (p * q);
 				h11 += decisionValues[i] * decisionValues[i] * d2;

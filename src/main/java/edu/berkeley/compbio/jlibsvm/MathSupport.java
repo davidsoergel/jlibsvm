@@ -17,7 +17,7 @@ public class MathSupport
 		return ret;
 		}
 
-	public static float dot(SvmPoint x, SvmPoint y)
+	public static float dotOrig(SvmPoint x, SvmPoint y)
 		{
 		float sum = 0;
 		int xlen = x.indexes.length;
@@ -39,6 +39,87 @@ public class MathSupport
 				else
 					{
 					++i;
+					}
+				}
+			}
+		return sum;
+		}
+
+	public static float dot(SvmPoint x, SvmPoint y)
+		{
+		// making final local copies may help performance??
+		final int[] xIndexes = x.indexes;
+		final int xlen = xIndexes.length;
+		final int[] yIndexes = y.indexes;
+		final int ylen = yIndexes.length;
+		final float[] xValues = x.values;
+		final float[] yValues = y.values;
+
+		float sum = 0;
+		int i = 0;
+		int j = 0;
+		int xIndex = xIndexes[0];
+		int yIndex = yIndexes[0];
+
+		while (i < xlen && j < ylen)
+			{
+			if (xIndex == yIndex)
+				{
+				sum += xValues[i] * yValues[j];
+
+				i++;
+				if (i >= xlen)
+					{
+					xIndex = Integer.MAX_VALUE;
+					}
+				else
+					{
+					xIndex = xIndexes[i];
+					}
+
+				j++;
+				if (j >= ylen)
+					{
+					yIndex = Integer.MAX_VALUE;
+					}
+				else
+					{
+					yIndex = yIndexes[j];
+					}
+				}
+			else
+				{
+
+				while (xIndex > yIndex)
+					{
+					// there is an entry for y but not for x at this index => x.value == 0
+					// so, do nothing
+
+					j++;
+					if (j >= ylen)
+						{
+						yIndex = Integer.MAX_VALUE;
+						}
+					else
+						{
+						yIndex = yIndexes[j];
+						}
+					}
+
+				while (yIndex > xIndex)
+					{
+					// there is an entry for x but not for y at this index => y.value == 0
+					// so, do nothing
+
+					i++;
+					if (i >= xlen)
+						{
+						xIndex = Integer.MAX_VALUE;
+						}
+					else
+						{
+						xIndex = xIndexes[i];
+						}
 					}
 				}
 			}

@@ -2,7 +2,6 @@ package edu.berkeley.compbio.jlibsvm;
 
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 
-import java.lang.reflect.Type;
 import java.util.Iterator;
 
 /**
@@ -69,11 +68,11 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 		return fs;
 		}
 
-	public abstract Type getGenericType();
+	public abstract Class getLabelClass();
 
 	public T[] crossValidation(P problem, int numberOfFolds)
 		{
-		Class type = (Class) getGenericType();
+		Class type = (Class) getLabelClass();
 		T[] predictions = (T[]) java.lang.reflect.Array.newInstance(type, problem.examples.length);
 		//T[] predictions = (T[]) new Object[problem.examples.length];
 

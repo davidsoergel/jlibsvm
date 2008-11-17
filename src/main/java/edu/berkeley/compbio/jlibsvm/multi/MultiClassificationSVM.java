@@ -7,8 +7,6 @@ import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +18,14 @@ import java.util.Map;
 public class MultiClassificationSVM<T extends Comparable> extends SVM<T, MultiClassProblem<T>>
 	{
 	BinaryClassificationSVM binarySvm;
+	private Class labelClass;
 
-	public MultiClassificationSVM(BinaryClassificationSVM binarySvm)
+	public MultiClassificationSVM(BinaryClassificationSVM binarySvm, Class labelClass)
 		{
 
-		super(binarySvm.kernel, (SvmParameter<T>)(binarySvm.param));
+		super(binarySvm.kernel, (SvmParameter<T>) (binarySvm.param));
 		this.binarySvm = binarySvm;
+		this.labelClass = labelClass;
 		}
 
 	public String getSvmType()
@@ -34,9 +34,9 @@ public class MultiClassificationSVM<T extends Comparable> extends SVM<T, MultiCl
 		}
 
 	@Override
-	public Type getGenericType()
+	public Class getLabelClass()
 		{
-		return ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		return labelClass;
 		}
 
 	public MultiClassModel<T> train(MultiClassProblem<T> problem)
@@ -260,7 +260,7 @@ public class MultiClassificationSVM<T extends Comparable> extends SVM<T, MultiCl
 		{
 		MultiClassModel<T> model = train(subprob);
 
-		T[] result = (T[]) new Object[length];
+		T[] result = (T[]) new Comparable[length];
 
 		int i = 0;
 		while (foldIterator.hasNext())
