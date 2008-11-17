@@ -27,30 +27,11 @@ public class C_SVC extends BinaryClassificationSVM
 	@Override
 	public BinaryModel trainOne(BinaryClassificationProblem problem, float Cp, float Cn)
 		{
-
-		//float[] alpha = si.getDecisionFunction().alpha;
-
-
 		int l = problem.examples.length;
 		float[] minusOnes = new float[l];
-		boolean[] y; // = new byte[l];
-
+		boolean[] y;
 
 		Arrays.fill(minusOnes, -1);
-		//	int i;
-
-		/*  for (int i = 0; i < l; i++)
-				   {		//	alpha[i] = 0;
-				   minusOnes[i] = -1f;
-				   if (problem.targetValues[i])
-					   {
-					   y[i] = +1;
-					   }
-				   else
-					   {
-					   y[i] = -1;
-					   }
-		   }*/
 
 		y = MathSupport.toPrimitive(problem.getTargetValues());
 

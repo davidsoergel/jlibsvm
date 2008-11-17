@@ -20,8 +20,8 @@ import java.util.StringTokenizer;
  */
 public abstract class AlphaModel extends SolutionModel
 	{
-	public SvmPoint[] supportVectors;// SVs (SV[l])
-	public float[] alpha;  // sv_coef
+	public SvmPoint[] supportVectors;
+	public float[] alpha;
 	public float rho;
 
 	public AlphaModel(BinaryModel alphaModel)
@@ -41,7 +41,6 @@ public abstract class AlphaModel extends SolutionModel
 		{
 		super(props);
 		rho = Float.parseFloat(props.getProperty("rho"));
-		// ignore total_sv
 		}
 
 	/**
@@ -95,7 +94,7 @@ public abstract class AlphaModel extends SolutionModel
 			fp.writeBytes(alpha[i] + " ");
 
 			SvmPoint p = supportVectors[i];
-			if (kernel instanceof PrecomputedKernel) //param.kernel_type == svm_parameter.PRECOMPUTED)
+			if (kernel instanceof PrecomputedKernel)
 				{
 				fp.writeBytes("0:" + (int) (p.values[0]));
 				}

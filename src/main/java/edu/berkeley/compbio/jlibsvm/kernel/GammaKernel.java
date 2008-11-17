@@ -6,7 +6,7 @@ package edu.berkeley.compbio.jlibsvm.kernel;
  */
 public abstract class GammaKernel implements KernelFunction
 	{
-	public float gamma;// for poly/rbf/sigmoid
+	public float gamma;
 
 	public GammaKernel(float gamma)
 		{

@@ -12,13 +12,14 @@ import java.util.Properties;
  */
 public class PolynomialKernel extends GammaKernel
 	{
-	public int degree;// for poly
-	public float coef0;// for poly/sigmoid
+	public int degree;
+	public float coef0;
 
 
 	public PolynomialKernel(Properties props)
 		{
-		this(Integer.parseInt(props.getProperty("degree")), Float.parseFloat(props.getProperty("gamma")), Float.parseFloat(props.getProperty("coef0")));
+		this(Integer.parseInt(props.getProperty("degree")), Float.parseFloat(props.getProperty("gamma")),
+		     Float.parseFloat(props.getProperty("coef0")));
 		}
 
 	public PolynomialKernel(int degree, float gamma, float coef0)

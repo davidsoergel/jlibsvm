@@ -10,7 +10,11 @@ public interface KernelFunction
 	{
 	float evaluate(SvmPoint x, SvmPoint y);
 
-//	float evaluate(svm_node[] x, svm_node[] y, float xDotX, float yDotY);
-
+	/**
+	 * Report performance statistics of the kernel, e.g. how often it was evaluated (which should respond to the cache
+	 * size).
+	 *
+	 * @return
+	 */
 	String perfString();
 	}

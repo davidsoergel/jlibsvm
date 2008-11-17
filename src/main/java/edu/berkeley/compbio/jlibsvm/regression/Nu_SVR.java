@@ -2,10 +2,10 @@ package edu.berkeley.compbio.jlibsvm.regression;
 
 import edu.berkeley.compbio.jlibsvm.Solver_NU;
 import edu.berkeley.compbio.jlibsvm.SvmException;
+import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.qmatrix.SVR_Q;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -34,8 +34,6 @@ public class Nu_SVR extends RegressionSVM
 			laplaceParameter = laplaceParameter(problem);
 			}
 
-		//private static void solve_nu_svr(svm_problem prob, svm_parameter param, KernelFunction kernel, int cache_size, SolutionInfoNu si) // , float[] alpha,
-		//	{
 		int l = problem.examples.length;
 		float C = param.C;
 		float[] initAlpha = new float[2 * l];

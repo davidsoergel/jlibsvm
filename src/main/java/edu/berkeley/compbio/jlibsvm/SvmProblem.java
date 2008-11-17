@@ -16,8 +16,6 @@ import java.util.Set;
 public abstract class SvmProblem<T extends Comparable, P extends SvmProblem<? extends T, ? extends P>>
 		implements java.io.Serializable
 	{
-	//public int l;
-
 	//** would be nice to make examples = Map<SvmPoint[], T>, but extensive consequences...
 
 	protected T[] targetValues;
@@ -27,13 +25,11 @@ public abstract class SvmProblem<T extends Comparable, P extends SvmProblem<? ex
 		return targetValues;
 		}
 
-	//public abstract float[] targetValueAsFloat();
-
-	//public float[] targetValues;
 	public SvmPoint[] examples;
 
 	// the unique set of targetvalues, in a defined order
-	private List<T> labels = null;  // avoid populating for regression!  OK, regression should never call getLabels(), then.
+	private List<T> labels = null;
+			// avoid populating for regression!  OK, regression should never call getLabels(), then.
 
 	public SvmProblem(int numExamples)
 		{
@@ -61,11 +57,7 @@ public abstract class SvmProblem<T extends Comparable, P extends SvmProblem<? ex
 	public GroupedClasses groupClasses(int[] perm)
 		{
 		int l = examples.length;
-		//int max_nr_class = 16;
 		int numberOfClasses = 0;
-		//int[] label = new int[max_nr_class];
-		//int[] count = new int[max_nr_class];
-
 		List<T> label = new ArrayList<T>();
 		List<Integer> count = new ArrayList<Integer>();
 
@@ -111,10 +103,6 @@ public abstract class SvmProblem<T extends Comparable, P extends SvmProblem<? ex
 			}
 
 		return new GroupedClasses(numberOfClasses, label, start, count);
-/*		nr_class_ret[0] = nr_class;
-		label_ret[0] = label;
-		start_ret[0] = start;
-		count_ret[0] = count;*/
 		}
 
 	public void putTargetValue(int i, T x)
@@ -167,9 +155,4 @@ public abstract class SvmProblem<T extends Comparable, P extends SvmProblem<? ex
 			}
 		return exampleCounts;
 		}
-
-/*	public int countExamples(T label)
-		{
-		return Arrays.count(targetValues, label); //return targetValues.count(label);
-		}*/
 	}

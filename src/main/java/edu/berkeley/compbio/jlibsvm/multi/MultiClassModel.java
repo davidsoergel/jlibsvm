@@ -20,37 +20,24 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class MultiClassModel<T> extends SolutionModel
-		implements DiscreteModel<T>// implements ProbabilitySupportingModel//implements java.io.Serializable
+public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T>
 	{
-	int numberOfClasses;// number of classes, = 2 in regression/one class svm
+	int numberOfClasses;
 
-	//	float[][] sv_coef;// coefficients for SVs in decision functions (sv_coef[k-1][l])
-	//	float[] rho;// constants in decision functions (rho[k*(k-1)/2])
 	float[] probA;// pairwise probability information
 	float[] probB;
 
 	BinaryModel[] oneVsOneModels;   // don't like array vs collection, but it's consistent with the rest for now
 
-	// for classification only
-
 	// generics are a hassle here  (T[] label; makes a mess)
+	// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight  //** proscribed 1-D order for 2-D decision_values is error-prone
 	Object[] label;
-			// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight
-//	int[] numSupportVectors;// number of SVs for each class (nSV[k])
-// nSV[0] + nSV[1] + ... + nSV[k-1] = l
+
 
 	public MultiClassModel(KernelFunction kernel, SvmParameter param)
 		{
 		super(kernel, param);
 		}
-
-
-	/*public float predictValue(SvmPoint x)
-		{
-		return predict(x);
-		}*/
-
 
 	public T predictLabel(SvmPoint x)
 		{
@@ -58,10 +45,7 @@ public class MultiClassModel<T> extends SolutionModel
 		float[] decisionValues = oneVsOneValues(x);
 
 		int[] vote = new int[numberOfClasses];
-		/*for (i = 0; i < nr_class; i++)
-			{
-			vote[i] = 0;
-			}*/
+
 		int pos = 0;
 		for (i = 0; i < numberOfClasses; i++)
 			{
@@ -114,12 +98,10 @@ public class MultiClassModel<T> extends SolutionModel
 		if (!supportsProbability())
 			{
 			throw new SvmException("Can't make probability predictions");
-//			return predict(x);
 			}
 
 		int i;
-		//float[] dec_values = new float[nr_class * (nr_class - 1) / 2];
-		float[] decisionValues = oneVsOneValues(x);//, dec_values);
+		float[] decisionValues = oneVsOneValues(x);
 
 		float minimumProbability = 1e-7f;
 		float[][] pairwiseProbabilities = new float[numberOfClasses][numberOfClasses];
@@ -138,7 +120,7 @@ public class MultiClassModel<T> extends SolutionModel
 			}
 		float[] probabilityEstimates = multiclassProbability(numberOfClasses, pairwiseProbabilities);
 
-		return probabilityEstimates;// label[bestProbabilityIndex];
+		return probabilityEstimates;
 		}
 
 	public T bestProbabilityLabel(float[] labelProbabilities)
@@ -245,17 +227,13 @@ public class MultiClassModel<T> extends SolutionModel
 
 		probA = parseFloatArray(props.getProperty("probA"));
 		probB = parseFloatArray(props.getProperty("probB"));
-		//	numSupportVectors = parseIntArray(props.getProperty("nr_sv"));
 		}
 
 
 	public void writeToStream(DataOutputStream fp) throws IOException
 		{
 		super.writeToStream(fp);
-		//svm_parameter param = model.param;
 
-		//int nr_class = nr_class;
-		//int l = model.l;
 		fp.writeBytes("nr_class " + numberOfClasses + "\n");
 
 		fp.writeBytes("rho");
@@ -284,50 +262,15 @@ public class MultiClassModel<T> extends SolutionModel
 			fp.writeBytes("\n");
 			}
 
-/*		if (numSupportVectors != null)
-			{
-			fp.writeBytes("nr_sv");
-			for (int i = 0; i < numberOfClasses; i++)
-				{
-				fp.writeBytes(" " + numSupportVectors[i]);
-				}
-			fp.writeBytes("\n");
-			}*/
-
 		//these must come after everything else
 		writeSupportVectors(fp);
 
-		/*
-		  float[][] sv_coef = model.sv_coef;
-		  svm_node[][] SV = model.SV;
-
-		  for (int i = 0; i < l; i++)
-			  {
-			  for (int j = 0; j < nr_class - 1; j++)
-				  {
-				  fp.writeBytes(sv_coef[j][i] + " ");
-				  }
-
-			  svm_node[] p = SV[i];
-			  if (param.kernel_type == svm_parameter.PRECOMPUTED)
-				  {
-				  fp.writeBytes("0:" + (int) (p[0].value));
-				  }
-			  else
-				  {
-				  for (int j = 0; j < p.length; j++)
-					  {
-					  fp.writeBytes(p[j].index + ":" + p[j].value + " ");
-					  }
-				  }
-			  fp.writeBytes("\n");
-			  }
-  */
 		fp.close();
 		}
 
 	protected void readSupportVectors(BufferedReader fp)
 		{
+		//** Implement support vector I/O
 		throw new UnsupportedOperationException();
 		}
 
@@ -336,6 +279,7 @@ public class MultiClassModel<T> extends SolutionModel
 		fp.writeBytes("SV\n");
 		fp.writeBytes("Saving multi-class support vectors is not implemented yet");
 
+		//** Implement support vector I/O
 		// the original format is a spaghetti
 
 		}

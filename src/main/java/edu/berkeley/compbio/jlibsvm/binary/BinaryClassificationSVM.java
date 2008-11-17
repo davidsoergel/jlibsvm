@@ -28,40 +28,6 @@ public abstract class BinaryClassificationSVM extends SVM<Boolean, BinaryClassif
 
 	public BinaryModel train(BinaryClassificationProblem problem)
 		{
-
-		// convert arbitrary labels into +1 , -1
-		//	assert param.weights.size() == 2;
-
-		//	Iterator<Integer> it= param.weights.keySet().iterator();
-		//	float label1 = it.next();
-		//float label2 = it.next();
-/*		Boolean label1 = problem.targetValues[0];  // should be int
-		Boolean label2 = null;
-
-
-		for (int i = 0; i < problem.targetValues.length; i++)
-			{
-			if (problem.targetValues[i] == label1)
-				{
-				problem.targetValues[i] = 1f;
-				}
-			else
-				{
-				if (label2 == null)
-					{
-					label2 = (int) problem.targetValues[i];
-					}
-				else if (!label2.equals((int) problem.targetValues[i]))
-					{
-					throw new SvmException("Can't do binary classification; more than two classes found");
-					}
-				problem.targetValues[i] = -1f;
-				}
-			}
-		if (label2 == null)
-			{
-			throw new SvmException("Can't do binary classification; only one class was found");
-			}*/
 		if (problem.getNumLabels() == 1)
 			{
 			throw new SvmException("Can't do binary classification; only one class was found");
@@ -92,53 +58,13 @@ public abstract class BinaryClassificationSVM extends SVM<Boolean, BinaryClassif
 
 	public abstract BinaryModel trainOne(BinaryClassificationProblem problem, float Cp, float Cn);
 
-	/*
-	static decision_function svm_train_one(svm_problem prob, svm_parameter param, float Cp, float Cn)
-		{
-		float[] alpha = new float[prob.examples.length];
-		SolutionInfo si = new SolutionInfo();
-		switch (param.svm_type)
-			{
-			case svm_parameter.C_SVC:
-				solve_c_svc(prob, param, alpha, si, Cp, Cn);
-				break;
-			case svm_parameter.NU_SVC:
-				solve_nu_svc(prob, param, alpha, si);
-				break;
-			case svm_parameter.ONE_CLASS:
-				solve_one_class(prob, param, alpha, si);
-				break;
-			case svm_parameter.EPSILON_SVR:
-				solve_epsilon_svr(prob, param, alpha, si);
-				break;
-			case svm_parameter.NU_SVR:
-				solve_nu_svr(prob, param, alpha, si);
-				break;
-			}
-
-		printSolutionInfo(prob, alpha, si);
-
-		decision_function f = new decision_function();
-		f.alpha = alpha;
-		f.rho = si.rho;
-		return f;
-		}
-		*/
-
 	public FoldSpec separateFolds(BinaryClassificationProblem problem, int numberOfFolds)
 		{
 		FoldSpec fs = new FoldSpec(problem.examples.length, numberOfFolds);
 
-		//problem.groupClasses(problem, fs.perm);
-
 
 		BinaryClassificationProblem.GroupedClasses groupedExamples = problem.groupClasses(fs.perm);
-		//	int nr_class = tmp_nr_class[0];
-		//	int[] label = tmp_label[0];
-		//	int[] start = tmp_start[0];
-		//	int[] count = tmp_count[0];
 		int numberOfClasses = groupedExamples.numberOfClasses;
-		//	List<Integer> label = groupedExamples.label;
 		int[] start = groupedExamples.start;
 		List<Integer> count = groupedExamples.count;
 
@@ -248,9 +174,6 @@ public abstract class BinaryClassificationSVM extends SVM<Boolean, BinaryClassif
 			int subprobLength = problem.examples.length - (end - begin);
 			BinaryClassificationProblem subprob = new BinaryClassificationProblem(subprobLength);
 
-			//subprob.examples = new SvmPoint[subprobLength];
-			//subprob.targetValues = new float[subprobLength];
-
 			k = 0;
 			for (j = 0; j < begin; j++)
 				{
@@ -303,7 +226,7 @@ public abstract class BinaryClassificationSVM extends SVM<Boolean, BinaryClassif
 					SvmParameter<Boolean> subparam = new SvmParameter<Boolean>(param);
 					subparam.probability = false;
 					subparam.C = 1.0f;
-					//subparam.nr_weight = 2;
+
 					subparam.putWeight(true, Cp);
 					subparam.putWeight(false, Cn);
 

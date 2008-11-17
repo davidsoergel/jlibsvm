@@ -10,9 +10,6 @@ import java.util.Iterator;
  */
 public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> extends SvmContext
 	{
-	//
-	// construct and solve various formulations
-	//
 	public static final int LIBSVM_VERSION = 288;
 
 
@@ -27,20 +24,8 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 
 
 	public abstract String getSvmType();
-	// label: label name, start: begin of each class, count: #data of classes, perm: indices to the original data
 
-	// perm, length l, must be allocated before calling this subroutine
-
-
-	//
-	// Interface functions
-
-	//
-
-	public abstract SolutionModel train(P problem);//, svm_parameter param);
-
-//	public abstract FoldSpec separateFolds(svm_problem problem, int nr_fold);
-
+	public abstract SolutionModel train(P problem);
 
 	protected abstract T[] foldPredict(P subprob, Iterator<SvmPoint> foldIterator, int length);
 
@@ -74,7 +59,6 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 		{
 		Class type = (Class) getLabelClass();
 		T[] predictions = (T[]) java.lang.reflect.Array.newInstance(type, problem.examples.length);
-		//T[] predictions = (T[]) new Object[problem.examples.length];
 
 		if (numberOfFolds >= problem.examples.length)
 			{
@@ -83,10 +67,8 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 
 		FoldSpec fs = separateFolds(problem, numberOfFolds);
 
-
-//		List<svm_node[]> exampleSets = permutedTiledSubsets(problem.examples, nr_fold);
-
-		// stratified cv may not give leave-one-out rate		// Each class to l folds -> some folds may have zero elements
+		// stratified cv may not give leave-one-out rate
+		// Each class to l folds -> some folds may have zero elements
 
 
 		for (int i = 0; i < numberOfFolds; i++)
@@ -97,10 +79,7 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 
 			int subprobLength = problem.examples.length - (end - begin);
 
-			//	subprob.examples = new SvmPoint[subprobLength];
-			//subprob.targetValues = new float[subprobLength];
-
-			P subprob = problem.newSubProblem(subprobLength); //new SvmProblem();
+			P subprob = problem.newSubProblem(subprobLength);
 
 			int k = 0;
 			for (int j = 0; j < begin; j++)
@@ -123,245 +102,10 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 				predictions[fs.perm[j]] = foldPredictions[j - begin];
 				}
 			}
-		// now target contains the prediction for each point based on training with e.g. 80% of the other points (for 5-fold).
+		// now predictions contains the prediction for each point based on training with e.g. 80% of the other points (for 5-fold).
 		return predictions;
 		}
 
-
-/*	public static int svm_get_svm_type(svm_model model)
-		{
-		return model.param.svm_type;
-		}
-
-	public static int svm_get_nr_class(svm_model model)
-		{
-		return model.nr_class;
-		}
-
-	public static void svm_get_labels(svm_model model, int[] label)
-		{
-		if (model.label != null)
-			{
-			for (int i = 0; i < model.nr_class; i++)
-				{
-				label[i] = model.label[i];
-				}
-			}
-		}
-*/
-
-	//public abstract float svm_predict_probability(svm_model model, svm_node[] x, float[] prob_estimates);
-
-
-/*
-   static final String svm_type_table[] = {
-		   "c_svc",
-		   "nu_svc",
-		   "one_class",
-		   "epsilon_svr",
-		   "nu_svr",
-   };
-
-   static final String kernel_type_table[] = {
-		   "linear",
-		   "polynomial",
-		   "rbf",
-		   "sigmoid",
-		   "precomputed"
-   };*/
-
-
-/*
-	private static float atof(String s)
-		{
-		return Double.valueOf(s).doubleValue();
-		}
-
-	private static int atoi(String s)
-		{
-		return Integer.parseInt(s);
-		}
-
-	public static svm_model svm_load_model(String model_file_name) throws IOException
-		{
-		BufferedReader fp = new BufferedReader(new FileReader(model_file_name));
-
-		// read parameters
-
-		svm_model model = new svm_model();
-		svm_parameter param = new svm_parameter();
-		model.param = param;
-		model.rho = null;
-		model.probA = null;
-		model.probB = null;
-		model.label = null;
-		model.nSV = null;
-
-		while (true)
-			{
-			String cmd = fp.readLine();
-			String arg = cmd.substring(cmd.indexOf(' ') + 1);
-
-			if (cmd.startsWith("svm_type"))
-				{
-				int i;
-				for (i = 0; i < svm_type_table.length; i++)
-					{
-					if (arg.indexOf(svm_type_table[i]) != -1)
-						{
-						param.svm_type = i;
-						break;
-						}
-					}
-				if (i == svm_type_table.length)
-					{
-					System.err.print("unknown svm type.\n");
-					return null;
-					}
-				}
-			else if (cmd.startsWith("kernel_type"))
-				{
-				int i;
-				for (i = 0; i < kernel_type_table.length; i++)
-					{
-					if (arg.indexOf(kernel_type_table[i]) != -1)
-						{
-						param.kernel_type = i;
-						break;
-						}
-					}
-				if (i == kernel_type_table.length)
-					{
-					System.err.print("unknown kernel function.\n");
-					return null;
-					}
-				}
-			else if (cmd.startsWith("degree"))
-				{
-				param.degree = atoi(arg);
-				}
-			else if (cmd.startsWith("gamma"))
-				{
-				param.gamma = atof(arg);
-				}
-			else if (cmd.startsWith("coef0"))
-				{
-				param.coef0 = atof(arg);
-				}
-			else if (cmd.startsWith("nr_class"))
-				{
-				model.nr_class = atoi(arg);
-				}
-			else if (cmd.startsWith("total_sv"))
-				{
-				model.l = atoi(arg);
-				}
-			else if (cmd.startsWith("rho"))
-				{
-				int n = model.nr_class * (model.nr_class - 1) / 2;
-				model.rho = new float[n];
-				StringTokenizer st = new StringTokenizer(arg);
-				for (int i = 0; i < n; i++)
-					{
-					model.rho[i] = atof(st.nextToken());
-					}
-				}
-			else if (cmd.startsWith("label"))
-				{
-				int n = model.nr_class;
-				model.label = new int[n];
-				StringTokenizer st = new StringTokenizer(arg);
-				for (int i = 0; i < n; i++)
-					{
-					model.label[i] = atoi(st.nextToken());
-					}
-				}
-			else if (cmd.startsWith("probA"))
-				{
-				int n = model.nr_class * (model.nr_class - 1) / 2;
-				model.probA = new float[n];
-				StringTokenizer st = new StringTokenizer(arg);
-				for (int i = 0; i < n; i++)
-					{
-					model.probA[i] = atof(st.nextToken());
-					}
-				}
-			else if (cmd.startsWith("probB"))
-				{
-				int n = model.nr_class * (model.nr_class - 1) / 2;
-				model.probB = new float[n];
-				StringTokenizer st = new StringTokenizer(arg);
-				for (int i = 0; i < n; i++)
-					{
-					model.probB[i] = atof(st.nextToken());
-					}
-				}
-			else if (cmd.startsWith("nr_sv"))
-				{
-				int n = model.nr_class;
-				model.nSV = new int[n];
-				StringTokenizer st = new StringTokenizer(arg);
-				for (int i = 0; i < n; i++)
-					{
-					model.nSV[i] = atoi(st.nextToken());
-					}
-				}
-			else if (cmd.startsWith("SV"))
-				{
-				break;
-				}
-			else
-				{
-				System.err.print("unknown text in model file: [" + cmd + "]\n");
-				return null;
-				}
-			}
-
-		// read sv_coef and SV
-
-		int m = model.nr_class - 1;
-		int l = model.l;
-		model.sv_coef = new float[m][l];
-		model.SV = new svm_node[l][];
-
-		for (int i = 0; i < l; i++)
-			{
-			String line = fp.readLine();
-			StringTokenizer st = new StringTokenizer(line, " \t\n\r\f:");
-
-			for (int k = 0; k < m; k++)
-				{
-				model.sv_coef[k][i] = atof(st.nextToken());
-				}
-			int n = st.countTokens() / 2;
-			model.SV[i] = new svm_node[n];
-			for (int j = 0; j < n; j++)
-				{
-				model.SV[i][j] = new svm_node();
-				model.SV[i][j].index = atoi(st.nextToken());
-				model.SV[i][j].value = atof(st.nextToken());
-				}
-			}
-
-		fp.close();
-		return model;
-		}
-*/
-/*	public static int svm_check_probability_model(svm_model model)
-		{
-		if (((model.param.svm_type == svm_parameter.C_SVC || model.param.svm_type == svm_parameter.NU_SVC)
-				&& model.probA != null && model.probB != null) || (
-				(model.param.svm_type == svm_parameter.EPSILON_SVR || model.param.svm_type == svm_parameter.NU_SVR)
-						&& model.probA != null))
-			{
-			return 1;
-			}
-		else
-			{
-			return 0;
-			}
-		}
-		*/
 
 	protected class FoldIterator implements Iterator<SvmPoint>
 		{

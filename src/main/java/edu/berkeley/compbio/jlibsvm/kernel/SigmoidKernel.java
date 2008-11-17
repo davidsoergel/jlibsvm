@@ -11,8 +11,7 @@ import java.util.Properties;
  */
 public class SigmoidKernel extends GammaKernel
 	{
-	//public float gamma;// for poly/rbf/sigmoid
-	public float coef0;// for poly/sigmoid
+	public float coef0;
 
 	public SigmoidKernel(Properties props)
 		{

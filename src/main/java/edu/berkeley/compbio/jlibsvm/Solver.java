@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.jlibsvm;
 
-import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
+import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 
 
 /**
@@ -54,7 +54,6 @@ public class Solver
 	boolean unshrink;// XXX
 	boolean shrinking;
 
-	//static final float Float.POSITIVE_INFINITY = java.lang.Float.POSITIVE_INFINITY;
 
 	float get_C(int i)
 		{
@@ -91,11 +90,6 @@ public class Solver
 		{
 		return alpha_status[i] == FREE;
 		}
-
-	// java: information about solution except alpha,
-
-	// because we cannot return multiple values otherwise...
-
 
 	void swap_index(int i, int j)
 		{
@@ -214,7 +208,7 @@ public class Solver
 
 	public Solver(QMatrix Q, float[] p, boolean[] y, float Cp, float Cn, float eps, boolean shrinking)
 		{
-		if(eps <= 0)
+		if (eps <= 0)
 			{
 			throw new SvmException("eps <= 0");
 			}
@@ -493,7 +487,7 @@ public class Solver
 			}
 
 
-		BinaryModel model = new BinaryModel(null,null);
+		BinaryModel model = new BinaryModel(null, null);
 
 		// calculate rho
 
@@ -523,8 +517,6 @@ public class Solver
 			model.alpha[shuffledExampleIndexToOriginalIndex[i]] = shuffledAlpha[i];
 			model.supportVectors[shuffledExampleIndexToOriginalIndex[i]] = Q.getVectors()[i];
 			}
-
-	//	model.supportVectors = Q.getVectors(); // problem.examples;
 
 		// note at this point the solution includes _all_ vectors, even if their alphas are zero
 
@@ -775,7 +767,7 @@ public class Solver
 
 			if (is_lower_bound(i))
 				{
-				if (y[i] )
+				if (y[i])
 					{
 					ub = Math.min(ub, yG);
 					}

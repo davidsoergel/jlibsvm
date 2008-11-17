@@ -44,11 +44,9 @@ public class EpsilonSVR extends RegressionSVM
 
 		for (i = 0; i < l; i++)
 			{
-			//alpha2[i] = 0;
 			linearTerm[i] = param.p - problem.getTargetValue(i);
 			y[i] = true;
 
-			//alpha2[i + l] = 0;
 			linearTerm[i + l] = param.p + problem.getTargetValue(i);
 			y[i + l] = false;
 			}

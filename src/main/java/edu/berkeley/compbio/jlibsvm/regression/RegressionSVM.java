@@ -23,16 +23,9 @@ public abstract class RegressionSVM extends SVM<Float, RegressionProblem>
 	@Override
 	public Class getLabelClass()
 		{
-		return Float.class; // ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		return Float.class;
 		}
 
-
-/*
-	@Override
-	public float svm_predict_probability(svm_model model, svm_node[] x, float[] prob_estimates)
-		{
-		return svm_predict(model, x);
-		}*/
 
 	// Stratified cross validation
 

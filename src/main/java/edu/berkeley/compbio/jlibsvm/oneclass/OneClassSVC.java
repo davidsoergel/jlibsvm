@@ -30,10 +30,8 @@ public class OneClassSVC extends RegressionSVM
 			}
 		}
 
-
 	public OneClassModel train(RegressionProblem problem)
 		{
-	//private static void solve_one_class(svm_problem prob, svm_parameter param, float[] alpha, SolutionInfo si)
 		int l = problem.examples.length;
 		float[] zeros = new float[l];
 		boolean[] ones = new boolean[l];
@@ -61,14 +59,15 @@ public class OneClassSVC extends RegressionSVM
 			ones[i] = true;
 			}
 
-		Solver_NU s = new Solver_NU(new ONE_CLASS_Q(problem, kernel, param.cache_size), zeros, ones, initAlpha, 1.0f, 1.0f, param.eps,
-		                      param.shrinking);
+		Solver_NU s =
+				new Solver_NU(new ONE_CLASS_Q(problem, kernel, param.cache_size), zeros, ones, initAlpha, 1.0f, 1.0f,
+				              param.eps, param.shrinking);
 
 		BinaryModel binaryModel = s.Solve();
 		binaryModel.kernel = kernel;
 		binaryModel.param = param;
 		binaryModel.compact();
-		OneClassModel model =  new OneClassModel(binaryModel);
+		OneClassModel model = new OneClassModel(binaryModel);
 		model.setSvmType(getSvmType());
 		return model;
 		}

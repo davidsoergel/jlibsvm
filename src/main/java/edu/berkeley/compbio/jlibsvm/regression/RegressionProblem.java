@@ -15,12 +15,7 @@ public class RegressionProblem extends SvmProblem<Float, RegressionProblem>
 		{
 		throw new SvmException("Shouldn't try to get unique target values for a regression problem");
 		}
-/*
-	public float[] targetValueAsFloat()
-		{
-		return ArrayUtils.toPrimitive(targetValues);
-		}
-*/
+
 	public RegressionProblem(int numExamples)
 		{
 		super(numExamples);

@@ -2,6 +2,8 @@ package edu.berkeley.compbio.jlibsvm.qmatrix;
 
 import edu.berkeley.compbio.jlibsvm.SvmException;
 
+// ** replace with WeakHashMap
+
 /**
  * Kernel Cache
  * <p/>
@@ -28,7 +30,7 @@ class Cache
 
 	Cache(int l_, long size_)
 		{
-		if(size_ < 0)
+		if (size_ < 0)
 			{
 			throw new SvmException("Cache size < 0");
 			}

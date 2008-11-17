@@ -9,30 +9,21 @@ import edu.berkeley.compbio.jlibsvm.SvmProblem;
  */
 public class MultiClassProblem<T extends Comparable> extends SvmProblem<T, MultiClassProblem<T>>
 	{
-/*	public float[] targetValueAsFloat()
-		{
-		float[] result = new float[targetValues.length];
-		int i = 0;
-
-		List<T> uniq = getLabels();
-
-		for (T targetValue : targetValues)
-			{
-			result[i] = (float)uniq.indexOf(targetValue);
-			i++;
-			}
-		return result;
-		}*/
-
 	Class type;
 
+	/**
+	 * For now, pending further cleanup, we need to create arrays of the label type.  That's impossible to do with generics
+	 * alone, so we need to provide the class object (e.g., String.class or whatever) for the label type used.  Of course
+	 * this should match the generics used on SvmProblem, etc.
+	 *
+	 * @param type
+	 * @param length
+	 */
 	public MultiClassProblem(Class type, int length)
 		{
 		super(length);
 		this.type = type;
-		//Class<?> type = getClass().getComponentType();
 		targetValues = (T[]) java.lang.reflect.Array.newInstance(type, length);
-//(T[]) new Object[length];
 		}
 
 

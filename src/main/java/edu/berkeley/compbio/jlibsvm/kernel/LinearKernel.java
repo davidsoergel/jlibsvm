@@ -23,10 +23,7 @@ public class LinearKernel implements KernelFunction
 
 	public float evaluate(SvmPoint x, SvmPoint y)
 		{
-		//float dot = MathSupport.dotOrig(x,y);
-		float dot = MathSupport.dot(x, y);
-		//assert dot1 == dot2;
-		return dot;
+		return MathSupport.dot(x, y);
 		}
 
 	public String toString()

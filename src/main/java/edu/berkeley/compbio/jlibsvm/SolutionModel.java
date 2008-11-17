@@ -17,13 +17,7 @@ import java.util.StringTokenizer;
  */
 public abstract class SolutionModel extends SvmContext
 	{
-	//public SvmParameter param;// parameter
-	//int l;// total #SV = svm_node.length
-
-	//public svm_node[][] supportVectors;// SVs (SV[l])
-//	public KernelFunction kernel;
-
-	public String svmType;
+	public String svmType;  // names the SVM that was used to produce this model; used only for writeToStream
 
 	public SolutionModel(Properties props)
 		{
@@ -70,10 +64,6 @@ public abstract class SolutionModel extends SvmContext
 		super(kernel, param);
 		}
 
-
-//	public abstract float predictValue(SvmPoint x);
-
-
 	public void save(String model_file_name) throws IOException
 		{
 		DataOutputStream fp = new DataOutputStream(new FileOutputStream(model_file_name));
@@ -91,15 +81,12 @@ public abstract class SolutionModel extends SvmContext
 		fp.writeBytes("svm_type " + svmType + "\n");
 		fp.writeBytes(kernel.toString());
 
-		//if (param.weights != null)
-		//	{
 		fp.writeBytes("label");
 		for (Object i : param.getWeights().keySet())  // note these are in insertion order
 			{
 			fp.writeBytes(" " + i);
 			}
 		fp.writeBytes("\n");
-		//	}
 		}
 
 	public static SolutionModel identifyTypeAndLoad(String model_file_name)

@@ -44,20 +44,7 @@ public class Nu_SVC extends BinaryClassificationSVM
 		int l = problem.examples.length;
 		float nu = param.nu;
 
-		boolean[] y ;//= new boolean[l];
-
-		/*for (int i = 0; i < l; i++)
-			{
-			if (problem.targetValues[i])
-				{
-				y[i] = +1;
-				}
-			else
-				{
-				y[i] = -1;
-				}
-			}*/
-
+		boolean[] y;
 
 		y = MathSupport.toPrimitive(problem.getTargetValues());
 
@@ -116,50 +103,10 @@ public class Nu_SVC extends BinaryClassificationSVM
 
 	public boolean isFeasible(BinaryClassificationProblem problem)
 		{
-/*		int l = problem.examples.length;
-		int maxNumberOfClasses = 16;
-		int numberOfClasses = 0;
-		Boolean[] label = new Boolean[maxNumberOfClasses];
-		int[] count = new int[maxNumberOfClasses];
-
-		int i;
-		for (i = 0; i < l; i++)
-			{
-			Boolean thisLabel = problem.targetValues[i];
-			int j;
-			for (j = 0; j < numberOfClasses; j++)
-				{
-				if (thisLabel.equals(label[j]))
-					{
-					++count[j];
-					break;
-					}
-				}
-
-			if (j == numberOfClasses)
-				{
-				if (numberOfClasses == maxNumberOfClasses)
-					{
-					maxNumberOfClasses *= 2;
-					int[] newData = new int[maxNumberOfClasses];
-					System.arraycopy(label, 0, newData, 0, label.length);
-					label = newData;
-
-					newData = new Boolean[maxNumberOfClasses];
-					System.arraycopy(count, 0, newData, 0, count.length);
-					count = newData;
-					}
-				label[numberOfClasses] = thisLabel;
-				count[numberOfClasses] = 1;
-				++numberOfClasses;
-				}
-			}
-*/
 		Map<Boolean, Integer> counts = problem.getExampleCounts();
 
-		int n1 = counts.get(true); //problem.countExamples(true);
-		int n2 = counts.get(false); //problem.countExamples(false);
-
+		int n1 = counts.get(true);
+		int n2 = counts.get(false);
 
 		if (param.nu * (n1 + n2) / 2 > Math.min(n1, n2))
 			{

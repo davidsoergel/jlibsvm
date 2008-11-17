@@ -143,6 +143,8 @@ public class MathSupport
 
 	/**
 	 * http://martin.ankerl.com/2007/02/11/optimized-exponential-functions-for-java/
+	 * <p/>
+	 * This approximation is much too coarse for our purposes
 	 *
 	 * @param val
 	 * @return
