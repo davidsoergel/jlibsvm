@@ -1,6 +1,5 @@
 package edu.berkeley.compbio.jlibsvm.kernel;
 
-import edu.berkeley.compbio.jlibsvm.ArrayInterpolatingFunctionCache;
 import edu.berkeley.compbio.jlibsvm.MathSupport;
 import edu.berkeley.compbio.jlibsvm.SvmPoint;
 
@@ -12,22 +11,23 @@ import java.util.Properties;
  */
 public class RBFKernel extends GammaKernel
 	{
-	private static ArrayInterpolatingFunctionCache interpolatingExp;
-
+//	private static ArrayInterpolatingFunctionCache interpolatingExp;
+/*
 	static int evaluateCount = 0;
 
 	static
 		{
 		try
 			{
-			interpolatingExp =
-					new ArrayInterpolatingFunctionCache(Math.class.getMethod("exp", double.class), .0001f, -10f, 10f);
+	//		interpolatingExp =
+	//				new ArrayInterpolatingFunctionCache(Math.class.getMethod("exp", double.class), .0001f, -10f, 10f);
 			}
 		catch (NoSuchMethodException e)
 			{
 			throw new Error(e);
 			}
 		}
+*/
 
 //	public float gamma;// for poly/rbf/sigmoid
 
@@ -81,23 +81,22 @@ public class RBFKernel extends GammaKernel
 		// anyhow I'll just suck up the Math.exp() for now.
 
 
-
-		evaluateCount++;
+//		evaluateCount++;
 
 		return result;
 		}
 
-	public String perfString()
-		{
-		return "" + evaluateCount + " evaluations, " + interpolatingExp.perfString();
-		}
+	/*	public String perfString()
+		 {
+		 return "" + evaluateCount + " evaluations, " + interpolatingExp.perfString();
+		 }
 
-	private float bogusNoop(float sum)
-		{
-		double result = Math.exp(-gamma * sum);
-		return (float) result;
-		}
-
+	 private float bogusNoop(float sum)
+		 {
+		 double result = Math.exp(-gamma * sum);
+		 return (float) result;
+		 }
+ */
 	private float float2xDotProduct(SvmPoint x, SvmPoint y)
 		{
 		// this ends up horribly wrong near the boundaries... ???
