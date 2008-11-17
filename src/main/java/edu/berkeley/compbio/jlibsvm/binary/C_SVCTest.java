@@ -1,11 +1,9 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
-import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
-import edu.berkeley.compbio.jlibsvm.binary.C_SVC;
-import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import edu.berkeley.compbio.jlibsvm.kernel.RBFKernel;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.SvmPoint;
+import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.kernel.RBFKernel;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
