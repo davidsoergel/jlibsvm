@@ -1,7 +1,6 @@
 package edu.berkeley.compbio.jlibsvm;
 
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.reflect.Type;
 import java.util.Iterator;
@@ -10,7 +9,7 @@ import java.util.Iterator;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class SVM<T extends Comparable,P extends SvmProblem<T,P>> extends SvmContext
+public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> extends SvmContext
 	{
 	//
 	// construct and solve various formulations
@@ -47,7 +46,6 @@ public abstract class SVM<T extends Comparable,P extends SvmProblem<T,P>> extend
 	protected abstract T[] foldPredict(P subprob, Iterator<SvmPoint> foldIterator, int length);
 
 
-
 	public FoldSpec separateFolds(P problem, int numberOfFolds)
 		{
 		FoldSpec fs = new FoldSpec(problem.examples.length, numberOfFolds);
@@ -75,7 +73,7 @@ public abstract class SVM<T extends Comparable,P extends SvmProblem<T,P>> extend
 
 	public T[] crossValidation(P problem, int numberOfFolds)
 		{
-		Class type = (Class)getGenericType();
+		Class type = (Class) getGenericType();
 		T[] predictions = (T[]) java.lang.reflect.Array.newInstance(type, problem.examples.length);
 		//T[] predictions = (T[]) new Object[problem.examples.length];
 
@@ -395,7 +393,7 @@ public abstract class SVM<T extends Comparable,P extends SvmProblem<T,P>> extend
 
 		public void remove()
 			{
-			throw new NotImplementedException();
+			throw new UnsupportedOperationException();
 			}
 		}
 	}

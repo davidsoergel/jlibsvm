@@ -1,7 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.kernel;
 
 import edu.berkeley.compbio.jlibsvm.SvmPoint;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Properties;
 
@@ -13,12 +12,12 @@ public class PrecomputedKernel implements KernelFunction
 	{
 	public PrecomputedKernel(Properties props)
 		{
-		throw new NotImplementedException(); //"Hmm, not sure how to load precomputed kernels");
+		throw new UnsupportedOperationException();// ** Hmm, not sure how to load precomputed kernels;
 		}
 
 	public PrecomputedKernel()
 		{
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 		}
 
 	public float evaluate(SvmPoint x, SvmPoint y)

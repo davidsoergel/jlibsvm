@@ -1,14 +1,13 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
+import edu.berkeley.compbio.jlibsvm.DiscreteModel;
 import edu.berkeley.compbio.jlibsvm.MathSupport;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.SvmPoint;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
-import edu.berkeley.compbio.jlibsvm.DiscreteModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -21,7 +20,8 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T>// implements ProbabilitySupportingModel//implements java.io.Serializable
+public class MultiClassModel<T> extends SolutionModel
+		implements DiscreteModel<T>// implements ProbabilitySupportingModel//implements java.io.Serializable
 	{
 	int numberOfClasses;// number of classes, = 2 in regression/one class svm
 
@@ -35,7 +35,8 @@ public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T
 	// for classification only
 
 	// generics are a hassle here  (T[] label; makes a mess)
-	Object[] label; // label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight
+	Object[] label;
+			// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight
 //	int[] numSupportVectors;// number of SVs for each class (nSV[k])
 // nSV[0] + nSV[1] + ... + nSV[k-1] = l
 
@@ -85,7 +86,7 @@ public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T
 				bestVoteIndex = i;
 				}
 			}
-		return (T)label[bestVoteIndex];
+		return (T) label[bestVoteIndex];
 		}
 
 
@@ -150,7 +151,7 @@ public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T
 				bestProbabilityIndex = i;
 				}
 			}
-		return (T)label[bestProbabilityIndex];
+		return (T) label[bestProbabilityIndex];
 		}
 
 
@@ -233,7 +234,7 @@ public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T
 		StringTokenizer st = new StringTokenizer(props.getProperty("rho"));
 
 		ArrayList<BinaryModel> models = new ArrayList<BinaryModel>();
-		while(st.hasMoreTokens())
+		while (st.hasMoreTokens())
 			{
 			BinaryModel m = new BinaryModel(kernel, param);
 			m.rho = Float.parseFloat(st.nextToken());
@@ -244,7 +245,7 @@ public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T
 
 		probA = parseFloatArray(props.getProperty("probA"));
 		probB = parseFloatArray(props.getProperty("probB"));
-	//	numSupportVectors = parseIntArray(props.getProperty("nr_sv"));
+		//	numSupportVectors = parseIntArray(props.getProperty("nr_sv"));
 		}
 
 
@@ -327,7 +328,7 @@ public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T
 
 	protected void readSupportVectors(BufferedReader fp)
 		{
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 		}
 
 	protected void writeSupportVectors(DataOutputStream fp) throws IOException
