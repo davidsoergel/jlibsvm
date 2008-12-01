@@ -1203,20 +1203,6 @@
         <entry key="$PROJECT_DIR$">
           <value>
             <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="svn+ssh://soergel@svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm/branches">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="svn+ssh://soergel@svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
               <option name="branchUrls">
                 <list>
                   <option value="svn+ssh://soergel@svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm/branches" />
@@ -1380,6 +1366,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/com/intellij/annotations/6.0.3/annotations-6.0.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: com.google:collections:20080321">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/collections/20080321/collections-20080321.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/collections/20080321/collections-20080321-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/google/collections/20080321/collections-20080321-sources.jar!/" />
       </SOURCES>
     </library>
   </component>

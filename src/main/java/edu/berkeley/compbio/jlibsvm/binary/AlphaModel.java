@@ -2,39 +2,42 @@ package edu.berkeley.compbio.jlibsvm.binary;
 
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.SvmPoint;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import edu.berkeley.compbio.jlibsvm.kernel.PrecomputedKernel;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class AlphaModel extends SolutionModel
+public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<P>
 	{
-	public SvmPoint[] supportVectors;
-	public float[] alpha;
+	public Map<P, Double> supportVectors;
+	//public float[] alpha;
 	public float rho;
 
-	public AlphaModel(BinaryModel alphaModel)
-		{
-		super(alphaModel);
-		alpha = alphaModel.alpha;
-		rho = alphaModel.rho;
-		supportVectors = alphaModel.supportVectors;
-		}
-
+	/*	public AlphaModel(BinaryModel<L,P> alphaModel)
+		 {
+		 super(alphaModel);
+		 supportVectors = alphaModel.supportVectors; // ** should be deep copy?
+	 //	alpha = alphaModel.alpha;
+		 rho = alphaModel.rho;
+		 }
+ */
 	protected AlphaModel(KernelFunction kernel, SvmParameter param)
 		{
 		super(kernel, param);
+		}
+
+	protected AlphaModel()
+		{
+		super(); //kernel, param);
 		}
 
 	public AlphaModel(Properties props)
@@ -48,11 +51,22 @@ public abstract class AlphaModel extends SolutionModel
 	 */
 	public void compact()
 		{
-		assert supportVectors.length == alpha.length;
+		//assert supportVectors.size() == alpha.length;
 
-		List<Integer> nonZeroAlphaIndexes = new ArrayList<Integer>();
+		//List<Integer> nonZeroAlphaIndexes = new ArrayList<Integer>();
 
-		for (int i = 0; i < supportVectors.length; i++)
+		for (Iterator<Map.Entry<P, Double>> i = supportVectors.entrySet().iterator(); i.hasNext();)
+			//for(Map.Entry<P,Float> entry : supportVectors.entrySet())
+			{
+			Map.Entry<P, Double> entry = i.next();
+			if (entry.getValue() == 0)
+				{
+				i.remove();
+				//supportVectors.remove(entry); // ** lookout for concurrent modification
+				}
+			}
+		/*
+		for (int i = 0; i < supportVectors.size(); i++)
 			{
 			if (Math.abs(alpha[i]) > 0)
 				{
@@ -60,20 +74,20 @@ public abstract class AlphaModel extends SolutionModel
 				}
 			}
 
-		SvmPoint[] newSupportVectors = new SvmPoint[nonZeroAlphaIndexes.size()];
+		List<P> newSupportVectors = new ArrayList<P>(nonZeroAlphaIndexes.size());
 		float[] newAlphas = new float[nonZeroAlphaIndexes.size()];
 
 
-		int j = 0;
+		//int j = 0;
 		for (Integer i : nonZeroAlphaIndexes)
 			{
-			newSupportVectors[j] = supportVectors[i];
+			newSupportVectors.add(supportVectors.get(i));
 			newAlphas[j] = alpha[i];
 			j++;
 			}
 
 		supportVectors = newSupportVectors;
-		alpha = newAlphas;
+		alpha = newAlphas;*/
 		}
 
 	public void writeToStream(DataOutputStream fp) throws IOException
@@ -81,7 +95,7 @@ public abstract class AlphaModel extends SolutionModel
 		super.writeToStream(fp);
 
 		fp.writeBytes("rho " + rho + "\n");
-		fp.writeBytes("total_sv " + supportVectors.length + "\n");
+		fp.writeBytes("total_sv " + supportVectors.size() + "\n");
 		}
 
 
@@ -89,12 +103,16 @@ public abstract class AlphaModel extends SolutionModel
 		{
 		fp.writeBytes("SV\n");
 
-		for (int i = 0; i < alpha.length; i++)
+		for (Map.Entry<P, Double> entry : supportVectors.entrySet())
 			{
-			fp.writeBytes(alpha[i] + " ");
 
-			SvmPoint p = supportVectors[i];
-			if (kernel instanceof PrecomputedKernel)
+			fp.writeBytes(entry.getValue() + " ");
+
+			//	P p = supportVectors.get(i);
+
+			fp.writeBytes(entry.getKey().toString());
+
+/*			if (kernel instanceof PrecomputedKernel)
 				{
 				fp.writeBytes("0:" + (int) (p.values[0]));
 				}
@@ -104,13 +122,15 @@ public abstract class AlphaModel extends SolutionModel
 					{
 					fp.writeBytes(p.indexes[j] + ":" + p.values[j] + " ");
 					}
-				}
+				}*/
 			fp.writeBytes("\n");
 			}
 		}
 
 	protected void readSupportVectors(BufferedReader reader) throws IOException
 		{
+		throw new NotImplementedException();
+		/*
 		String line;
 		int lineNo = 0;
 		while ((line = reader.readLine()) != null)
@@ -118,8 +138,11 @@ public abstract class AlphaModel extends SolutionModel
 			StringTokenizer st = new StringTokenizer(line, " \t\n\r\f:");
 
 			alpha[lineNo] = Float.parseFloat(st.nextToken());
+
+			// ** SparseVector not generified here, bah
+
 			int n = st.countTokens() / 2;
-			SvmPoint p = new SvmPoint(n);
+			SparseVector p = new SparseVector(n);
 			supportVectors[lineNo] = p;
 			for (int j = 0; j < n; j++)
 				{
@@ -127,5 +150,6 @@ public abstract class AlphaModel extends SolutionModel
 				p.values[j] = Float.parseFloat(st.nextToken());
 				}
 			}
+			*/
 		}
 	}

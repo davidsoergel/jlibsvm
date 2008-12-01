@@ -4,7 +4,7 @@ package edu.berkeley.compbio.jlibsvm.kernel;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class GammaKernel implements KernelFunction
+public abstract class GammaKernel<T> implements KernelFunction<T>
 	{
 	public float gamma;
 
@@ -21,10 +21,5 @@ public abstract class GammaKernel implements KernelFunction
 	public float getGamma()
 		{
 		return gamma;
-		}
-
-	public String perfString()
-		{
-		return "";
 		}
 	}

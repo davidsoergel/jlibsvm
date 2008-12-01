@@ -2,8 +2,6 @@ package edu.berkeley.compbio.jlibsvm.qmatrix;
 
 import edu.berkeley.compbio.jlibsvm.SvmException;
 
-// ** replace with WeakHashMap
-
 /**
  * Kernel Cache
  * <p/>

@@ -2,9 +2,9 @@ package edu.berkeley.compbio.jlibsvm;
 
 public class MathSupport
 	{
-	public static float powi(float base, int times)
+	public static double powi(double base, int times)
 		{
-		float tmp = base, ret = 1.0f;
+		double tmp = base, ret = 1.0f;
 
 		for (int t = times; t > 0; t /= 2)
 			{
@@ -17,7 +17,7 @@ public class MathSupport
 		return ret;
 		}
 
-	public static float dotOrig(SvmPoint x, SvmPoint y)
+	public static float dotOrig(SparseVector x, SparseVector y)
 		{
 		float sum = 0;
 		int xlen = x.indexes.length;
@@ -45,8 +45,10 @@ public class MathSupport
 		return sum;
 		}
 
-	public static float dot(SvmPoint x, SvmPoint y)
+	public static double dot(SparseVector x, SparseVector y)
 		{
+		// try doing the internal stuff at double precision
+
 		// making final local copies may help performance??
 		final int[] xIndexes = x.indexes;
 		final int xlen = xIndexes.length;
@@ -55,7 +57,7 @@ public class MathSupport
 		final float[] xValues = x.values;
 		final float[] yValues = y.values;
 
-		float sum = 0;
+		double sum = 0;
 		int i = 0;
 		int j = 0;
 		int xIndex = xIndexes[0];
@@ -65,7 +67,7 @@ public class MathSupport
 			{
 			if (xIndex == yIndex)
 				{
-				sum += xValues[i] * yValues[j];
+				sum += (double) xValues[i] * (double) yValues[j];
 
 				i++;
 				if (i >= xlen)
@@ -124,20 +126,6 @@ public class MathSupport
 				}
 			}
 		return sum;
-		}
-
-
-	public static float sigmoidPredict(float decisionValue, float A, float B)
-		{
-		float fApB = decisionValue * A + B;
-		if (fApB >= 0)
-			{
-			return (float) (Math.exp(-fApB) / (1.0 + Math.exp(-fApB)));
-			}
-		else
-			{
-			return (float) (1.0 / (1 + Math.exp(fApB)));
-			}
 		}
 
 

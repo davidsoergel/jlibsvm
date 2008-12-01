@@ -1,6 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.kernel;
 
-import edu.berkeley.compbio.jlibsvm.SvmPoint;
+import edu.berkeley.compbio.jlibsvm.SparseVector;
 
 import java.util.Properties;
 
@@ -8,7 +8,7 @@ import java.util.Properties;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class PrecomputedKernel implements KernelFunction
+public class PrecomputedKernel implements KernelFunction<SparseVector>
 	{
 	public PrecomputedKernel(Properties props)
 		{
@@ -20,7 +20,12 @@ public class PrecomputedKernel implements KernelFunction
 		throw new UnsupportedOperationException();
 		}
 
-	public float evaluate(SvmPoint x, SvmPoint y)
+	public double evaluate(SparseVector x, SparseVector y)
+		{
+		return (double) evaluateF(x, y);
+		}
+
+	public float evaluateF(SparseVector x, SparseVector y)
 		{
 		return x.values[(int) (y.values[0])];
 		}
@@ -30,10 +35,5 @@ public class PrecomputedKernel implements KernelFunction
 		StringBuilder sb = new StringBuilder();
 		sb.append("kernel_type precomputed\n");
 		return sb.toString();
-		}
-
-	public String perfString()
-		{
-		return "";
 		}
 	}

@@ -1,21 +1,22 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
-import edu.berkeley.compbio.jlibsvm.Solver;
+import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import edu.berkeley.compbio.jlibsvm.qmatrix.SVR_Q;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class EpsilonSVR extends RegressionSVM
+public class EpsilonSVR<P> extends RegressionSVM<P>
 	{
 
-
-	public EpsilonSVR(KernelFunction kernel, SvmParameter param)
+	public EpsilonSVR(KernelFunction<P> kernel, SvmParameter param)
 		{
 		super(kernel, param);
 		if (param.p < 0)
@@ -28,7 +29,8 @@ public class EpsilonSVR extends RegressionSVM
 			}
 		}
 
-	public RegressionModel train(RegressionProblem problem)
+
+	public RegressionModel<P> train(RegressionProblem<P> problem)
 		{
 		float laplaceParameter = RegressionModel.NO_LAPLACE_PARAMETER;
 		if (param.probability)
@@ -36,8 +38,8 @@ public class EpsilonSVR extends RegressionSVM
 			laplaceParameter = laplaceParameter(problem);
 			}
 
-
-		int l = problem.examples.length;
+/*
+		int l = problem.getNumExamples();
 		float[] linearTerm = new float[2 * l];
 		boolean[] y = new boolean[2 * l];
 		int i;
@@ -52,25 +54,35 @@ public class EpsilonSVR extends RegressionSVM
 			}
 
 		Solver s = new Solver(new SVR_Q(problem, kernel, param.cache_size), linearTerm, y, param.C, param.C, param.eps,
-		                      param.shrinking);
-		BinaryModel binaryModel = s.Solve();
-		binaryModel.kernel = kernel;
-		binaryModel.param = param;
+		                      param.shrinking);*/
 
-		RegressionModel model = new RegressionModel(binaryModel);
+		List<SolutionVector<P>> solutionVectors = new ArrayList<SolutionVector<P>>();
+		int c = 0;
+		for (Map.Entry<P, Float> example : problem.getExamples().entrySet())
+			{
+			SolutionVector<P> sv;
+
+			sv = new SolutionVector<P>(example.getKey(), true, param.p - example.getValue());
+			sv.id = problem.getId(example.getKey());
+			c++;
+			solutionVectors.add(sv);
+
+			sv = new SolutionVector<P>(example.getKey(), false, param.p + example.getValue());
+			sv.id = -problem.getId(example.getKey());
+			c++;
+			solutionVectors.add(sv);
+			}
+
+		RegressionSolver<P> s = new RegressionSolver<P>(solutionVectors, qMatrix, param.C, param.eps, param.shrinking);
+
+
+		RegressionModel<P> model = s.Solve(); //new RegressionModel<P>(binaryModel);
+		model.kernel = kernel;
+		model.param = param;
 		model.setSvmType(getSvmType());
 		model.laplaceParameter = laplaceParameter;
 
-		float[] alpha = new float[l];
-		float sumAlpha = 0;
-		for (i = 0; i < l; i++)
-			{
-			alpha[i] = model.alpha[i] - model.alpha[i + l];
-			sumAlpha += Math.abs(alpha[i]);
-			}
-		System.out.print("nu = " + sumAlpha / (param.C * l) + "\n");
 
-		model.alpha = alpha;
 		model.compact();
 
 		return model;

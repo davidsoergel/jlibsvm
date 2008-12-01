@@ -1,7 +1,12 @@
 package edu.berkeley.compbio.jlibsvm;
 
-import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
+import edu.berkeley.compbio.jlibsvm.binary.AlphaModel;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 
 /**
@@ -22,191 +27,147 @@ import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
  * @version $Id$
  */
 
-public class Solver
+public abstract class Solver<L extends Comparable, P>
 	{
-	int active_size;
-	boolean[] y;
-	float[] G;// gradient of objective function
-	static final byte LOWER_BOUND = 0;
-	static final byte UPPER_BOUND = 1;
-	static final byte FREE = 2;
-	byte[] alpha_status;// LOWER_BOUND, UPPER_BOUND, FREE
+	private static final Logger logger = Logger.getLogger(Solver.class);
+
+	private static final int MAXITER = 10000;
+
+	protected Collection<SolutionVector<P>> allExamples;
+	protected Collection<SolutionVector<P>> activeSet;
+	protected Collection<SolutionVector<P>> inactiveSet;
+
+//	int activeSize;
+//	boolean[] y;
+//	float[] G;// gradient of objective function
+
+//	static final byte LOWER_BOUND = 0;
+//	static final byte UPPER_BOUND = 1;
+	//	static final byte FREE = 2;
+//	Status[] alphaStatus;// LOWER_BOUND, UPPER_BOUND, FREE
 
 	/**
 	 * In the course of shrinking it's convenient to reorder the alpha array.
 	 */
-	float[] shuffledAlpha;
+//	float[] shuffledAlpha;
 
 	/**
 	 * This array maps the rearranged indices back to the original indices.
 	 */
-	int[] shuffledExampleIndexToOriginalIndex;
+//	int[] shuffledExampleIndexToOriginalIndex;
 
 
-	QMatrix Q;
-	float[] QD;
+	QMatrix<P> Q;
+	//	float[] QD;
 	float eps;
-	float Cp, Cn;
-	float[] p;
+	protected float Cp, Cn;
+//	float[] p;
 
-	float[] G_bar;// gradient, if we treat free variables as 0
-	int l;
-	boolean unshrink;// XXX
+	//	float[] G_bar;// gradient, if we treat free variables as 0
+	protected int numExamples;
+	boolean unshrink = false;// XXX
 	boolean shrinking;
 
-
-	float get_C(int i)
-		{
-		return (y[i]) ? Cp : Cn;
-		}
-
-	void update_alpha_status(int i)
-		{
-		if (shuffledAlpha[i] >= get_C(i))
-			{
-			alpha_status[i] = UPPER_BOUND;
-			}
-		else if (shuffledAlpha[i] <= 0)
-			{
-			alpha_status[i] = LOWER_BOUND;
-			}
-		else
-			{
-			alpha_status[i] = FREE;
-			}
-		}
-
-	boolean is_upper_bound(int i)
-		{
-		return alpha_status[i] == UPPER_BOUND;
-		}
-
-	boolean is_lower_bound(int i)
-		{
-		return alpha_status[i] == LOWER_BOUND;
-		}
-
-	boolean is_free(int i)
-		{
-		return alpha_status[i] == FREE;
-		}
-
+/*
 	void swap_index(int i, int j)
 		{
 		Q.swapIndex(i, j);
-		do
-			{
-			boolean _ = y[i];
-			y[i] = y[j];
-			y[j] = _;
-			}
-		while (false);
-		do
-			{
-			float _ = G[i];
-			G[i] = G[j];
-			G[j] = _;
-			}
-		while (false);
-		do
-			{
-			byte _ = alpha_status[i];
-			alpha_status[i] = alpha_status[j];
-			alpha_status[j] = _;
-			}
-		while (false);
-		do
-			{
-			float _ = shuffledAlpha[i];
-			shuffledAlpha[i] = shuffledAlpha[j];
-			shuffledAlpha[j] = _;
-			}
-		while (false);
-		do
-			{
-			float _ = p[i];
-			p[i] = p[j];
-			p[j] = _;
-			}
-		while (false);
-		do
-			{
-			int _ = shuffledExampleIndexToOriginalIndex[i];
-			shuffledExampleIndexToOriginalIndex[i] = shuffledExampleIndexToOriginalIndex[j];
-			shuffledExampleIndexToOriginalIndex[j] = _;
-			}
-		while (false);
-		do
-			{
-			float _ = G_bar[i];
-			G_bar[i] = G_bar[j];
-			G_bar[j] = _;
-			}
-		while (false);
+
+		boolean b = y[i];
+		y[i] = y[j];
+		y[j] = b;
+
+		float f = G[i];
+		G[i] = G[j];
+		G[j] = f;
+
+		Status y = alphaStatus[i];
+		alphaStatus[i] = alphaStatus[j];
+		alphaStatus[j] = y;
+
+		float f1 = shuffledAlpha[i];
+		shuffledAlpha[i] = shuffledAlpha[j];
+		shuffledAlpha[j] = f1;
+
+		float f2 = p[i];
+		p[i] = p[j];
+		p[j] = f2;
+
+		int i2 = shuffledExampleIndexToOriginalIndex[i];
+		shuffledExampleIndexToOriginalIndex[i] = shuffledExampleIndexToOriginalIndex[j];
+		shuffledExampleIndexToOriginalIndex[j] = i2;
+
+		float g = G_bar[i];
+		G_bar[i] = G_bar[j];
+		G_bar[j] = g;
 		}
+		*/
 
 	void reconstruct_gradient()
 		{		// reconstruct inactive elements of G from G_bar and free variables
 
-		if (active_size == l)
+		if (activeSet.size() == numExamples)
 			{
 			return;
 			}
 
-		int i, j;
+		//int i, j;
 		int nr_free = 0;
 
-		for (j = active_size; j < l; j++)
+
+		for (SolutionVector sv : inactiveSet)
 			{
-			G[j] = G_bar[j] + p[j];
+			sv.G = sv.G_bar + sv.linearTerm;
 			}
 
-		for (j = 0; j < active_size; j++)
+		for (SolutionVector sv : activeSet)
 			{
-			if (is_free(j))
+			if (sv.isFree())
 				{
 				nr_free++;
 				}
 			}
 
-		if (2 * nr_free < active_size)
+		int activeSize = activeSet.size();
+
+		if (2 * nr_free < activeSize)
 			{
 			System.out.print("\nWarning: using -h 0 may be faster\n");
 			}
 
-		if (nr_free * l > 2 * active_size * (l - active_size))
+		if (nr_free * numExamples > 2 * activeSize * (numExamples - activeSize))
 			{
-			for (i = active_size; i < l; i++)
+			for (SolutionVector svA : inactiveSet)
 				{
-				float[] Q_i = Q.getQ(i, active_size);
-				for (j = 0; j < active_size; j++)
+				//float[] Q_i = Q.getQ(i, activeSize);
+				for (SolutionVector svB : activeSet)
 					{
-					if (is_free(j))
+					if (svB.isFree()) //is_free(j))
 						{
-						G[i] += shuffledAlpha[j] * Q_i[j];
+						svA.G += svB.alpha * Q.evaluate(svA, svB);//[j];
 						}
 					}
 				}
 			}
 		else
 			{
-			for (i = 0; i < active_size; i++)
+			for (SolutionVector svA : activeSet)
 				{
-				if (is_free(i))
+				if (svA.isFree()) //is_free(i))
 					{
-					float[] Q_i = Q.getQ(i, l);
-					float alpha_i = shuffledAlpha[i];
-					for (j = active_size; j < l; j++)
+					//	float[] Q_i = Q.getQ(i, numExamples);
+					//	float alpha_i = shuffledAlpha[i];
+
+					for (SolutionVector svB : inactiveSet)
 						{
-						G[j] += alpha_i * Q_i[j];
+						svB.G += svA.alpha * Q.evaluate(svA, svB);
 						}
 					}
 				}
 			}
 		}
 
-
-	public Solver(QMatrix Q, float[] p, boolean[] y, float Cp, float Cn, float eps, boolean shrinking)
+	protected Solver(QMatrix<P> Q, float Cp, float Cn, float eps, boolean shrinking)
 		{
 		if (eps <= 0)
 			{
@@ -214,327 +175,385 @@ public class Solver
 			}
 
 		this.Q = Q;
-		this.QD = Q.getQD();
-		this.l = y.length;
-		this.p = p.clone();
-		this.y = y.clone();
 		this.Cp = Cp;
 		this.Cn = Cn;
 		this.eps = eps;
-		this.unshrink = false;
-
 		this.shrinking = shrinking;
 		}
 
-	public BinaryModel Solve()
+
+	public Solver(Collection<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
+	              boolean shrinking)
+		{
+		this(Q, Cp, Cn, eps, shrinking);
+
+		this.allExamples = solutionVectors;
+
+		this.numExamples = allExamples.size();
+		}
+
+/*
+	public Solver(Map<P, Boolean> examples, QMatrix<P> Q, float linearTerm, float Cp, float Cn, float eps, boolean shrinking)
+		{
+		this(Q,Cp,Cn,eps,shrinking);
+
+		this.allExamples = new HashSet<SolutionVector>();
+		for (Map.Entry<P, Boolean> example : examples.entrySet())
+			{
+			SolutionVector sv = new SolutionVector( example.getKey(), example.getValue(), linearTerm);
+			allExamples.add(sv);
+			}
+
+		this.numExamples = allExamples.size();
+
+		}
+
+
+	public Solver(Map<P, Boolean> examples, QMatrix<P> Q, float linearTerm, Map<P, Float> initAlpha, float Cp, float Cn, float eps, boolean shrinking)
+		{
+		this(Q, Cp, Cn, eps, shrinking);
+
+
+		this.allExamples = new HashSet<SolutionVector>();
+		for (Map.Entry<P, Boolean> example : examples.entrySet())
+			{
+			SolutionVector sv = new SolutionVector(example.getKey(), example.getValue(), linearTerm, initAlpha.get(example.getKey()));
+			allExamples.add(sv);
+			}
+
+		this.numExamples = allExamples.size();
+		}
+*/
+
+
+	protected int optimize()
 		{
 
-		if (shuffledAlpha == null)
-			{
+//		if (shuffledAlpha == null)
+//			{
 
-			// initialize shuffledAlpha if needed (the constructor may or may not have already set it)
-			shuffledAlpha = new float[l];
-			}
+		// initialize shuffledAlpha if needed (the constructor may or may not have already set it)
+//			shuffledAlpha = new float[numExamples];
+//			}
 
 		// initialize alpha_status
-		{
-		alpha_status = new byte[l];
-		for (int i = 0; i < l; i++)
+
+//		alphaStatus = new Status[numExamples];
+		for (SolutionVector svA : allExamples)
+			//	for (int i = 0; i < numExamples; i++)
 			{
-			update_alpha_status(i);
+			svA.updateAlphaStatus(Cp, Cn);
+			//update_alpha_status(i);
 			}
-		}
+
 
 		// initialize active set (for shrinking)
-		{
-		shuffledExampleIndexToOriginalIndex = new int[l];
-		for (int i = 0; i < l; i++)
-			{
-			shuffledExampleIndexToOriginalIndex[i] = i;
-			}
-		active_size = l;
-		}
+
+		resetActiveSet();
+
+		/*	shuffledExampleIndexToOriginalIndex = new int[numExamples];
+		  for (int i = 0; i < numExamples; i++)
+			  {
+			  shuffledExampleIndexToOriginalIndex[i] = i;
+			  }
+		  activeSize = numExamples;
+  */
 
 		// initialize gradient
-		{
-		G = new float[l];
-		G_bar = new float[l];
-		int i;
-		for (i = 0; i < l; i++)
+
+		//	G = new float[numExamples];
+		//	G_bar = new float[numExamples];
+		for (SolutionVector svA : allExamples)
 			{
-			G[i] = p[i];
-			G_bar[i] = 0;
+			svA.G = svA.linearTerm;
+			svA.G_bar = 0;
 			}
-		for (i = 0; i < l; i++)
+		for (SolutionVector svA : allExamples)
 			{
-			if (!is_lower_bound(i))
+			if (!svA.isLowerBound()) //is_lower_bound(i))
 				{
-				float[] Q_i = Q.getQ(i, l);
-				float alpha_i = shuffledAlpha[i];
-				int j;
-				for (j = 0; j < l; j++)
+				//	float[] Q_i = Q.getQ(i, numExamples);
+				//	float alpha_i = shuffledAlpha[i];
+				for (SolutionVector svB : allExamples)
 					{
-					G[j] += alpha_i * Q_i[j];
+					svB.G += svA.alpha * Q.evaluate(svA, svB);
 					}
-				if (is_upper_bound(i))
+				if (svA.isUpperBound()) //is_upper_bound(i))
 					{
-					for (j = 0; j < l; j++)
+					for (SolutionVector svB : allExamples)
 						{
-						G_bar[j] += get_C(i) * Q_i[j];
+						svB.G_bar += svA.getC(Cp, Cn) * Q.evaluate(svA, svB); //getC(i) * Q_i[j];
 						}
 					}
 				}
 			}
-		}
+
 
 		// optimization step
 
 		int iter = 0;
-		int counter = Math.min(l, 1000) + 1;
-		int[] working_set = new int[2];
+		int counter = Math.min(numExamples, 1000) + 1;
+		//int[] working_set = new int[2];
+
+		SolutionVector<P> svA;
+		SolutionVector<P> svB;
+
+		//SolutionVectorPair pair, oldPair;
 
 		while (true)
 			{			// show progress and do shrinking
 
 			if (--counter == 0)
 				{
-				counter = Math.min(l, 1000);
+				counter = Math.min(numExamples, 1000);
 				if (shrinking)
 					{
 					do_shrinking();
 					}
 				System.err.print(".");
 				}
+//oldPair = pair;
+			SolutionVectorPair pair = selectWorkingPair();
 
-			if (select_working_set(working_set))
+			if (pair.isOptimal) // pair already optimal
 				{				// reconstruct the whole gradient
 				reconstruct_gradient();				// reset active set size and check
-				active_size = l;
+				resetActiveSet();
+				//activeSize = numExamples;
 				System.err.print("*");
-				if (select_working_set(working_set))
+				//svA = pair.svA;
+				//svB = pair.svB;
+
+				pair = selectWorkingPair();
+				if (pair == null) // pair already optimal
 					{
+					//svA = oldPair.svA;
+					//svB = oldPair.svB;
 					break;
 					}
 				else
 					{
 					counter = 1;// do shrinking next iteration
+					// leave the working pair the same as before
+					//pair = oldPair;
 					}
 				}
-
-			int i = working_set[0];
-			int j = working_set[1];
+			svA = pair.svA;
+			svB = pair.svB;
+//			int i = working_set[0];
+//			int j = working_set[1];
 
 			++iter;
 
+			if (iter > MAXITER)
+				{
+				logger.error("Solver reached maximum iterations, aborting");
+				break;
+				}
+
 			// update alpha[i] and alpha[j], handle bounds carefully
 
-			float[] Q_i = Q.getQ(i, active_size);
-			float[] Q_j = Q.getQ(j, active_size);
+			//	float[] Q_i = Q.getQ(i, activeSize);
+			//	float[] Q_j = Q.getQ(j, activeSize);
 
-			float C_i = get_C(i);
-			float C_j = get_C(j);
+			float C_i = svA.getC(Cp, Cn); //getC(i);
+			float C_j = svB.getC(Cp, Cn); //getC(j);
 
-			float old_alpha_i = shuffledAlpha[i];
-			float old_alpha_j = shuffledAlpha[j];
+			double old_alpha_i = svA.alpha; //shuffledAlpha[i];
+			double old_alpha_j = svB.alpha; //shuffledAlpha[j];
 
-			if (y[i] != y[j])
+			if (svA.targetValue != svB.targetValue)
 				{
-				float quad_coef = Q_i[i] + Q_j[j] + 2 * Q_i[j];
+				float quad_coef = Q.evaluate(svA, svA) + Q.evaluate(svB, svB) + 2 * Q.evaluate(svA, svB);
 				if (quad_coef <= 0)
 					{
 					quad_coef = 1e-12f;
 					}
-				float delta = (-G[i] - G[j]) / quad_coef;
-				float diff = shuffledAlpha[i] - shuffledAlpha[j];
-				shuffledAlpha[i] += delta;
-				shuffledAlpha[j] += delta;
+				double delta = (-svA.G - svB.G) / quad_coef;
+				double diff = svA.alpha - svB.alpha;
+				svA.alpha += delta;
+				svB.alpha += delta;
 
 				if (diff > 0)
 					{
-					if (shuffledAlpha[j] < 0)
+					if (svB.alpha < 0)
 						{
-						shuffledAlpha[j] = 0;
-						shuffledAlpha[i] = diff;
+						svB.alpha = 0;
+						svA.alpha = diff;
 						}
 					}
 				else
 					{
-					if (shuffledAlpha[i] < 0)
+					if (svA.alpha < 0)
 						{
-						shuffledAlpha[i] = 0;
-						shuffledAlpha[j] = -diff;
+						svA.alpha = 0;
+						svB.alpha = -diff;
 						}
 					}
 				if (diff > C_i - C_j)
 					{
-					if (shuffledAlpha[i] > C_i)
+					if (svA.alpha > C_i)
 						{
-						shuffledAlpha[i] = C_i;
-						shuffledAlpha[j] = C_i - diff;
+						svA.alpha = C_i;
+						svB.alpha = C_i - diff;
 						}
 					}
 				else
 					{
-					if (shuffledAlpha[j] > C_j)
+					if (svB.alpha > C_j)
 						{
-						shuffledAlpha[j] = C_j;
-						shuffledAlpha[i] = C_j + diff;
+						svB.alpha = C_j;
+						svA.alpha = C_j + diff;
 						}
 					}
 				}
 			else
 				{
-				float quad_coef = Q_i[i] + Q_j[j] - 2 * Q_i[j];
+				float quad_coef = Q.evaluate(svA, svA) + Q.evaluate(svB, svB) - 2 * Q.evaluate(svA, svB);
 				if (quad_coef <= 0)
 					{
 					quad_coef = 1e-12f;
 					}
-				float delta = (G[i] - G[j]) / quad_coef;
-				float sum = shuffledAlpha[i] + shuffledAlpha[j];
-				shuffledAlpha[i] -= delta;
-				shuffledAlpha[j] += delta;
+				double delta = (svA.G - svB.G) / quad_coef;
+				double sum = svA.alpha + svB.alpha;
+				svA.alpha -= delta;
+				svB.alpha += delta;
 
 				if (sum > C_i)
 					{
-					if (shuffledAlpha[i] > C_i)
+					if (svA.alpha > C_i)
 						{
-						shuffledAlpha[i] = C_i;
-						shuffledAlpha[j] = sum - C_i;
+						svA.alpha = C_i;
+						svB.alpha = sum - C_i;
 						}
 					}
 				else
 					{
-					if (shuffledAlpha[j] < 0)
+					if (svB.alpha < 0)
 						{
-						shuffledAlpha[j] = 0;
-						shuffledAlpha[i] = sum;
+						svB.alpha = 0;
+						svA.alpha = sum;
 						}
 					}
 				if (sum > C_j)
 					{
-					if (shuffledAlpha[j] > C_j)
+					if (svB.alpha > C_j)
 						{
-						shuffledAlpha[j] = C_j;
-						shuffledAlpha[i] = sum - C_j;
+						svB.alpha = C_j;
+						svA.alpha = sum - C_j;
 						}
 					}
 				else
 					{
-					if (shuffledAlpha[i] < 0)
+					if (svA.alpha < 0)
 						{
-						shuffledAlpha[i] = 0;
-						shuffledAlpha[j] = sum;
+						svA.alpha = 0;
+						svB.alpha = sum;
 						}
 					}
 				}
 
 			// update G
 
-			float delta_alpha_i = shuffledAlpha[i] - old_alpha_i;
-			float delta_alpha_j = shuffledAlpha[j] - old_alpha_j;
+			double delta_alpha_i = svA.alpha - old_alpha_i;
+			double delta_alpha_j = svB.alpha - old_alpha_j;
 
-			for (int k = 0; k < active_size; k++)
+			if (delta_alpha_i == 0 && delta_alpha_j == 0)
 				{
-				G[k] += Q_i[k] * delta_alpha_i + Q_j[k] * delta_alpha_j;
+				// pair was already optimal, but selectWorkingPair() didn't realize it because the numeric precision of float is insufficient with respect to eps
+				logger.error(
+						"Pair is optimal within available numeric precision, but this is still larger than requested eps = "
+								+ eps + ".");
+				break;
+				}
+
+
+			for (SolutionVector<P> svC : activeSet)
+				{
+				svC.G += Q.evaluate(svA, svC) * delta_alpha_i + Q.evaluate(svB, svC) * delta_alpha_j;
 				}
 
 			// update alpha_status and G_bar
 
-			{
-			boolean ui = is_upper_bound(i);
-			boolean uj = is_upper_bound(j);
-			update_alpha_status(i);
-			update_alpha_status(j);
-			int k;
-			if (ui != is_upper_bound(i))
+
+			boolean ui = svA.isUpperBound(); //is_upper_bound(i);
+			boolean uj = svB.isUpperBound(); //is_upper_bound(j);
+			svA.updateAlphaStatus(Cp, Cn); //update_alpha_status(i);
+			svB.updateAlphaStatus(Cp, Cn); //update_alpha_status(j);
+			//int k;
+			if (ui != svA.isUpperBound()) //is_upper_bound(i))
 				{
-				Q_i = Q.getQ(i, l);
+				//Q_i = Q.getQ(i, numExamples);
 				if (ui)
 					{
-					for (k = 0; k < l; k++)
+					for (SolutionVector svC : allExamples)
 						{
-						G_bar[k] -= C_i * Q_i[k];
+						svC.G_bar -= C_i * Q.evaluate(svA, svC);
 						}
 					}
 				else
 					{
-					for (k = 0; k < l; k++)
+					for (SolutionVector svC : allExamples)
 						{
-						G_bar[k] += C_i * Q_i[k];
+						svC.G_bar += C_i * Q.evaluate(svA, svC);
 						}
 					}
 				}
 
-			if (uj != is_upper_bound(j))
+			if (uj != svB.isUpperBound()) //is_upper_bound(j))
 				{
-				Q_j = Q.getQ(j, l);
+				//Q_j = Q.getQ(j, numExamples);
 				if (uj)
 					{
-					for (k = 0; k < l; k++)
+					for (SolutionVector svC : allExamples)
 						{
-						G_bar[k] -= C_j * Q_j[k];
+						svC.G_bar -= C_j * Q.evaluate(svB, svC);
 						}
 					}
 				else
 					{
-					for (k = 0; k < l; k++)
+					for (SolutionVector svC : allExamples)
 						{
-						G_bar[k] += C_j * Q_j[k];
+						svC.G_bar += C_j * Q.evaluate(svB, svC);
 						}
 					}
 				}
 			}
-			}
 
-
-		BinaryModel model = new BinaryModel(null, null);
-
-		// calculate rho
-
-		//		si.rho =
-		calculate_rho(model);
-
-		// calculate objective value
-		{
-		float v = 0;
-		int i;
-		for (i = 0; i < l; i++)
-			{
-			v += shuffledAlpha[i] * (G[i] + p[i]);
-			}
-
-		model.obj = v / 2;
+		//System.err.println(Q.perfString());
+		return iter;
+		// activeSet;
 		}
 
-		// put the solution, mapping the alphas back to their original order
 
-		// note the swapping process applied to the Q matrix as well, so we have to map that back too
-
-		model.alpha = new float[l];
-		model.supportVectors = new SvmPoint[l];
-		for (int i = 0; i < l; i++)
-			{
-			model.alpha[shuffledExampleIndexToOriginalIndex[i]] = shuffledAlpha[i];
-			model.supportVectors[shuffledExampleIndexToOriginalIndex[i]] = Q.getVectors()[i];
-			}
-
-		// note at this point the solution includes _all_ vectors, even if their alphas are zero
-
-		// we can't do this yet because in the regression case there are twice as many alphas as vectors
-		// model.compact();
-
-		model.upperBoundPositive = Cp;
-		model.upperBoundNegative = Cn;
-
-		System.out.print("\noptimization finished, #iter = " + iter + "\n");
-
-		return model;
+	protected void resetActiveSet()
+		{
+		activeSet = new ArrayList<SolutionVector<P>>(allExamples);
+		inactiveSet = new ArrayList<SolutionVector<P>>(allExamples.size()); // it should get that big eventually
 		}
 
 	// return 1 if already optimal, return 0 otherwise
-	boolean select_working_set(int[] working_set)
-		{
+	//boolean select_working_set(int[] working_set)
+	//	{
 
+	//	}
+
+	protected class SolutionVectorPair
+		{
+		boolean isOptimal;
+		SolutionVector svA;
+		SolutionVector svB;
+
+		protected SolutionVectorPair(SolutionVector svA, SolutionVector svB, boolean isOptimal)
+			{
+			this.svA = svA;
+			this.svB = svB;
+			this.isOptimal = isOptimal;
+			}
+		}
+
+	protected SolutionVectorPair selectWorkingPair()
+		{
 		/*
 		return i,j such that
 		i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
@@ -543,60 +562,65 @@ public class Solver
 		 -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 		*/
 
-		float Gmax = Float.NEGATIVE_INFINITY;
-		float Gmax2 = Float.NEGATIVE_INFINITY;
-		int Gmax_idx = -1;
-		int Gmin_idx = -1;
-		float obj_diff_min = Float.POSITIVE_INFINITY;
+		double Gmax = Double.NEGATIVE_INFINITY;
+		double Gmax2 = Double.NEGATIVE_INFINITY;
+		SolutionVector GmaxSV = null; //-1;
+		SolutionVector GminSV = null; //-1;
+		double obj_diff_min = Double.POSITIVE_INFINITY;
 
-		for (int t = 0; t < active_size; t++)
+		for (SolutionVector sv : activeSet)
 			{
-			if (y[t])
+			//	for (int t = 0; t < activeSize; t++)
+			//		{
+			if (sv.targetValue) //y[t])
 				{
-				if (!is_upper_bound(t))
+				if (!sv.isUpperBound()) //is_upper_bound(t))
 					{
-					if (-G[t] >= Gmax)
+					if (-sv.G >= Gmax)
 						{
-						Gmax = -G[t];
-						Gmax_idx = t;
+						Gmax = -sv.G;
+						GmaxSV = sv;
 						}
 					}
 				}
 			else
 				{
-				if (!is_lower_bound(t))
+				if (!sv.isLowerBound()) //is_lower_bound(t))
 					{
-					if (G[t] >= Gmax)
+					if (sv.G >= Gmax)
 						{
-						Gmax = G[t];
-						Gmax_idx = t;
+						Gmax = sv.G;
+						GmaxSV = sv;
 						}
 					}
 				}
 			}
 
-		int i = Gmax_idx;
-		float[] Q_i = null;
-		if (i != -1)// null Q_i not accessed: Gmax=Float.NEGATIVE_INFINITY if i=-1
-			{
-			Q_i = Q.getQ(i, active_size);
-			}
+		//int i = Gmax_idx;
+		//float[] Q_i = null;
+		//if (GmaxSV != null) //i != -1)// null Q_i not accessed: Gmax=Float.NEGATIVE_INFINITY if i=-1
+		//	{
+		//	Q_i = Q.getQ(GmaxSV, activeSize);
+		//	}
 
-		for (int j = 0; j < active_size; j++)
+		for (SolutionVector sv : activeSet)
 			{
-			if (y[j])
+			//for (int j = 0; j < activeSize; j++)
+			//	{
+			if (sv.targetValue)
 				{
-				if (!is_lower_bound(j))
+				if (!sv.isLowerBound())
 					{
-					float grad_diff = Gmax + G[j];
-					if (G[j] >= Gmax2)
+					double grad_diff = Gmax + sv.G;
+					if (sv.G >= Gmax2)
 						{
-						Gmax2 = G[j];
+						Gmax2 = sv.G;
 						}
 					if (grad_diff > 0)
 						{
-						float obj_diff;
-						float quad_coef = Q_i[i] + QD[j] - 2.0f * (y[i] ? 1f : -1f) * Q_i[j];
+						double obj_diff;
+						double quad_coef = Q.evaluate(GmaxSV, GmaxSV) + Q.evaluate(sv, sv)
+								- 2.0f * (GmaxSV.targetValue ? 1f : -1f) * Q.evaluate(GmaxSV, sv);
 						if (quad_coef > 0)
 							{
 							obj_diff = -(grad_diff * grad_diff) / quad_coef;
@@ -608,7 +632,7 @@ public class Solver
 
 						if (obj_diff <= obj_diff_min)
 							{
-							Gmin_idx = j;
+							GminSV = sv;
 							obj_diff_min = obj_diff;
 							}
 						}
@@ -616,17 +640,18 @@ public class Solver
 				}
 			else
 				{
-				if (!is_upper_bound(j))
+				if (!sv.isUpperBound())
 					{
-					float grad_diff = Gmax - G[j];
-					if (-G[j] >= Gmax2)
+					double grad_diff = Gmax - sv.G;
+					if (-sv.G >= Gmax2)
 						{
-						Gmax2 = -G[j];
+						Gmax2 = -sv.G;
 						}
 					if (grad_diff > 0)
 						{
-						float obj_diff;
-						float quad_coef = Q_i[i] + QD[j] + 2.0f * (y[i] ? 1f : -1f) * Q_i[j];
+						double obj_diff;
+						double quad_coef = Q.evaluate(GmaxSV, GmaxSV) + Q.evaluate(sv, sv)
+								+ 2.0f * (GmaxSV.targetValue ? 1f : -1f) * Q.evaluate(GmaxSV, sv);
 						if (quad_coef > 0)
 							{
 							obj_diff = -(grad_diff * grad_diff) / quad_coef;
@@ -638,7 +663,7 @@ public class Solver
 
 						if (obj_diff <= obj_diff_min)
 							{
-							Gmin_idx = j;
+							GminSV = sv;
 							obj_diff_min = obj_diff;
 							}
 						}
@@ -646,128 +671,111 @@ public class Solver
 				}
 			}
 
-		if (Gmax + Gmax2 < eps)
-			{
-			return true;
-			}
 
-		working_set[0] = Gmax_idx;
-		working_set[1] = Gmin_idx;
-		return false;
-		}
+		return new SolutionVectorPair(GmaxSV, GminSV, Gmax + Gmax2 < eps);
 
-	private boolean be_shrunk(int i, float Gmax1, float Gmax2)
-		{
-		if (is_upper_bound(i))
+		/*	if (Gmax + Gmax2 < eps)
+		   {
+
+		   return new SolutionVectorPair(GmaxSV, GminSV, true);
+		   }*/
+		/*
+		if(Gmax + Gmax2 < Math.ulp(Gmax) )
 			{
-			if (y[i])
-				{
-				return (-G[i] > Gmax1);
-				}
-			else
-				{
-				return (-G[i] > Gmax2);
-				}
+			logger.warn("Pair is optimal within available numeric precision of " + Math.ulp(Gmax) + ", but this is still larger than requested eps = " + eps + ".");
+			return null;
 			}
-		else if (is_lower_bound(i))
-			{
-			if (y[i])
-				{
-				return (G[i] > Gmax2);
-				}
-			else
-				{
-				return (G[i] > Gmax1);
-				}
-			}
-		else
-			{
-			return (false);
-			}
+			*/
+
+		//working_set[0] = Gmax_idx;
+		//working_set[1] = Gmin_idx;
+		//	return new SolutionVectorPair(GmaxSV, GminSV, false);
 		}
 
 	void do_shrinking()
 		{
 		int i;
-		float Gmax1 = Float.NEGATIVE_INFINITY;// max { -y_i * grad(f)_i | i in I_up(\alpha) }
-		float Gmax2 = Float.NEGATIVE_INFINITY;// max { y_i * grad(f)_i | i in I_low(\alpha) }
+		double Gmax1 = Float.NEGATIVE_INFINITY;// max { -y_i * grad(f)_i | i in I_up(\alpha) }
+		double Gmax2 = Float.NEGATIVE_INFINITY;// max { y_i * grad(f)_i | i in I_low(\alpha) }
 
 		// find maximal violating pair first
-		for (i = 0; i < active_size; i++)
+
+		for (SolutionVector<P> sv : activeSet)
 			{
-			if (y[i])
+			if (sv.targetValue)
 				{
-				if (!is_upper_bound(i))
+				if (!sv.isUpperBound())
 					{
-					if (-G[i] >= Gmax1)
+					if (-sv.G >= Gmax1)
 						{
-						Gmax1 = -G[i];
+						Gmax1 = -sv.G;
 						}
 					}
-				if (!is_lower_bound(i))
+				if (!sv.isLowerBound())
 					{
-					if (G[i] >= Gmax2)
+					if (sv.G >= Gmax2)
 						{
-						Gmax2 = G[i];
+						Gmax2 = sv.G;
 						}
 					}
 				}
 			else
 				{
-				if (!is_upper_bound(i))
+				if (!sv.isUpperBound())
 					{
-					if (-G[i] >= Gmax2)
+					if (-sv.G >= Gmax2)
 						{
-						Gmax2 = -G[i];
+						Gmax2 = -sv.G;
 						}
 					}
-				if (!is_lower_bound(i))
+				if (!sv.isLowerBound())
 					{
-					if (G[i] >= Gmax1)
+					if (sv.G >= Gmax1)
 						{
-						Gmax1 = G[i];
+						Gmax1 = sv.G;
 						}
 					}
 				}
 			}
 
-		if (unshrink == false && Gmax1 + Gmax2 <= eps * 10)
+		if (!unshrink && Gmax1 + Gmax2 <= eps * 10)
 			{
 			unshrink = true;
 			reconstruct_gradient();
-			active_size = l;
+			resetActiveSet();
+			//activeSize = numExamples;
 			}
 
-		for (i = 0; i < active_size; i++)
+
+		// There was an extremely messy iteration here before, but I think it served only to separate the shrinkable vectors from the unshrinkable ones.
+
+		for (Iterator<SolutionVector<P>> iter = activeSet.iterator(); iter.hasNext();)
 			{
-			if (be_shrunk(i, Gmax1, Gmax2))
+			SolutionVector sv = iter.next();
+
+			if (sv.isShrinkable(Gmax1, Gmax2))
 				{
-				active_size--;
-				while (active_size > i)
-					{
-					if (!be_shrunk(active_size, Gmax1, Gmax2))
-						{
-						swap_index(i, active_size);
-						break;
-						}
-					active_size--;
-					}
+				iter.remove();
+				inactiveSet.add(sv);
 				}
 			}
+
+		Q.maintainCache(activeSet);
 		}
 
-	void calculate_rho(BinaryModel si)
+	protected void calculate_rho(AlphaModel<L, P> si)
 		{
-		float r;
+		double r;
 		int nr_free = 0;
-		float ub = Float.POSITIVE_INFINITY, lb = Float.NEGATIVE_INFINITY, sum_free = 0;
-		for (int i = 0; i < active_size; i++)
-			{
-			float yG = (y[i] ? 1f : -1f) * G[i];
+		double ub = Double.POSITIVE_INFINITY, lb = Double.NEGATIVE_INFINITY, sum_free = 0;
 
-			if (is_lower_bound(i))
+		for (SolutionVector<P> sv : activeSet)
+			{
+			double yG = (sv.targetValue ? 1f : -1f) * sv.G;
+
+			if (sv.isLowerBound())
 				{
-				if (y[i])
+				if (sv.targetValue)
 					{
 					ub = Math.min(ub, yG);
 					}
@@ -776,9 +784,9 @@ public class Solver
 					lb = Math.max(lb, yG);
 					}
 				}
-			else if (is_upper_bound(i))
+			else if (sv.isUpperBound())
 				{
-				if (!y[i])
+				if (!sv.targetValue)
 					{
 					ub = Math.min(ub, yG);
 					}
@@ -803,6 +811,6 @@ public class Solver
 			r = (ub + lb) / 2;
 			}
 
-		si.rho = r;		//return r;
+		si.rho = (float) r;		//return r;
 		}
 	}

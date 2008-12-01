@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.jlibsvm.kernel;
 
 import edu.berkeley.compbio.jlibsvm.MathSupport;
-import edu.berkeley.compbio.jlibsvm.SvmPoint;
+import edu.berkeley.compbio.jlibsvm.SparseVector;
 
 import java.util.Properties;
 
@@ -9,7 +9,7 @@ import java.util.Properties;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class LinearKernel implements KernelFunction
+public class LinearKernel implements KernelFunction<SparseVector>
 	{
 	public LinearKernel(Properties props)
 		{
@@ -21,20 +21,17 @@ public class LinearKernel implements KernelFunction
 
 		}
 
-	public float evaluate(SvmPoint x, SvmPoint y)
+
+	public double evaluate(SparseVector x, SparseVector y)
 		{
 		return MathSupport.dot(x, y);
 		}
+
 
 	public String toString()
 		{
 		StringBuilder sb = new StringBuilder();
 		sb.append("kernel_type linear\n");
 		return sb.toString();
-		}
-
-	public String perfString()
-		{
-		return "";
 		}
 	}

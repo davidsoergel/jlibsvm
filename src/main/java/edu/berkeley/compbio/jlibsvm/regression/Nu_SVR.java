@@ -1,19 +1,21 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
-import edu.berkeley.compbio.jlibsvm.Solver_NU;
+import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import edu.berkeley.compbio.jlibsvm.qmatrix.SVR_Q;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class Nu_SVR extends RegressionSVM
+public class Nu_SVR<P> extends RegressionSVM<P>
 	{
-	public Nu_SVR(KernelFunction kernel, SvmParameter param)
+	public Nu_SVR(KernelFunction<P> kernel, SvmParameter param)
 		{
 		super(kernel, param);
 		if (param.nu <= 0 || param.nu > 1)
@@ -26,15 +28,15 @@ public class Nu_SVR extends RegressionSVM
 			}
 		}
 
-	public RegressionModel train(RegressionProblem problem)
+	public RegressionModel<P> train(RegressionProblem<P> problem)
 		{
 		float laplaceParameter = RegressionModel.NO_LAPLACE_PARAMETER;
 		if (param.probability)
 			{
 			laplaceParameter = laplaceParameter(problem);
 			}
-
-		int l = problem.examples.length;
+/*
+		int l = problem.getNumExamples();
 		float C = param.C;
 		float[] initAlpha = new float[2 * l];
 		float[] linearTerm = new float[2 * l];
@@ -74,6 +76,46 @@ public class Nu_SVR extends RegressionSVM
 			alpha[i] = model.alpha[i] - model.alpha[i + l];
 			}
 		model.alpha = alpha;
+		model.compact();
+
+		return model;
+*/
+		float sum = param.C * param.nu * problem.getExamples().size() / 2f;
+
+		List<SolutionVector<P>> solutionVectors = new ArrayList<SolutionVector<P>>();
+		int c = 0;
+		for (Map.Entry<P, Float> example : problem.getExamples().entrySet())
+			{
+			float initAlpha = Math.min(sum, param.C);
+			sum -= initAlpha;
+
+			SolutionVector<P> sv;
+
+			sv = new SolutionVector<P>(example.getKey(), true, -example.getValue(), initAlpha);
+			solutionVectors.add(sv);
+			sv.id = problem.getId(example.getKey());
+			//sv.id = c;
+			c++;
+			sv = new SolutionVector<P>(example.getKey(), false, example.getValue(), initAlpha);
+			solutionVectors.add(sv);
+			sv.id = -problem.getId(example.getKey());
+			//sv.id = c;
+			c++;
+			}
+
+		RegressionSolverNu<P> s =
+				new RegressionSolverNu<P>(solutionVectors, qMatrix, param.C, param.eps, param.shrinking);
+
+
+		RegressionModel<P> model = s.Solve(); //new RegressionModel<P>(binaryModel);
+		model.kernel = kernel;
+		model.param = param;
+		model.setSvmType(getSvmType());
+		model.laplaceParameter = laplaceParameter;
+
+
+		System.out.print("epsilon = " + (-model.r) + "\n");
+
 		model.compact();
 
 		return model;

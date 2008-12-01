@@ -2,28 +2,34 @@ package edu.berkeley.compbio.jlibsvm.binary;
 
 import edu.berkeley.compbio.jlibsvm.ContinuousModel;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
+import edu.berkeley.compbio.jlibsvm.SigmoidProbabilityModel;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.SvmPoint;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class BinaryModel extends AlphaModel implements DiscreteModel<Boolean>, ContinuousModel
+public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
+		implements DiscreteModel<L, P>, ContinuousModel<P>
 	{
 	public float obj;
 	public float upperBoundPositive;
 	public float upperBoundNegative;
 
+	public SigmoidProbabilityModel sigmoid;
+
+	L trueLabel;
+	L falseLabel;
 
 	public float r;// for Solver_NU.  I wanted to factor this out as SolutionInfoNu, but that was too much hassle
 
-	public BinaryModel(KernelFunction kernel, SvmParameter param)
+	public BinaryModel(KernelFunction<P> kernel, SvmParameter<L> param)
 		{
 		super(kernel, param);
 		}
@@ -33,27 +39,29 @@ public class BinaryModel extends AlphaModel implements DiscreteModel<Boolean>, C
 		super(props);
 		}
 
-	public void printSolutionInfo(BinaryClassificationProblem problem)
+	public void printSolutionInfo(BinaryClassificationProblem<L, P> problem)
 		{
 		System.out.print("obj = " + obj + ", rho = " + rho + "\n");
 
 		// output SVs
 
 		int nBSV = 0;
-		for (int i = 0; i < alpha.length; i++)
+		for (Map.Entry<P, Double> entry : supportVectors.entrySet())
 			{
-			if (Math.abs(alpha[i]) > 0)
+			Double alpha = entry.getValue();
+			P point = entry.getKey();
+			if (Math.abs(alpha) > 0)
 				{
-				if (problem.getTargetValue(i))
+				if (problem.getTargetValue(point).equals(trueLabel))
 					{
-					if (Math.abs(alpha[i]) >= upperBoundPositive)
+					if (Math.abs(alpha) >= upperBoundPositive)
 						{
 						++nBSV;
 						}
 					}
 				else
 					{
-					if (Math.abs(alpha[i]) >= upperBoundNegative)
+					if (Math.abs(alpha) >= upperBoundNegative)
 						{
 						++nBSV;
 						}
@@ -61,22 +69,24 @@ public class BinaryModel extends AlphaModel implements DiscreteModel<Boolean>, C
 				}
 			}
 
-		System.out.print("nSV = " + alpha.length + ", nBSV = " + nBSV + "\n");
+		System.out.print("nSV = " + supportVectors.size() + ", nBSV = " + nBSV + "\n");
 		}
 
-	public Boolean predictLabel(SvmPoint x)
+	public L predictLabel(P x)
 		{
-		return predictValue(x) > 0;
+		return predictValue(x) > 0 ? trueLabel : falseLabel;
 		}
 
-	public Float predictValue(SvmPoint x)
+	public Float predictValue(P x)
 		{
 		float sum = 0;
-		for (int i = 0; i < alpha.length; i++)
+
+		for (Map.Entry<P, Double> entry : supportVectors.entrySet())
 			{
-			float kvalue = kernel.evaluate(x, supportVectors[i]);
-			sum += alpha[i] * kvalue;
+			float kvalue = (float) kernel.evaluate(x, entry.getKey());
+			sum += entry.getValue() * kvalue;
 			}
+
 		sum -= rho;
 		return sum;
 		}
@@ -91,5 +101,15 @@ public class BinaryModel extends AlphaModel implements DiscreteModel<Boolean>, C
 		writeSupportVectors(fp);
 
 		fp.close();
+		}
+
+	public float getSumAlpha()
+		{
+		float result = 0;
+		for (Double aFloat : supportVectors.values())
+			{
+			result += aFloat;
+			}
+		return result;
 		}
 	}

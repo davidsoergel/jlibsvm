@@ -15,7 +15,7 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class SolutionModel extends SvmContext
+public abstract class SolutionModel<P> extends SvmContext
 	{
 	public String svmType;  // names the SVM that was used to produce this model; used only for writeToStream
 
@@ -47,21 +47,26 @@ public abstract class SolutionModel extends SvmContext
 			}
 		}
 
-
 	public void setSvmType(String svmType)
 		{
 		this.svmType = svmType;
 		}
 
-	public SolutionModel(SolutionModel model)
-		{
-		super(model.kernel, model.param);
-		svmType = model.svmType;
-		}
-
+	/*
+	 public SolutionModel(SolutionModel model)
+		 {
+		 super(model.kernel, model.param);
+		 svmType = model.svmType;
+		 }
+ */
 	public SolutionModel(KernelFunction kernel, SvmParameter param)
 		{
 		super(kernel, param);
+		}
+
+	public SolutionModel()
+		{
+		super();
 		}
 
 	public void save(String model_file_name) throws IOException

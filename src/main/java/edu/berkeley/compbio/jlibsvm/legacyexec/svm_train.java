@@ -1,34 +1,37 @@
 package edu.berkeley.compbio.jlibsvm.legacyexec;
 
+import edu.berkeley.compbio.jlibsvm.MutableSvmProblem;
 import edu.berkeley.compbio.jlibsvm.SVM;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
+import edu.berkeley.compbio.jlibsvm.SparseVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.SvmPoint;
-import edu.berkeley.compbio.jlibsvm.SvmProblem;
-import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
+import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblemImpl;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.C_SVC;
 import edu.berkeley.compbio.jlibsvm.binary.Nu_SVC;
 import edu.berkeley.compbio.jlibsvm.kernel.GammaKernel;
+import edu.berkeley.compbio.jlibsvm.kernel.GaussianRBFKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.kernel.LinearKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.PolynomialKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.PrecomputedKernel;
-import edu.berkeley.compbio.jlibsvm.kernel.RBFKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.SigmoidKernel;
-import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblem;
+import edu.berkeley.compbio.jlibsvm.labelinverter.StringLabelInverter;
+import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblemImpl;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.oneclass.OneClassSVC;
 import edu.berkeley.compbio.jlibsvm.regression.EpsilonSVR;
 import edu.berkeley.compbio.jlibsvm.regression.Nu_SVR;
-import edu.berkeley.compbio.jlibsvm.regression.RegressionProblem;
+import edu.berkeley.compbio.jlibsvm.regression.RegressionProblemImpl;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -38,7 +41,7 @@ public class svm_train
 	KernelFunction kernel;
 	SVM svm;
 	private SvmParameter param;		// set by parse_command_line
-	private SvmProblem problem;		// set by read_problem
+	private MutableSvmProblem problem;		// set by read_problem
 	private SolutionModel model;
 	private String input_file_name;		// set by parse_command_line
 	private String model_file_name;		// set by parse_command_line
@@ -86,19 +89,21 @@ public class svm_train
 
 	private void do_cross_validation()
 		{
-		int i;
+		//int i;
 		int total_correct = 0;
 		double total_error = 0;
 		double sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
 		//double[] target = new double[problem.l];
 
-		Object[] target = svm.crossValidation(problem, nr_fold);
+		int numExamples = problem.getExamples().size();
 		if (svm instanceof RegressionSVM) //param.svm_type == svm_parameter.EPSILON_SVR || param.svm_type == svm_parameter.NU_SVR)
 			{
-			for (i = 0; i < problem.examples.length; i++)
+			Map cvResult = svm.continuousCrossValidation(problem, nr_fold);
+			//for (i = 0; i < numExamples; i++)
+			for (Object p : problem.getExamples().keySet())
 				{
-				Float y = (Float) problem.getTargetValue(i);
-				Float v = (Float) target[i];
+				Float y = (Float) problem.getTargetValue(p);
+				Float v = (Float) cvResult.get(p);
 				total_error += (v - y) * (v - y);
 				sumv += v;
 				sumy += y;
@@ -106,22 +111,23 @@ public class svm_train
 				sumyy += y * y;
 				sumvy += v * y;
 				}
-			System.out.print("Cross Validation Mean squared error = " + total_error / problem.examples.length + "\n");
-			System.out.print("Cross Validation Squared correlation coefficient = " +
-					((problem.examples.length * sumvy - sumv * sumy) * (problem.examples.length * sumvy - sumv * sumy))
-							/ ((problem.examples.length * sumvv - sumv * sumv) * (problem.examples.length * sumyy
-							- sumy * sumy)) + "\n");
+			System.out.print("Cross Validation Mean squared error = " + total_error / numExamples + "\n");
+			System.out.print("Cross Validation Squared correlation coefficient = "
+					+ ((numExamples * sumvy - sumv * sumy) * (numExamples * sumvy - sumv * sumy)) / (
+					(numExamples * sumvv - sumv * sumv) * (numExamples * sumyy - sumy * sumy)) + "\n");
 			}
 		else
 			{
-			for (i = 0; i < problem.examples.length; i++)
+			Map cvResult = svm.discreteCrossValidation(problem, nr_fold);
+			for (Object p : problem.getExamples().keySet())
+				//	for (i = 0; i < numExamples; i++)
 				{
-				if (target[i].equals(problem.getTargetValue(i)))
+				if (cvResult.get(p).equals(problem.getTargetValue(p)))
 					{
 					++total_correct;
 					}
 				}
-			System.out.print("Cross Validation Accuracy = " + 100.0 * total_correct / problem.examples.length + "%\n");
+			System.out.print("Cross Validation Accuracy = " + 100.0 * total_correct / numExamples + "%\n");
 			}
 		}
 
@@ -133,7 +139,7 @@ public class svm_train
 
 		long startTime = System.currentTimeMillis();
 
-		if (svm instanceof BinaryClassificationSVM && problem.getNumLabels() > 2)
+		if (svm instanceof BinaryClassificationSVM && problem.getLabels().size() > 2)
 			{
 			svm = new MultiClassificationSVM((BinaryClassificationSVM) svm, String.class);
 			}
@@ -150,7 +156,9 @@ public class svm_train
 			}
 		else
 			{
+			svm.setupQMatrix(problem);
 			model = svm.train(problem);
+			System.err.println(svm.qMatrix.perfString());
 			model.save(model_file_name);
 			}
 
@@ -159,7 +167,6 @@ public class svm_train
 		float time = (endTime - startTime) / 1000f;
 
 		System.out.println("Finished in " + time + " secs");
-		System.out.println(kernel.perfString());
 		}
 
 	public static void main(String argv[]) throws IOException
@@ -310,7 +317,7 @@ public class svm_train
 				kernel = new PolynomialKernel(degree, gamma, coef0);
 				break;
 			case svm_train.RBF:
-				kernel = new RBFKernel(gamma);
+				kernel = new GaussianRBFKernel(gamma);
 				break;
 			case svm_train.SIGMOID:
 				kernel = new SigmoidKernel(gamma, coef0);
@@ -350,7 +357,7 @@ public class svm_train
 		{
 		BufferedReader fp = new BufferedReader(new FileReader(input_file_name));
 		Vector<Float> vy = new Vector<Float>();
-		Vector<SvmPoint> vx = new Vector<SvmPoint>();
+		Vector<SparseVector> vx = new Vector<SparseVector>();
 		int max_index = 0;
 
 		while (true)
@@ -365,7 +372,7 @@ public class svm_train
 
 			vy.addElement(Float.parseFloat(st.nextToken()));
 			int m = st.countTokens() / 2;
-			SvmPoint x = new SvmPoint(m);
+			SparseVector x = new SparseVector(m);
 			for (int j = 0; j < m; j++)
 				{
 				//x[j] = new svm_node();
@@ -383,7 +390,7 @@ public class svm_train
 		// build problem
 		if (svm instanceof RegressionSVM)
 			{
-			problem = new RegressionProblem(vy.size());
+			problem = (MutableSvmProblem) new RegressionProblemImpl(vy.size());
 			}
 		else
 			{
@@ -391,28 +398,31 @@ public class svm_train
 			int numClasses = uniqueClasses.size();
 			if (numClasses == 1)
 				{
-				problem = new RegressionProblem(vy.size());
+				problem = (MutableSvmProblem) new RegressionProblemImpl(vy.size());
 				}
 			else if (numClasses == 2)
 				{
-				problem = new BinaryClassificationProblem(vy.size());
+				problem = (MutableSvmProblem) new BinaryClassificationProblemImpl(String.class, vy.size());
 				}
 			else
 				{
-				problem = new MultiClassProblem<String>(String.class, vy.size());
+				problem = (MutableSvmProblem) new MultiClassProblemImpl<String, SparseVector>(String.class,
+				                                                                              new StringLabelInverter(),
+				                                                                              vy.size());
 				}
 
-			for (int i = 0; i < vy.size(); i++)
+			/*for (int i = 0; i < vy.size(); i++)
 				{
+				problem.addExample(vx.elementAt(i))
 				problem.examples[i] = vx.elementAt(i);
-				}
+				}*/
 			}
 
 
 		//boolean isClassification = svm instanceof BinaryClassificationSVM;
 		for (int i = 0; i < vy.size(); i++)
 			{
-			problem.putTargetFloat(i, vy.elementAt(i));
+			problem.addExampleFloat(vx.elementAt(i), vy.elementAt(i));
 			/*		if (isClassification)
 			   {
 			   problem.uniqueValues.add(new Float(vy.elementAt(i)));
@@ -427,6 +437,8 @@ public class svm_train
 
 		if (kernel instanceof PrecomputedKernel) //param.kernel_type == svm_parameter.PRECOMPUTED)
 			{
+			throw new NotImplementedException();
+			/*
 			for (int i = 0; i < vy.size(); i++)
 				{
 				if (problem.examples[i].indexes[0] != 0)
@@ -439,7 +451,7 @@ public class svm_train
 					System.err.print("Wrong input format: sample_serial_number out of range\n");
 					System.exit(1);
 					}
-				}
+				}*/
 			}
 
 		fp.close();

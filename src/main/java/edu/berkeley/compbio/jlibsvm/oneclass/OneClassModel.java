@@ -1,8 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.oneclass;
 
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
-import edu.berkeley.compbio.jlibsvm.SvmPoint;
-import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionModel;
 
 import java.util.Properties;
@@ -11,13 +9,18 @@ import java.util.Properties;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class OneClassModel extends RegressionModel implements DiscreteModel<Boolean>
+public class OneClassModel<P> extends RegressionModel<P> implements DiscreteModel<Boolean, P>
 	{
-	public OneClassModel(BinaryModel binaryModel)
+	/*public OneClassModel(BinaryModel binaryModel)
 		{
 		super(binaryModel);
 		}
+*/
 
+	public OneClassModel()
+		{
+		super();
+		}
 
 	public OneClassModel(Properties props)
 		{
@@ -25,13 +28,13 @@ public class OneClassModel extends RegressionModel implements DiscreteModel<Bool
 		}
 
 	//** Hmmm does this make sense?
-	public Float predictValue(SvmPoint x)
+	public Float predictValue(P x)
 		{
 		return predictLabel(x) ? 1f : -1f;
 		}
 
 
-	public Boolean predictLabel(SvmPoint x)
+	public Boolean predictLabel(P x)
 		{
 		return super.predictValue(x) > 0;
 		}

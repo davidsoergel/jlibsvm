@@ -3,29 +3,30 @@ package edu.berkeley.compbio.jlibsvm.legacyexec;
 
 import edu.berkeley.compbio.jlibsvm.ContinuousModel;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
+import edu.berkeley.compbio.jlibsvm.MutableSvmProblem;
 import edu.berkeley.compbio.jlibsvm.SVM;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
+import edu.berkeley.compbio.jlibsvm.SparseVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.SvmPoint;
-import edu.berkeley.compbio.jlibsvm.SvmProblem;
-import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
+import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblemImpl;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.C_SVC;
 import edu.berkeley.compbio.jlibsvm.binary.Nu_SVC;
 import edu.berkeley.compbio.jlibsvm.kernel.GammaKernel;
+import edu.berkeley.compbio.jlibsvm.kernel.GaussianRBFKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.kernel.LinearKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.PolynomialKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.PrecomputedKernel;
-import edu.berkeley.compbio.jlibsvm.kernel.RBFKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.SigmoidKernel;
-import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblem;
+import edu.berkeley.compbio.jlibsvm.labelinverter.ByteLabelInverter;
+import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblemImpl;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.oneclass.OneClassSVC;
 import edu.berkeley.compbio.jlibsvm.regression.EpsilonSVR;
 import edu.berkeley.compbio.jlibsvm.regression.Nu_SVR;
-import edu.berkeley.compbio.jlibsvm.regression.RegressionProblem;
+import edu.berkeley.compbio.jlibsvm.regression.RegressionProblemImpl;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
 
 import java.applet.Applet;
@@ -328,7 +329,7 @@ public class svm_toy extends Applet
 				kernel = new PolynomialKernel(degree, gamma, coef0);
 				break;
 			case svm_train.RBF:
-				kernel = new RBFKernel(gamma);
+				kernel = new GaussianRBFKernel(gamma);
 				break;
 			case svm_train.SIGMOID:
 				kernel = new SigmoidKernel(gamma, coef0);
@@ -370,22 +371,25 @@ public class svm_toy extends Applet
 		int numClasses = uniqueClasses.size();
 
 		// build problem
-		SvmProblem prob;
+		MutableSvmProblem prob;
 		if (svm instanceof RegressionSVM)
 			{
-			prob = new RegressionProblem(point_list.size());
+			prob = (MutableSvmProblem) new RegressionProblemImpl<SparseVector>(point_list.size());
 			}
 		else if (numClasses == 1)
 			{
-			prob = new RegressionProblem(point_list.size());
+			prob = (MutableSvmProblem) new RegressionProblemImpl<SparseVector>(point_list.size());
 			}
 		else if (numClasses == 2)
 				{
-				prob = new BinaryClassificationProblem(point_list.size());
+				prob = (MutableSvmProblem) new BinaryClassificationProblemImpl<Byte, SparseVector>(Byte.class,
+				                                                                                   point_list.size());
 				}
 			else
 				{
-				prob = new MultiClassProblem<Byte>(Byte.class, point_list.size());
+				prob = (MutableSvmProblem) new MultiClassProblemImpl<Byte, SparseVector>(Byte.class,
+				                                                                         new ByteLabelInverter(),
+				                                                                         point_list.size());
 				}
 
 		//prob.l = point_list.size();
@@ -408,15 +412,24 @@ public class svm_toy extends Applet
 			for (int i = 0; i < point_list.size(); i++)
 				{
 				point p = point_list.elementAt(i);
-				prob.examples[i] = new SvmPoint(1);
-				prob.examples[i].indexes[0] = 1;
-				prob.examples[i].values[0] = p.x;
-				prob.putTargetValue(i, p.y);
+
+				SparseVector v = new SparseVector(1);
+				v.indexes[0] = 1;
+				v.values[0] = p.x;
+
+				prob.addExampleFloat(v, p.y);
+
+				/*	prob.examples[i] = new SparseVector(1);
+								prob.examples[i].indexes[0] = 1;
+								prob.examples[i].values[0] = p.x;
+								prob.putTargetValue(i, p.y);*/
 				}
 
 			// build model & classify
+			svm.setupQMatrix(prob);
 			ContinuousModel model = (ContinuousModel) svm.train(prob);
-			SvmPoint x = new SvmPoint(1);
+			System.err.println(svm.qMatrix.perfString());
+			SparseVector x = new SparseVector(1);
 			//x[0] = new svm_node();
 			x.indexes[0] = 1;
 			int[] j = new int[XLEN];
@@ -468,26 +481,29 @@ public class svm_toy extends Applet
 				//gamma = 0.5f;
 				}
 
-			prob.examples = new SvmPoint[point_list.size()]; //[2];
+			//	prob.examples = new SparseVector[point_list.size()]; //[2];
 			for (int i = 0; i < point_list.size(); i++)
 				{
 				point p = point_list.elementAt(i);
-				prob.examples[i] = new SvmPoint(2);
-				prob.examples[i].indexes[0] = 1;
-				prob.examples[i].values[0] = p.x;
-				prob.examples[i].indexes[1] = 2;
-				prob.examples[i].values[1] = p.y;
 
-				prob.putTargetValue(i, p.value);
+				SparseVector v = new SparseVector(2);
+				v.indexes[0] = 1;
+				v.values[0] = p.x;
+				v.indexes[1] = 2;
+				v.values[1] = p.y;
+
+				prob.addExample(v, new Byte(p.value));
 				}
 
-			if (svm instanceof BinaryClassificationSVM && prob.getNumLabels() > 2)
+			if (svm instanceof BinaryClassificationSVM && prob.getLabels().size() > 2)
 				{
 				svm = new MultiClassificationSVM((BinaryClassificationSVM) svm, Byte.class);
 				}
 			// build model & classify
+			svm.setupQMatrix(prob);
 			SolutionModel model = svm.train(prob);
-			SvmPoint x = new SvmPoint(2);
+			System.err.println(svm.qMatrix.perfString());
+			SparseVector x = new SparseVector(2);
 			//x[0] = new svm_node();
 			//x[1] = new svm_node();
 			x.indexes[0] = 1;

@@ -1,19 +1,23 @@
 package edu.berkeley.compbio.jlibsvm;
 
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
+import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> extends SvmContext
+public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P>> extends SvmContext<L, P>
 	{
 	public static final int LIBSVM_VERSION = 288;
 
 
-	protected SVM(KernelFunction kernel, SvmParameter<T> param)
+	protected SVM(KernelFunction<P> kernel, SvmParameter<L> param)
 		{
 		super(kernel, param);
 		if (param.eps < 0)
@@ -23,16 +27,30 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 		}
 
 
+//	public abstract Class getLabelClass();
+
 	public abstract String getSvmType();
 
-	public abstract SolutionModel train(P problem);
+	//public abstract void setupQMatrix(SvmProblem<L, P> problem);
 
-	protected abstract T[] foldPredict(P subprob, Iterator<SvmPoint> foldIterator, int length);
+	public QMatrix<P> qMatrix;
 
-
-	public FoldSpec separateFolds(P problem, int numberOfFolds)
+	public void setupQMatrix(SvmProblem<L, P> problem)
 		{
-		FoldSpec fs = new FoldSpec(problem.examples.length, numberOfFolds);
+		if (qMatrix == null)
+			{
+			qMatrix = new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
+			}
+		}
+
+	public abstract SolutionModel<P> train(R problem);
+
+/*	protected abstract Map<P,L> foldPredict(R subprob, Iterator<P> foldIterator, int length);
+
+
+	public FoldSpec separateFolds(R problem, int numberOfFolds)
+		{
+		FoldSpec fs = new FoldSpec(problem.examples.size(), numberOfFolds);
 		for (int i = 0; i < fs.perm.length; i++)
 			{
 			fs.perm[i] = i;
@@ -52,19 +70,55 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 			}
 		return fs;
 		}
+*/
 
-	public abstract Class getLabelClass();
 
-	public T[] crossValidation(P problem, int numberOfFolds)
+	public Map<P, Float> continuousCrossValidation(ExplicitSvmProblem<L, P, R> problem, int numberOfFolds)
 		{
-		Class type = (Class) getLabelClass();
-		T[] predictions = (T[]) java.lang.reflect.Array.newInstance(type, problem.examples.length);
+		Map<P, Float> predictions = new HashMap<P, Float>();
 
-		if (numberOfFolds >= problem.examples.length)
+		if (numberOfFolds >= problem.getExamples().size())
 			{
 			throw new SvmException("Can't have more cross-validation folds than there are examples");
 			}
 
+		Set<Fold<L, P, R>> folds = problem.makeFolds(numberOfFolds);
+		setupQMatrix(problem);
+		for (Fold<L, P, R> f : folds)
+			{
+			// this will throw ClassCastException if you try cross-validation on a discrete-only model (e.g. MultiClassModel)
+			ContinuousModel<P> model = (ContinuousModel<P>) train(f.asR());
+			for (P p : f.getHeldOutPoints())
+				{
+				predictions.put(p, model.predictValue(p));
+				}
+			}
+		System.err.println(qMatrix.perfString());
+		return predictions;
+		}
+
+	public Map<P, L> discreteCrossValidation(ExplicitSvmProblem<L, P, R> problem, int numberOfFolds)
+		{
+		Map<P, L> predictions = new HashMap<P, L>();
+
+		if (numberOfFolds >= problem.getExamples().size())
+			{
+			throw new SvmException("Can't have more cross-validation folds than there are examples");
+			}
+
+		Set<Fold<L, P, R>> folds = problem.makeFolds(numberOfFolds);
+		setupQMatrix(problem);
+		for (Fold<L, P, R> f : folds)
+			{
+			// this will throw ClassCastException if you try cross-validation on a continuous-only model (e.g. RegressionModel)
+			DiscreteModel<L, P> model = (DiscreteModel<L, P>) train(f.asR());
+			for (P p : f.getHeldOutPoints())
+				{
+				predictions.put(p, model.predictLabel(p));
+				}
+			}
+		System.err.println(qMatrix.perfString());
+		/*
 		FoldSpec fs = separateFolds(problem, numberOfFolds);
 
 		// stratified cv may not give leave-one-out rate
@@ -77,9 +131,9 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 			int end = fs.foldStart[i + 1];
 
 
-			int subprobLength = problem.examples.length - (end - begin);
+			int subprobLength = problem.getNumExamples() - (end - begin);
 
-			P subprob = problem.newSubProblem(subprobLength);
+			R subprob = problem.newSubProblem(subprobLength);
 
 			int k = 0;
 			for (int j = 0; j < begin; j++)
@@ -95,30 +149,30 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 				++k;
 				}
 
-			T[] foldPredictions = foldPredict(subprob, new FoldIterator(problem, fs.perm, begin, end), end - begin);
-
-			for (int j = begin; j < end; j++)
+			//L[] foldPredictions =
+					predictions.putAll(foldPredict(subprob, new FoldIterator(problem, fs.perm, begin, end), end - begin));		for (int j = begin; j < end; j++)
 				{
 				predictions[fs.perm[j]] = foldPredictions[j - begin];
 				}
 			}
+	*/
 		// now predictions contains the prediction for each point based on training with e.g. 80% of the other points (for 5-fold).
 		return predictions;
 		}
 
-
-	protected class FoldIterator implements Iterator<SvmPoint>
+/*
+	protected class FoldIterator implements Iterator<P>
 		{
 		int index;
 		private int end;
-		private SvmPoint[] examples;
+		private List<P> examples;
 		private int[] perm;
 
-		public FoldIterator(SvmProblem problem, int[] perm, int begin, int end)
+		public FoldIterator(SvmProblem<L,P,?> problem, int[] perm, int begin, int end)
 			{
 			index = begin;
 			this.end = end;
-			this.examples = problem.examples;
+			this.examples = new ArrayList(problem.examples.keySet());
 			this.perm = perm;
 			}
 
@@ -127,9 +181,9 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 			return index < end;
 			}
 
-		public SvmPoint next()
+		public P next()
 			{
-			SvmPoint result = examples[perm[index]];
+			P result = examples.get(perm[index]);
 			index++;
 			return result;
 			}
@@ -138,5 +192,5 @@ public abstract class SVM<T extends Comparable, P extends SvmProblem<T, P>> exte
 			{
 			throw new UnsupportedOperationException();
 			}
-		}
+		}*/
 	}

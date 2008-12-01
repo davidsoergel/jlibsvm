@@ -1,47 +1,23 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
-import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmProblem;
+import edu.berkeley.compbio.jlibsvm.labelinverter.LabelInverter;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class MultiClassProblem<T extends Comparable> extends SvmProblem<T, MultiClassProblem<T>>
+public interface MultiClassProblem<L extends Comparable, P>//, R extends SvmProblem<L,P>>
+		extends SvmProblem<L, P>
 	{
-	Class type;
+//	void addExampleFloat(P point, Float x);
 
-	/**
-	 * For now, pending further cleanup, we need to create arrays of the label type.  That's impossible to do with generics
-	 * alone, so we need to provide the class object (e.g., String.class or whatever) for the label type used.  Of course
-	 * this should match the generics used on SvmProblem, etc.
-	 *
-	 * @param type
-	 * @param length
-	 */
-	public MultiClassProblem(Class type, int length)
-		{
-		super(length);
-		this.type = type;
-		targetValues = (T[]) java.lang.reflect.Array.newInstance(type, length);
-		}
+	Map<L, Set<P>> getExamplesByLabel();
 
+	LabelInverter<L> getLabelInverter();
 
-	public MultiClassProblem<T> newSubProblem(int length)
-		{
-		return new MultiClassProblem<T>(type, length);
-		}
-
-
-	public void putTargetFloat(int i, Float x)
-		{
-		try
-			{
-			putTargetValue(i, (T) type.getConstructor(String.class).newInstance(x.toString()));
-			}
-		catch (Exception e)
-			{
-			throw new SvmException(e);
-			}
-		}
+	Class getLabelClass();
 	}

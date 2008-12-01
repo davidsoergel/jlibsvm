@@ -1,14 +1,16 @@
 package edu.berkeley.compbio.jlibsvm.kernel;
 
-import edu.berkeley.compbio.jlibsvm.SvmPoint;
-
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface KernelFunction
+public interface KernelFunction<P>
 	{
-	float evaluate(SvmPoint x, SvmPoint y);
+	//float evaluate(SvmPoint x, SvmPoint y);
+
+	double evaluate(P x, P y);
+
+	//double evaluateD(P x, P y);
 
 	/**
 	 * Report performance statistics of the kernel, e.g. how often it was evaluated (which should respond to the cache
@@ -16,5 +18,5 @@ public interface KernelFunction
 	 *
 	 * @return
 	 */
-	String perfString();
+	//String perfString();
 	}

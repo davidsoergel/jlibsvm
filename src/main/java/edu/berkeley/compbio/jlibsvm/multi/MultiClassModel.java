@@ -1,48 +1,101 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
-import edu.berkeley.compbio.jlibsvm.MathSupport;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.SvmPoint;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T>
+public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> implements DiscreteModel<L, P>
 	{
-	int numberOfClasses;
+	private int numberOfClasses;
 
-	float[] probA;// pairwise probability information
-	float[] probB;
+	//private float[] probA;// pairwise probability information
+	//private float[] probB;
 
-	BinaryModel[] oneVsOneModels;   // don't like array vs collection, but it's consistent with the rest for now
+	//BinaryModel<P>[] oneVsOneModels;   // don't like array vs collection, but it's consistent with the rest for now
+
+//	private List<BinaryModel<P>> oneVsOneModels = new ArrayList<BinaryModel<P>>();
+
+	private SymmetricHashMap2d<L, BinaryModel<L, P>> oneVsOneModels;
+	private HashMap<L, BinaryModel<L, P>> oneVsAllModels;
+
 
 	// generics are a hassle here  (T[] label; makes a mess)
 	// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight  //** proscribed 1-D order for 2-D decision_values is error-prone
-	Object[] label;
+	List<L> labels;
 
 
-	public MultiClassModel(KernelFunction kernel, SvmParameter param)
+	public MultiClassModel(KernelFunction<P> kernel, SvmParameter<L> param, int numberOfClasses)
 		{
 		super(kernel, param);
+		this.numberOfClasses = numberOfClasses;
+		oneVsOneModels = new SymmetricHashMap2d<L, BinaryModel<L, P>>(numberOfClasses);
+		oneVsAllModels = new HashMap<L, BinaryModel<L, P>>(numberOfClasses);
 		}
 
-	public T predictLabel(SvmPoint x)
+	// allocate this only once; it'll get cleared on every predictLabel() anyway
+	List<L> bestLabelList = new ArrayList<L>();
+
+	public L predictLabel(P x)
 		{
 		int i;
-		float[] decisionValues = oneVsOneValues(x);
+		//float[] decisionValues = oneVsOneValues(x);
+
+		Multiset<L> votes = new HashMultiset<L>();
+		for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
+			{
+			votes.add(binaryModel.predictLabel(x));
+			}
+
+		// in case of a tie in the number of votes, pick one class randomly (not always the one that happens to be first)
+
+		//	L bestLabel = null;
+//		Multinomial<L> bestLabelSet
+		int bestCount = 0;
+		for (L label : votes.elementSet())
+			{
+			int count = votes.count(label);
+			if (count == bestCount)
+				{
+				bestLabelList.add(label);
+				}
+			if (count > bestCount)
+				{
+				bestLabelList.clear();
+				bestLabelList.add(label);
+				//bestLabel = label;
+				bestCount = count;
+				}
+			}
+		if (bestLabelList.size() == 1)
+			{
+			return bestLabelList.get(0);
+			}
+
+		return bestLabelList.get((int) (Math.random() * bestLabelList.size()));
+
+		//return bestLabel;
+
+/*
 
 		int[] vote = new int[numberOfClasses];
 
@@ -70,70 +123,107 @@ public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T
 				bestVoteIndex = i;
 				}
 			}
-		return (T) label[bestVoteIndex];
+		return labels.get(bestVoteIndex);*/
 		}
 
-
-	public float[] oneVsOneValues(SvmPoint x)
+/*
+	private float[] oneVsOneValues(P x)
 		{
-		float[] decisionValues = new float[oneVsOneModels.length];
+		float[] decisionValues = new float[oneVsOneModels.size()];
 
 		int i = 0;
-		for (BinaryModel m : oneVsOneModels)
+		for (BinaryModel<P> m : oneVsOneModels)
 			{
 			decisionValues[i] = m.predictValue(x);
 			i++;
 			}
 		return decisionValues;
-		}
+		}*/
 
 
 	public boolean supportsProbability()
 		{
-		return probA != null && probB != null;
+		// just check the first model and assume the rest are the same
+		return oneVsOneModels.valueIterator().next().sigmoid != null;
+//		return probA != null && probB != null;
 		}
 
-	public float[] predictProbability(SvmPoint x)
+
+	public Map<L, Float> predictProbability(P x)
 		{
 		if (!supportsProbability())
 			{
 			throw new SvmException("Can't make probability predictions");
 			}
 
-		int i;
-		float[] decisionValues = oneVsOneValues(x);
+
+		//** ugly Map2d vs. array issue etc.; oh well, adapt for now to the old multiclassProbability signature
+		// the main thing is just to iterate through the Map2d in the order given by the labels list
+
+		//	float[] decisionValues = oneVsOneValues(x);
 
 		float minimumProbability = 1e-7f;
 		float[][] pairwiseProbabilities = new float[numberOfClasses][numberOfClasses];
 
-		int k = 0;
-		for (i = 0; i < numberOfClasses; i++)
+		//int k = 0;
+
+		// this is kind of a lame way to do it, but whatever.
+
+		for (int i = 0; i < numberOfClasses; i++)
 			{
+			L label1 = labels.get(i);
 			for (int j = i + 1; j < numberOfClasses; j++)
 				{
-				pairwiseProbabilities[i][j] = Math.min(
-						Math.max(MathSupport.sigmoidPredict(decisionValues[k], probA[k], probB[k]), minimumProbability),
-						1 - minimumProbability);
+				L label2 = labels.get(j);
+
+				BinaryModel<L, P> binaryModel = oneVsOneModels.get(label1, label2);
+
+				float prob = binaryModel.sigmoid.predict(binaryModel.predictValue(x));
+				//MathSupport.sigmoidPredict(decisionValues[k], probA[k], probB[k])
+
+				pairwiseProbabilities[i][j] = Math.min(Math.max(prob, minimumProbability), 1 - minimumProbability);
 				pairwiseProbabilities[j][i] = 1 - pairwiseProbabilities[i][j];
-				k++;
+				//k++;
 				}
 			}
 		float[] probabilityEstimates = multiclassProbability(numberOfClasses, pairwiseProbabilities);
 
-		return probabilityEstimates;
+		// but then map back to a cleaner Map API.  Note the probabilityEstimates should come back in order corresponding to the labels list.
+
+		Map<L, Float> result = new HashMap<L, Float>();
+		int i = 0;
+		for (L label : labels)
+			{
+			result.put(label, probabilityEstimates[i]);
+			i++;
+			}
+
+		return result;
 		}
 
-	public T bestProbabilityLabel(float[] labelProbabilities)
+	public L bestProbabilityLabel(Map<L, Float> labelProbabilities)
 		{
-		int bestProbabilityIndex = 0;
-		for (int i = 1; i < numberOfClasses; i++)
+		Float bestProb = 0f;
+		L bestLabel = null;
+		for (Map.Entry<L, Float> entry : labelProbabilities.entrySet())
 			{
-			if (labelProbabilities[i] > labelProbabilities[bestProbabilityIndex])
+			if (entry.getValue() > bestProb)
 				{
-				bestProbabilityIndex = i;
+				bestLabel = entry.getKey();
+				bestProb = entry.getValue();
 				}
 			}
-		return (T) label[bestProbabilityIndex];
+		return bestLabel;
+		/*
+				int bestProbabilityIndex = 0;
+				for (int i = 1; i < numberOfClasses; i++)
+					{
+					if (labelProbabilities[i] > labelProbabilities[bestProbabilityIndex])
+						{
+						bestProbabilityIndex = i;
+						}
+					}
+				return (L) label[bestProbabilityIndex];*/
 		}
 
 
@@ -211,33 +301,37 @@ public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T
 	public MultiClassModel(Properties props)
 		{
 		super(props);
+		throw new NotImplementedException();
+		/*
 		numberOfClasses = Integer.parseInt(props.getProperty("nr_class"));
 
 		StringTokenizer st = new StringTokenizer(props.getProperty("rho"));
 
-		ArrayList<BinaryModel> models = new ArrayList<BinaryModel>();
+		//ArrayList<BinaryModel<P>> models = new ArrayList<BinaryModel<P>>();
 		while (st.hasMoreTokens())
 			{
-			BinaryModel m = new BinaryModel(kernel, param);
+			BinaryModel<P> m = new BinaryModel<P>(kernel, param);
 			m.rho = Float.parseFloat(st.nextToken());
 			// no SVs yet
-			models.add(m);
+			oneVsOneModels.add(m);
 			}
-		oneVsOneModels = models.toArray(new BinaryModel[]{});
+		//oneVsOneModels = models.toArray(new BinaryModel<P>[]{});
 
 		probA = parseFloatArray(props.getProperty("probA"));
-		probB = parseFloatArray(props.getProperty("probB"));
+		probB = parseFloatArray(props.getProperty("probB"));*/
 		}
 
 
 	public void writeToStream(DataOutputStream fp) throws IOException
 		{
+		throw new NotImplementedException();
+		/*
 		super.writeToStream(fp);
 
 		fp.writeBytes("nr_class " + numberOfClasses + "\n");
 
 		fp.writeBytes("rho");
-		for (BinaryModel m : oneVsOneModels)
+		for (BinaryModel<P> m : oneVsOneModels)
 			{
 			fp.writeBytes(" " + m.rho);
 			}
@@ -265,7 +359,7 @@ public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T
 		//these must come after everything else
 		writeSupportVectors(fp);
 
-		fp.close();
+		fp.close();*/
 		}
 
 	protected void readSupportVectors(BufferedReader fp)
@@ -282,5 +376,113 @@ public class MultiClassModel<T> extends SolutionModel implements DiscreteModel<T
 		//** Implement support vector I/O
 		// the original format is a spaghetti
 
+		}
+
+	public void putOneVsOneModel(L label1, L label2, BinaryModel<L, P> binaryModel)
+		{
+		oneVsOneModels.put(label1, label2, binaryModel);
+		}
+
+	public void putOneVsAllModel(L label1, BinaryModel<L, P> binaryModel)
+		{
+		oneVsAllModels.put(label1, binaryModel);
+		}
+
+
+	private class SymmetricHashMap2d<K extends Comparable, V>
+		{
+		HashMap<K, Map<K, V>> l1Map;
+		private int sizePerDimension;
+
+		public Iterable<V> values()
+			{
+			return new Iterable<V>()
+			{
+			public Iterator<V> iterator()
+				{
+				return valueIterator();
+				}
+			};
+			}
+
+		public Iterator<V> valueIterator()
+			{
+			return new Iterator<V>()
+			{
+			Iterator<K> k1iter = l1Map.keySet().iterator();
+			Iterator<V> l2iter = null;
+
+			public boolean hasNext()
+				{
+				return (l2iter != null && l2iter.hasNext()) || k1iter.hasNext();
+				}
+
+			public V next()
+				{
+				if (l2iter == null || !l2iter.hasNext())
+					{
+					if (k1iter.hasNext())
+						{
+						l2iter = l1Map.get(k1iter.next()).values().iterator();
+						}
+					else
+						{
+						return null;
+						}
+					}
+
+				return l2iter.next();
+				}
+
+			public void remove()
+				{
+				throw new UnsupportedOperationException();
+				}
+			};
+			}
+
+		public SymmetricHashMap2d(int sizePerDimension)
+			{
+			this.sizePerDimension = sizePerDimension;
+			l1Map = new HashMap<K, Map<K, V>>(sizePerDimension);
+			}
+
+		V get(K k1, K k2)
+			{
+			if (k1.compareTo(k2) > 0)
+				{
+				K k3 = k1;
+				k1 = k2;
+				k2 = k3;
+				}
+
+			Map<K, V> l2Map = l1Map.get(k1);
+			if (l2Map == null)
+				{
+				l2Map = new HashMap<K, V>(sizePerDimension);
+				l1Map.put(k1, l2Map);
+				}
+
+			return l2Map.get(k2);
+			}
+
+		public void put(K k1, K k2, V value)
+			{
+			if (k1.compareTo(k2) > 0)
+				{
+				K k3 = k1;
+				k1 = k2;
+				k2 = k3;
+				}
+
+			Map<K, V> l2Map = l1Map.get(k1);
+			if (l2Map == null)
+				{
+				l2Map = new HashMap<K, V>();
+				l1Map.put(k1, l2Map);
+				}
+
+			l2Map.put(k2, value);
+			}
 		}
 	}

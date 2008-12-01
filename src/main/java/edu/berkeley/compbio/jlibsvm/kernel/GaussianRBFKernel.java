@@ -1,6 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.kernel;
 
-import edu.berkeley.compbio.jlibsvm.SvmPoint;
+import edu.berkeley.compbio.jlibsvm.SparseVector;
 
 import java.util.Properties;
 
@@ -8,20 +8,21 @@ import java.util.Properties;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class RBFKernel extends GammaKernel
+public class GaussianRBFKernel extends GammaKernel<SparseVector>
 	{
-	public RBFKernel(Properties props)
+	public GaussianRBFKernel(Properties props)
 		{
 		this(Float.parseFloat(props.getProperty("gamma")));
 		}
 
-	public RBFKernel(float gamma)
+	public GaussianRBFKernel(float gamma)
 		{
 		super(gamma);
 		}
 
-	public float evaluate(SvmPoint x, SvmPoint y)
+	public double evaluate(SparseVector x, SparseVector y)
 		{
+		// try doing the internal stuff at double precision
 
 		// FIRST CHOOSE THE SUM METHOD
 		// we're looking for the square of the distance between x and y in the original space
@@ -30,14 +31,14 @@ public class RBFKernel extends GammaKernel
 		//float sum = float2xDotProduct(x, y);  // DOESN'T WORK
 		//double sum = explicitDoubleSum(x, y);  // Most precise.
 		//float sum = explicitFloatSum(x, y);  // Works just as well; no evident speed improvement though
-		float sum = explicitFloatSumOptimized(x, y);  // Works just as well; faster
+		double sum = explicitSumOptimized(x, y);  // Works just as well; faster
 
 		//	assert sum == sum2;
 
 
 		// THEN CHOOSE THE EXP METHOD
 
-		float result = (float) Math.exp(-gamma * sum);
+		double result = Math.exp(-gamma * sum);
 		//	float result = interpolatingExp.evaluate(-gamma * sum);  // approximation is as good as the interpolator specifies, but no faster than Math.exp()
 		//float result =  (float) MathSupport.expApprox(-gamma * sum);  // APPROXIMATION IS NOT GOOD ENOUGH
 
@@ -81,6 +82,19 @@ public class RBFKernel extends GammaKernel
 
 		return sum;
 		}
+*/
+
+/*		private float float2xDotProduct(SvmPoint x, SvmPoint y)
+		 {
+		 // this ends up horribly wrong near the boundaries... ???
+		 // or not, and I was previously worried about the exp method?
+		 float sum = -2f * MathSupport.dot(x, y);
+
+		 sum += x.getSquared();
+		 sum += y.getSquared();
+
+		 return sum;
+		 }
 */
 
 
@@ -143,9 +157,9 @@ public class RBFKernel extends GammaKernel
 	 * @param y
 	 * @return
 	 */
-	private static final float explicitFloatSumOptimized(final SvmPoint x, final SvmPoint y)
+	private static final double explicitSumOptimized(final SparseVector x, final SparseVector y)
 		{
-		float sum = 0;
+		double sum = 0;
 
 		// making final local copies may help performance??  Or not, the JIT should figure this out
 		final int[] xIndexes = x.indexes;
@@ -167,7 +181,7 @@ public class RBFKernel extends GammaKernel
 
 			if (xIndex == yIndex)
 				{
-				float d = xValues[i] - yValues[j];
+				double d = (double) xValues[i] - (double) yValues[j];
 				sum += d * d;
 
 				i++;
@@ -197,7 +211,7 @@ public class RBFKernel extends GammaKernel
 
 					// there is an entry for y but not for x at this index => x.value == 0
 
-					sum += yValues[j] * yValues[j];
+					sum += (double) yValues[j] * (double) yValues[j];
 					j++;
 					if (j >= ylen)
 						{
@@ -214,7 +228,7 @@ public class RBFKernel extends GammaKernel
 
 					// there is an entry for x but not for y at this index => y.value == 0
 
-					sum += xValues[i] * xValues[i];
+					sum += (double) xValues[i] * (double) xValues[i];
 					i++;
 					if (i >= xlen)
 						{

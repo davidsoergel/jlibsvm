@@ -3,8 +3,8 @@ package edu.berkeley.compbio.jlibsvm.legacyexec;
 import edu.berkeley.compbio.jlibsvm.ContinuousModel;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
+import edu.berkeley.compbio.jlibsvm.SparseVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
-import edu.berkeley.compbio.jlibsvm.SvmPoint;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassModel;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionModel;
 
@@ -14,7 +14,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
+import java.util.SortedMap;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 public class svm_predict
 	{
@@ -65,7 +68,7 @@ public class svm_predict
 
 			Float target = Float.parseFloat(st.nextToken());
 			int m = st.countTokens() / 2;
-			SvmPoint x = new SvmPoint(m);
+			SparseVector x = new SparseVector(m);
 			for (int j = 0; j < m; j++)
 				{
 				//x[j] = new svm_node();
@@ -77,11 +80,14 @@ public class svm_predict
 			if (predict_probability == 1
 					&& model instanceof MultiClassModel) //(svm_type == SvmParameter.C_SVC || svm_type == SvmParameter.NU_SVC))
 				{
-				float[] prob_estimates = ((MultiClassModel) model).predictProbability(x); //null;
+				Map<Integer, Float> prob_estimates =
+						((MultiClassModel<Integer, SparseVector>) model).predictProbability(x); //null;
 				//v = svm.svm_predict_probability(model, x, prob_estimates);
-				prediction = ((MultiClassModel<Integer>) model).bestProbabilityLabel(prob_estimates);
+				prediction = ((MultiClassModel<Integer, SparseVector>) model).bestProbabilityLabel(prob_estimates);
 				output.writeBytes(prediction + " ");
-				for (float prob_estimate : prob_estimates)
+
+				SortedMap<Integer, Float> prob_estimates_sorted = new TreeMap<Integer, Float>(prob_estimates);
+				for (float prob_estimate : prob_estimates_sorted.values())
 					{
 					output.writeBytes(prob_estimate + " ");
 					}

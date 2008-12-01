@@ -4,7 +4,7 @@ package edu.berkeley.compbio.jlibsvm;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface ContinuousModel
+public interface ContinuousModel<P>
 	{
-	Float predictValue(SvmPoint x);
+	Float predictValue(P x);
 	}

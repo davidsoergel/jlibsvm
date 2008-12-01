@@ -8,17 +8,20 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class SvmContext<T extends Comparable>
+public class SvmContext<L extends Comparable, P>
 	{
-	public KernelFunction kernel;
-	public SvmParameter<T> param;
+	public KernelFunction<P> kernel;
+	public SvmParameter<L> param;
 
-	public SvmContext(KernelFunction kernel, SvmParameter<T> param)
+	public SvmContext(KernelFunction<P> kernel, SvmParameter<L> param)
 		{
 		this.kernel = kernel;
 		this.param = param;
 		}
 
+	public SvmContext()
+		{
+		}
 
 	public static float[] parseFloatArray(String s)
 		{

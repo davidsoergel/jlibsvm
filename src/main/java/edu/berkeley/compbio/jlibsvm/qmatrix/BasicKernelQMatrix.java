@@ -1,23 +1,24 @@
 package edu.berkeley.compbio.jlibsvm.qmatrix;
 
+import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import edu.berkeley.compbio.jlibsvm.qmatrix.KernelQMatrix;
-import edu.berkeley.compbio.jlibsvm.SvmProblem;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class ONE_CLASS_Q extends KernelQMatrix
+public class BasicKernelQMatrix<P> extends KernelQMatrix<P>
 	{
+	/*
 	private final Cache cache;
 
-	public ONE_CLASS_Q(SvmProblem problem, KernelFunction kernel, float cache_size)
+
+	public ONE_CLASS_Q(Map<P,L> examples, KernelFunction<P> kernel, float cache_size)
 		{
-		super(problem.examples, kernel);
-		cache = new Cache(problem.examples.length, (long) (cache_size * (1 << 20)));
-		QD = new float[problem.examples.length];
-		for (int i = 0; i < problem.examples.length; i++)
+		super(examples, kernel);
+		cache = new Cache(examples.size(), (long) (cache_size * (1 << 20)));
+		QD = new float[examples.size()];
+		for (int i = 0; i < examples.size(); i++)
 			{
 			QD[i] = kernel.evaluate(x[i], x[i]);
 			}
@@ -47,5 +48,16 @@ public class ONE_CLASS_Q extends KernelQMatrix
 		{
 		cache.swap_index(i, j);
 		super.swapIndex(i, j);
+		}
+	*/
+
+	public BasicKernelQMatrix(KernelFunction<P> kernel, int numExamples, int maxCachedRank)
+		{
+		super(kernel, numExamples, maxCachedRank);
+		}
+
+	public float computeQ(SolutionVector<P> a, SolutionVector<P> b)
+		{
+		return (float) kernel.evaluate(a.point, b.point);
 		}
 	}
