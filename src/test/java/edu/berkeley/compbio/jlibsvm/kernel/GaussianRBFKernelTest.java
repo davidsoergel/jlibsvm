@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.jlibsvm.kernel;
 
 import edu.berkeley.compbio.jlibsvm.SparseVector;
+import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
 
 /**
@@ -9,6 +10,7 @@ import org.testng.annotations.Test;
  */
 public class GaussianRBFKernelTest
 	{
+	private static final Logger logger = Logger.getLogger(GaussianRBFKernelTest.class);
 
 	@Test
 	public void explicitAndCompositeKernelsAreEqual()
@@ -42,8 +44,7 @@ public class GaussianRBFKernelTest
 
 	@Test
 	public void explicitRBFKernelSpeedTest()
-		{
-		// poor man's profiling
+		{		// poor man's profiling
 		long startTime = System.currentTimeMillis();
 
 		float gamma = 1f;
@@ -69,14 +70,13 @@ public class GaussianRBFKernelTest
 
 		long endTime = System.currentTimeMillis();
 		float time = (endTime - startTime) / 1000f;
-		System.err.println("Explicit RBF kernel time = " + time + " sec");
+		logger.debug("Explicit RBF kernel time = " + time + " sec");
 		}
 
 
 	@Test
 	public void compositeRBFKernelSpeedTest()
-		{
-		// poor man's profiling
+		{		// poor man's profiling
 		long startTime = System.currentTimeMillis();
 
 		float gamma = 1f;
@@ -103,6 +103,6 @@ public class GaussianRBFKernelTest
 
 		long endTime = System.currentTimeMillis();
 		float time = (endTime - startTime) / 1000f;
-		System.err.println("Composite RBF kernel time = " + time + " sec");
+		logger.debug("Composite RBF kernel time = " + time + " sec");
 		}
 	}

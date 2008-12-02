@@ -8,6 +8,7 @@ import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblemImpl;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.labelinverter.LabelInverter;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,14 +20,14 @@ import java.util.Set;
  */
 public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P, MultiClassProblem<L, P>>
 	{
-	BinaryClassificationSVM<L, P> binarySvm;
-	//private Class labelClass;
+	private static final Logger logger = Logger.getLogger(MultiClassificationSVM.class);
+
+	BinaryClassificationSVM<L, P> binarySvm;	//private Class labelClass;
 
 	public MultiClassificationSVM(BinaryClassificationSVM<L, P> binarySvm, Class labelClass)
 		{
 		super(binarySvm.kernel, (SvmParameter<L>) (binarySvm.param));
-		this.binarySvm = binarySvm;
-		//	this.labelClass = labelClass;
+		this.binarySvm = binarySvm;		//	this.labelClass = labelClass;
 		}
 
 	public String getSvmType()
@@ -34,11 +35,11 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		return "multiclass " + binarySvm.getSvmType();
 		}
 
-/*	@Override
-	public Class getLabelClass()
-		{
-		return labelClass;
-		}*/
+	/*	@Override
+   public Class getLabelClass()
+	   {
+	   return labelClass;
+	   }*/
 
 
 	public void setupQMatrix(SvmProblem<L, P> problem)
@@ -57,6 +58,10 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		Map<L, Float> weights = prepareWeights(problem);
 
 		// create and train all vs all classifiers
+
+
+		int numLabels = problem.getLabels().size();
+		logger.info("Training " + numLabels * (numLabels - 1) + " one-vs-one classifiers for " + numLabels + " labels");
 
 		Map<L, Set<P>> examplesByLabel = problem.getExamplesByLabel();
 		for (L label1 : problem.getLabels())
@@ -90,7 +95,6 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 					final BinaryModel<L, P> binaryModel =
 							binarySvm.train(subProblem, weights.get(label1), weights.get(label2));
 
-
 					model.putOneVsOneModel(label1, label2, binaryModel);
 					}
 				}
@@ -98,6 +102,8 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 
 		// create and train one vs all classifiers
+
+		logger.info("Training one-vs-all classifiers for " + numLabels + " labels");
 
 		float weightSum = 0;
 		for (Float f : weights.values())
@@ -127,8 +133,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		}
 
 	private Map<L, Float> prepareWeights(MultiClassProblem<L, P> problem)
-		{
-		// use param.C as the default weight...
+		{		// use param.C as the default weight...
 		Map<L, Float> weights = new HashMap<L, Float>();
 		for (L label : problem.getLabels())
 			{
@@ -146,139 +151,138 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				}
 			else
 				{
-				System.err.print("warning: class label " + key + " specified in weight is not found\n");
+				logger.warn("class label " + key + " specified in weight is not found");
 				}
 			}
 		return weights;
 		}
 
 
-/*	public MultiClassModel<L, P> train(MultiClassProblem<L, P> problem)
-		{
-		MultiClassModel<L, P> model = new MultiClassModel<L, P>(kernel, param);
-		model.setSvmType(getSvmType());
+	/*	public MultiClassModel<L, P> train(MultiClassProblem<L, P> problem)
+		 {
+		 MultiClassModel<L, P> model = new MultiClassModel<L, P>(kernel, param);
+		 model.setSvmType(getSvmType());
 
-		// classification
-		int l = problem.examples.size();
-		int[] perm = new int[l];
+		 // classification
+		 int l = problem.examples.size();
+		 int[] perm = new int[l];
 
-		// group training data of the same class
-		MultiClassProblem<L, P>.GroupedClasses groupedExamples = problem.groupClasses(perm);
-		int numberOfClasses = groupedExamples.numberOfClasses;
-		List<L> groupLabels = groupedExamples.label;
-		int[] groupStarts = groupedExamples.start;
-		List<Integer> groupCounts = groupedExamples.count;
+		 // group training data of the same class
+		 MultiClassProblem<L, P>.GroupedClasses groupedExamples = problem.groupClasses(perm);
+		 int numberOfClasses = groupedExamples.numberOfClasses;
+		 List<L> groupLabels = groupedExamples.label;
+		 int[] groupStarts = groupedExamples.start;
+		 List<Integer> groupCounts = groupedExamples.count;
 
-		// sort the examples so they occur in class blocks
-		P[] x = new P[l];
-		int i;
-		for (i = 0; i < l; i++)
-			{
-			x[i] = problem.examples[perm[i]];
-			}
+		 // sort the examples so they occur in class blocks
+		 P[] x = new P[l];
+		 int i;
+		 for (i = 0; i < l; i++)
+			 {
+			 x[i] = problem.examples[perm[i]];
+			 }
 
-		// calculate weighted C
+		 // calculate weighted C
 
-//		List<Float> weightedC = new ArrayList<Float>(numberOfClasses);
+ //		List<Float> weightedC = new ArrayList<Float>(numberOfClasses);
 
-//		for (i = 0; i < numberOfClasses; i++)
-//			{
-//			weightedC.add(param.C);
-//			}
+ //		for (i = 0; i < numberOfClasses; i++)
+ //			{
+ //			weightedC.add(param.C);
+ //			}
 
-		// if any weights are provided, apply them; else just use param.C
-		Map<L, Float> weights = param.getWeights();
-		for (Map.Entry<L, Float> weightEntry : weights.entrySet())
-			{
-			L key = weightEntry.getKey();
-			Float value = weightEntry.getValue();
-			int j = groupLabels.indexOf(key);
-			if (j == -1)
-				{
-				System.err.print("warning: class label " + key + " specified in weight is not found\n");
-				}
-			else
-				{
-				Float w = weightEntry.getValue();
-				weightEntry.setValue((w == null ? 1f : w) * param.C);
-				}
-			}
+		 // if any weights are provided, apply them; else just use param.C
+		 Map<L, Float> weights = param.getWeights();
+		 for (Map.Entry<L, Float> weightEntry : weights.entrySet())
+			 {
+			 L key = weightEntry.getKey();
+			 Float value = weightEntry.getValue();
+			 int j = groupLabels.indexOf(key);
+			 if (j == -1)
+				 {
+				 System.err.print("warning: class label " + key + " specified in weight is not found\n");
+				 }
+			 else
+				 {
+				 Float w = weightEntry.getValue();
+				 weightEntry.setValue((w == null ? 1f : w) * param.C);
+				 }
+			 }
 
-		model.oneVsOneModels = new BinaryModel[numberOfClasses * (numberOfClasses - 1) / 2];
+		 model.oneVsOneModels = new BinaryModel[numberOfClasses * (numberOfClasses - 1) / 2];
 
-		float[] probA = null, probB = null;
-		if (param.probability)
-			{
-			probA = new float[numberOfClasses * (numberOfClasses - 1) / 2];
-			probB = new float[numberOfClasses * (numberOfClasses - 1) / 2];
-			}
+		 float[] probA = null, probB = null;
+		 if (param.probability)
+			 {
+			 probA = new float[numberOfClasses * (numberOfClasses - 1) / 2];
+			 probB = new float[numberOfClasses * (numberOfClasses - 1) / 2];
+			 }
 
-		int oneVsOneIndex = 0;
-		for (i = 0; i < numberOfClasses; i++)
-			{
-			for (int j = i + 1; j < numberOfClasses; j++)
-				{
-				int iStart = groupStarts[i], jStart = groupStarts[j];
-				int iCount = groupCounts.get(i), jCount = groupCounts.get(j);
-				int subprobLength = iCount + jCount;
+		 int oneVsOneIndex = 0;
+		 for (i = 0; i < numberOfClasses; i++)
+			 {
+			 for (int j = i + 1; j < numberOfClasses; j++)
+				 {
+				 int iStart = groupStarts[i], jStart = groupStarts[j];
+				 int iCount = groupCounts.get(i), jCount = groupCounts.get(j);
+				 int subprobLength = iCount + jCount;
 
-				BinaryClassificationProblem<P> subProblem = new BinaryClassificationProblem<P>(subprobLength);
+				 BinaryClassificationProblem<P> subProblem = new BinaryClassificationProblem<P>(subprobLength);
 
-				for (int k = 0; k < iCount; k++)
-					{
-					subProblem.examples[k] = x[iStart + k];
-					subProblem.putTargetValue(k, true);
-					}
-				for (int k = 0; k < jCount; k++)
-					{
-					subProblem.examples[iCount + k] = x[jStart + k];
-					subProblem.putTargetValue(iCount + k, false);
-					}
+				 for (int k = 0; k < iCount; k++)
+					 {
+					 subProblem.examples[k] = x[iStart + k];
+					 subProblem.putTargetValue(k, true);
+					 }
+				 for (int k = 0; k < jCount; k++)
+					 {
+					 subProblem.examples[iCount + k] = x[jStart + k];
+					 subProblem.putTargetValue(iCount + k, false);
+					 }
 
-				if (param.probability)
-					{
-					float[] probAB = binarySvm.svcProbability(subProblem, weightedC[i], weightedC[j]);
-					probA[oneVsOneIndex] = probAB[0];
-					probB[oneVsOneIndex] = probAB[1];
-					}
+				 if (param.probability)
+					 {
+					 float[] probAB = binarySvm.svcProbability(subProblem, weightedC[i], weightedC[j]);
+					 probA[oneVsOneIndex] = probAB[0];
+					 probB[oneVsOneIndex] = probAB[1];
+					 }
 
-				model.oneVsOneModels[oneVsOneIndex] = binarySvm.trainOne(subProblem, weightedC[i], weightedC[j]);
+				 model.oneVsOneModels[oneVsOneIndex] = binarySvm.trainOne(subProblem, weightedC[i], weightedC[j]);
 
-				++oneVsOneIndex;
-				}
-			}
+				 ++oneVsOneIndex;
+				 }
+			 }
 
-		// build output
+		 // build output
 
-		model.numberOfClasses = numberOfClasses;
+		 model.numberOfClasses = numberOfClasses;
 
 
-		model.labels = new Object[numberOfClasses];
-		for (i = 0; i < numberOfClasses; i++)
-			{
-			model.labels[i] = groupLabels.get(i);
-			}
+		 model.labels = new Object[numberOfClasses];
+		 for (i = 0; i < numberOfClasses; i++)
+			 {
+			 model.labels[i] = groupLabels.get(i);
+			 }
 
-		if (param.probability)
-			{
-			model.probA = new float[numberOfClasses * (numberOfClasses - 1) / 2];
-			model.probB = new float[numberOfClasses * (numberOfClasses - 1) / 2];
-			for (i = 0; i < numberOfClasses * (numberOfClasses - 1) / 2; i++)
-				{
-				model.probA[i] = probA[i];
-				model.probB[i] = probB[i];
-				}
-			}
-		else
-			{
-			model.probA = null;
-			model.probB = null;
-			}
+		 if (param.probability)
+			 {
+			 model.probA = new float[numberOfClasses * (numberOfClasses - 1) / 2];
+			 model.probB = new float[numberOfClasses * (numberOfClasses - 1) / 2];
+			 for (i = 0; i < numberOfClasses * (numberOfClasses - 1) / 2; i++)
+				 {
+				 model.probA[i] = probA[i];
+				 model.probB[i] = probB[i];
+				 }
+			 }
+		 else
+			 {
+			 model.probA = null;
+			 model.probB = null;
+			 }
 
-		return model;
-		}
-*/
-/*
+		 return model;
+		 }
+ *//*
 	protected L[] foldPredict(MultiClassProblem<L,P> subprob, Iterator<P> foldIterator, int length)
 		{
 		MultiClassModel<L,P> model = train(subprob);

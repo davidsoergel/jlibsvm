@@ -3,6 +3,7 @@ package edu.berkeley.compbio.jlibsvm.regression;
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.Solver_NU;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.List;
  */
 public class RegressionSolverNu<P> extends Solver_NU<Float, P>
 	{
+	private static final Logger logger = Logger.getLogger(RegressionSolverNu.class);
+
 	public RegressionSolverNu(List<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float C, float eps,
 	                          boolean shrinking)
 		{
@@ -32,7 +35,8 @@ public class RegressionSolverNu<P> extends Solver_NU<Float, P>
 		calculate_rho(model);
 
 		// calculate objective value
-/*		{
+
+		/*		{
 		float v = 0;
 		for (SolutionVector svC : activeSet)
 			{
@@ -46,8 +50,7 @@ public class RegressionSolverNu<P> extends Solver_NU<Float, P>
 
 		// note the swapping process applied to the Q matrix as well, so we have to map that back too
 
-		//	model.alpha = new float[numExamples];
-		//	model.supportVectors = new SparseVector[numExamples];
+		//	model.alpha = new float[numExamples];		//	model.supportVectors = new SparseVector[numExamples];
 
 		/*	float[] alpha = new float[l];
 		  float sumAlpha = 0;
@@ -56,16 +59,13 @@ public class RegressionSolverNu<P> extends Solver_NU<Float, P>
 			  alpha[i] = model.alpha[i] - model.alpha[i + l];
 			  sumAlpha += Math.abs(alpha[i]);
 			  }
-  */
-		//model.alpha = alpha;
+  */		//model.alpha = alpha;
 
 		float sumAlpha = 0;
 
 		model.supportVectors = new HashMap<P, Double>();
 		for (SolutionVector<P> svC : allExamples)
-			{
-			// the examples contain both a true and a false SolutionVector for each P.
-			// we want the difference of their alphas
+			{			// the examples contain both a true and a false SolutionVector for each P.			// we want the difference of their alphas
 
 			Double alphaDiff = model.supportVectors.get(svC.point);
 			if (alphaDiff == null)
@@ -81,18 +81,15 @@ public class RegressionSolverNu<P> extends Solver_NU<Float, P>
 			{
 			sumAlpha += Math.abs(alphaDiff);
 			}
-
-		System.out.print("nu = " + sumAlpha / (Cp * allExamples.size()) + "\n");  //Cp == Cn == C
+		logger.info("nu = " + sumAlpha / (Cp * allExamples.size()));  //Cp == Cn == C
 
 		// note at this point the solution includes _all_ vectors, even if their alphas are zero
 
-		// we can't do this yet because in the regression case there are twice as many alphas as vectors
-		// model.compact();
+		// we can't do this yet because in the regression case there are twice as many alphas as vectors		// model.compact();
 
-		//	model.upperBoundPositive = Cp;
-		//	model.upperBoundNegative = Cn;
+		//	model.upperBoundPositive = Cp;		//	model.upperBoundNegative = Cn;
 
-		System.out.print("\noptimization finished, #iter = " + iter + "\n");
+		logger.info("optimization finished, #iter = " + iter);
 
 		return model;
 		}

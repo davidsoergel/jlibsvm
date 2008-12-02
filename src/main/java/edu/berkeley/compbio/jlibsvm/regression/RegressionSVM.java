@@ -4,6 +4,7 @@ import edu.berkeley.compbio.jlibsvm.ExplicitSvmProblem;
 import edu.berkeley.compbio.jlibsvm.SVM;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 
@@ -13,6 +14,8 @@ import java.util.Map;
  */
 public abstract class RegressionSVM<P> extends SVM<Float, P, RegressionProblem<P>>
 	{
+	private static final Logger logger = Logger.getLogger(RegressionSVM.class);
+
 	protected RegressionSVM(KernelFunction<P> kernel, SvmParameter<Float> param)
 		{
 		super(kernel, param);
@@ -20,11 +23,11 @@ public abstract class RegressionSVM<P> extends SVM<Float, P, RegressionProblem<P
 
 	public abstract RegressionModel<P> train(RegressionProblem<P> problem);
 
-/*	@Override
-	public Class getLabelClass()
-		{
-		return Float.class;
-		}*/
+	/*	@Override
+   public Class getLabelClass()
+	   {
+	   return Float.class;
+	   }*/
 
 
 	// Stratified cross validation
@@ -66,22 +69,18 @@ public abstract class RegressionSVM<P> extends SVM<Float, P, RegressionProblem<P
 			float newVal = problem.getTargetValue(entry.getKey()) - entry.getValue();
 			entry.setValue(newVal);
 			mae += Math.abs(newVal);
-			}
-		/*for (i = 0; i < problem.getNumExamples(); i++)
+			}		/*for (i = 0; i < problem.getNumExamples(); i++)
 			{
 			ymv[i] = problem.getTargetValue(i) - ymv[i];
 			mae += Math.abs(ymv[i]);
 			}*/
-		mae /= problem.getExamples().size();
-		//float std = (float) Math.sqrt(2 * mae * mae);  // PERF
+		mae /= problem.getExamples().size();		//float std = (float) Math.sqrt(2 * mae * mae);  // PERF
 		float std = SQRT_2 * mae;
 		int count = 0;
 		mae = 0;
 
 		for (Map.Entry<P, Float> entry : ymv.entrySet())
-			{
-			//for (i = 0; i < problem.getNumExamples(); i++)
-			//	{
+			{			//for (i = 0; i < problem.getNumExamples(); i++)			//	{
 			float absVal = Math.abs(entry.getValue());
 			if (absVal > 5 * std)
 				{
@@ -93,9 +92,8 @@ public abstract class RegressionSVM<P> extends SVM<Float, P, RegressionProblem<P
 				}
 			}
 		mae /= (problem.getExamples().size() - count);
-		System.err
-				.print("Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma="
-						+ mae + "\n");
+		logger.info("Prob. model for test data: target value = predicted value + z");
+		logger.info("z: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma=" + mae);
 		return mae;
 		}
 	}

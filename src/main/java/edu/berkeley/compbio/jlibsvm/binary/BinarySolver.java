@@ -3,6 +3,7 @@ package edu.berkeley.compbio.jlibsvm.binary;
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.Solver;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.List;
  */
 public class BinarySolver<L extends Comparable, P> extends Solver<L, P>
 	{
+	private static final Logger logger = Logger.getLogger(BinarySolver.class);
+
 	public BinarySolver(List<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
 	                    boolean shrinking)
 		{
@@ -45,8 +48,7 @@ public class BinarySolver<L extends Comparable, P> extends Solver<L, P>
 
 		// note the swapping process applied to the Q matrix as well, so we have to map that back too
 
-		//	model.alpha = new float[numExamples];
-		//	model.supportVectors = new SparseVector[numExamples];
+		//	model.alpha = new float[numExamples];		//	model.supportVectors = new SparseVector[numExamples];
 		model.supportVectors = new HashMap<P, Double>();
 		for (SolutionVector<P> svC : allExamples)
 			{
@@ -55,13 +57,12 @@ public class BinarySolver<L extends Comparable, P> extends Solver<L, P>
 
 		// note at this point the solution includes _all_ vectors, even if their alphas are zero
 
-		// we can't do this yet because in the regression case there are twice as many alphas as vectors
-		// model.compact();
+		// we can't do this yet because in the regression case there are twice as many alphas as vectors		// model.compact();
 
 		model.upperBoundPositive = Cp;
 		model.upperBoundNegative = Cn;
 
-		System.out.print("\noptimization finished, #iter = " + iter + "\n");
+		logger.info("optimization finished, #iter = " + iter);
 
 		return model;
 		}

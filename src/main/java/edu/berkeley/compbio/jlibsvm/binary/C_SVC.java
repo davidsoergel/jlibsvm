@@ -4,6 +4,7 @@ import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Map;
  */
 public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P>
 	{
+	private static final Logger logger = Logger.getLogger(C_SVC.class);
 
 	public C_SVC(KernelFunction<P> kernel, SvmParameter param)
 		{
@@ -28,17 +30,13 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 
 	@Override
 	public BinaryModel<L, P> trainOne(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
-		{
-		//	int l = problem.getNumExamples();
-		//	float[] minusOnes = new float[l];
-		//	boolean[] targetValues;
+		{		//	int l = problem.getNumExamples();		//	float[] minusOnes = new float[l];		//	boolean[] targetValues;
 
 		//	Arrays.fill(minusOnes, -1);
 
 		//	targetValues = MathSupport.toPrimitive(problem.getTargetValues());
 
-		//Solver s = new Solver(new SVC_Q(problem, kernel, param.cache_size, targetValues), minusOnes, targetValues, Cp, Cn, param.eps,
-		//                      param.shrinking);
+		//Solver s = new Solver(new SVC_Q(problem, kernel, param.cache_size, targetValues), minusOnes, targetValues, Cp, Cn, param.eps,		//                      param.shrinking);
 
 		float linearTerm = -1f;
 		Map<P, Boolean> examples = problem.getBooleanExamples();
@@ -76,20 +74,18 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 
 		if (Cp == Cn)
 			{
-			System.out.print("nu = " + model.getSumAlpha() / (Cp * problem.getExamples().size()) + "\n");
+			logger.info("nu = " + model.getSumAlpha() / (Cp * problem.getExamples().size()));
 			}
 
 		for (Map.Entry<P, Double> entry : model.supportVectors.entrySet())
 			{
 			final P key = entry.getKey();
 			final Boolean target = examples.get(key);
-			if (!target)  // targetValue was false
-				//if(problem.getTargetValue(entry.getKey()).equals(falseLabel))
+			if (!target)  // targetValue was false				//if(problem.getTargetValue(entry.getKey()).equals(falseLabel))
 				{
 				entry.setValue(entry.getValue() * -1);
 				}
-			}
-/*		for (int i = 0; i < alpha.length; i++)
+			}/*		for (int i = 0; i < alpha.length; i++)
 			{
 			if (!targetValues[i])
 				{

@@ -8,6 +8,7 @@ import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import org.apache.log4j.Logger;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
@@ -26,21 +27,22 @@ import java.util.Properties;
  */
 public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> implements DiscreteModel<L, P>
 	{
+	private static final Logger logger = Logger.getLogger(MultiClassModel.class);
+
+
 	private int numberOfClasses;
 
-	//private float[] probA;// pairwise probability information
-	//private float[] probB;
+	//private float[] probA;// pairwise probability information	//private float[] probB;
 
 	//BinaryModel<P>[] oneVsOneModels;   // don't like array vs collection, but it's consistent with the rest for now
 
-//	private List<BinaryModel<P>> oneVsOneModels = new ArrayList<BinaryModel<P>>();
+	//	private List<BinaryModel<P>> oneVsOneModels = new ArrayList<BinaryModel<P>>();
 
 	private SymmetricHashMap2d<L, BinaryModel<L, P>> oneVsOneModels;
 	private HashMap<L, BinaryModel<L, P>> oneVsAllModels;
 
 
-	// generics are a hassle here  (T[] label; makes a mess)
-	// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight  //** proscribed 1-D order for 2-D decision_values is error-prone
+	// generics are a hassle here  (T[] label; makes a mess)	// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight  //** proscribed 1-D order for 2-D decision_values is error-prone
 	List<L> labels;
 
 
@@ -57,8 +59,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 	public L predictLabel(P x)
 		{
-		int i;
-		//float[] decisionValues = oneVsOneValues(x);
+		int i;		//float[] decisionValues = oneVsOneValues(x);
 
 		Multiset<L> votes = new HashMultiset<L>();
 		for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
@@ -68,8 +69,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		// in case of a tie in the number of votes, pick one class randomly (not always the one that happens to be first)
 
-		//	L bestLabel = null;
-//		Multinomial<L> bestLabelSet
+		//	L bestLabel = null;//		Multinomial<L> bestLabelSet
 		int bestCount = 0;
 		for (L label : votes.elementSet())
 			{
@@ -81,8 +81,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			if (count > bestCount)
 				{
 				bestLabelList.clear();
-				bestLabelList.add(label);
-				//bestLabel = label;
+				bestLabelList.add(label);				//bestLabel = label;
 				bestCount = count;
 				}
 			}
@@ -95,57 +94,55 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		//return bestLabel;
 
-/*
+		/*
 
-		int[] vote = new int[numberOfClasses];
+				int[] vote = new int[numberOfClasses];
 
-		int pos = 0;
-		for (i = 0; i < numberOfClasses; i++)
-			{
-			for (int j = i + 1; j < numberOfClasses; j++)
-				{
-				if (decisionValues[pos++] > 0)
+				int pos = 0;
+				for (i = 0; i < numberOfClasses; i++)
 					{
-					++vote[i];
+					for (int j = i + 1; j < numberOfClasses; j++)
+						{
+						if (decisionValues[pos++] > 0)
+							{
+							++vote[i];
+							}
+						else
+							{
+							++vote[j];
+							}
+						}
 					}
-				else
-					{
-					++vote[j];
-					}
-				}
-			}
 
-		int bestVoteIndex = 0;
-		for (i = 1; i < numberOfClasses; i++)
-			{
-			if (vote[i] > vote[bestVoteIndex])
-				{
-				bestVoteIndex = i;
-				}
-			}
-		return labels.get(bestVoteIndex);*/
+				int bestVoteIndex = 0;
+				for (i = 1; i < numberOfClasses; i++)
+					{
+					if (vote[i] > vote[bestVoteIndex])
+						{
+						bestVoteIndex = i;
+						}
+					}
+				return labels.get(bestVoteIndex);*/
 		}
 
-/*
-	private float[] oneVsOneValues(P x)
-		{
-		float[] decisionValues = new float[oneVsOneModels.size()];
+	/*
+   private float[] oneVsOneValues(P x)
+	   {
+	   float[] decisionValues = new float[oneVsOneModels.size()];
 
-		int i = 0;
-		for (BinaryModel<P> m : oneVsOneModels)
-			{
-			decisionValues[i] = m.predictValue(x);
-			i++;
-			}
-		return decisionValues;
-		}*/
+	   int i = 0;
+	   for (BinaryModel<P> m : oneVsOneModels)
+		   {
+		   decisionValues[i] = m.predictValue(x);
+		   i++;
+		   }
+	   return decisionValues;
+	   }*/
 
 
 	public boolean supportsProbability()
-		{
-		// just check the first model and assume the rest are the same
-		return oneVsOneModels.valueIterator().next().sigmoid != null;
-//		return probA != null && probB != null;
+		{		// just check the first model and assume the rest are the same
+		return oneVsOneModels.valueIterator().next().sigmoid != null;//		return probA != null && probB != null;
 		}
 
 
@@ -157,8 +154,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			}
 
 
-		//** ugly Map2d vs. array issue etc.; oh well, adapt for now to the old multiclassProbability signature
-		// the main thing is just to iterate through the Map2d in the order given by the labels list
+		//** ugly Map2d vs. array issue etc.; oh well, adapt for now to the old multiclassProbability signature		// the main thing is just to iterate through the Map2d in the order given by the labels list
 
 		//	float[] decisionValues = oneVsOneValues(x);
 
@@ -178,12 +174,11 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 				BinaryModel<L, P> binaryModel = oneVsOneModels.get(label1, label2);
 
-				float prob = binaryModel.sigmoid.predict(binaryModel.predictValue(x));
-				//MathSupport.sigmoidPredict(decisionValues[k], probA[k], probB[k])
+				float prob = binaryModel.sigmoid.predict(binaryModel.predictValue(x))
+						;				//MathSupport.sigmoidPredict(decisionValues[k], probA[k], probB[k])
 
 				pairwiseProbabilities[i][j] = Math.min(Math.max(prob, minimumProbability), 1 - minimumProbability);
-				pairwiseProbabilities[j][i] = 1 - pairwiseProbabilities[i][j];
-				//k++;
+				pairwiseProbabilities[j][i] = 1 - pairwiseProbabilities[i][j];				//k++;
 				}
 			}
 		float[] probabilityEstimates = multiclassProbability(numberOfClasses, pairwiseProbabilities);
@@ -213,8 +208,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				bestProb = entry.getValue();
 				}
 			}
-		return bestLabel;
-		/*
+		return bestLabel;		/*
 				int bestProbabilityIndex = 0;
 				for (int i = 1; i < numberOfClasses; i++)
 					{
@@ -293,7 +287,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			}
 		if (iter >= maximumIterations)
 			{
-			System.err.print("Multiclass probability attempted too many iterations\n");
+			logger.error("Multiclass probability attempted too many iterations");
 			}
 		return p;
 		}
@@ -301,8 +295,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	public MultiClassModel(Properties props)
 		{
 		super(props);
-		throw new NotImplementedException();
-		/*
+		throw new NotImplementedException();		/*
 		numberOfClasses = Integer.parseInt(props.getProperty("nr_class"));
 
 		StringTokenizer st = new StringTokenizer(props.getProperty("rho"));
@@ -324,8 +317,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 	public void writeToStream(DataOutputStream fp) throws IOException
 		{
-		throw new NotImplementedException();
-		/*
+		throw new NotImplementedException();		/*
 		super.writeToStream(fp);
 
 		fp.writeBytes("nr_class " + numberOfClasses + "\n");
@@ -363,8 +355,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		}
 
 	protected void readSupportVectors(BufferedReader fp)
-		{
-		//** Implement support vector I/O
+		{		//** Implement support vector I/O
 		throw new UnsupportedOperationException();
 		}
 
@@ -373,8 +364,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		fp.writeBytes("SV\n");
 		fp.writeBytes("Saving multi-class support vectors is not implemented yet");
 
-		//** Implement support vector I/O
-		// the original format is a spaghetti
+		//** Implement support vector I/O		// the original format is a spaghetti
 
 		}
 

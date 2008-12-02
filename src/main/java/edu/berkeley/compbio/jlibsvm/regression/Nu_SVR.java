@@ -4,6 +4,7 @@ import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.Map;
  */
 public class Nu_SVR<P> extends RegressionSVM<P>
 	{
+	private static final Logger logger = Logger.getLogger(Nu_SVR.class);
+
 	public Nu_SVR(KernelFunction<P> kernel, SvmParameter param)
 		{
 		super(kernel, param);
@@ -34,8 +37,7 @@ public class Nu_SVR<P> extends RegressionSVM<P>
 		if (param.probability)
 			{
 			laplaceParameter = laplaceParameter(problem);
-			}
-/*
+			}/*
 		int l = problem.getNumExamples();
 		float C = param.C;
 		float[] initAlpha = new float[2 * l];
@@ -93,13 +95,11 @@ public class Nu_SVR<P> extends RegressionSVM<P>
 
 			sv = new SolutionVector<P>(example.getKey(), true, -example.getValue(), initAlpha);
 			solutionVectors.add(sv);
-			sv.id = problem.getId(example.getKey());
-			//sv.id = c;
+			sv.id = problem.getId(example.getKey());			//sv.id = c;
 			c++;
 			sv = new SolutionVector<P>(example.getKey(), false, example.getValue(), initAlpha);
 			solutionVectors.add(sv);
-			sv.id = -problem.getId(example.getKey());
-			//sv.id = c;
+			sv.id = -problem.getId(example.getKey());			//sv.id = c;
 			c++;
 			}
 
@@ -114,7 +114,7 @@ public class Nu_SVR<P> extends RegressionSVM<P>
 		model.laplaceParameter = laplaceParameter;
 
 
-		System.out.print("epsilon = " + (-model.r) + "\n");
+		logger.info("epsilon = " + (-model.r));
 
 		model.compact();
 

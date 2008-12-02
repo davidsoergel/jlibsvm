@@ -6,6 +6,7 @@ import edu.berkeley.compbio.jlibsvm.SigmoidProbabilityModel;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 
@@ -16,6 +17,8 @@ import java.util.Map;
 public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		extends SVM<L, P, BinaryClassificationProblem<L, P>>
 	{
+	private static final Logger logger = Logger.getLogger(BinaryClassificationSVM.class);
+
 	protected BinaryClassificationSVM(KernelFunction<P> kernel, SvmParameter<L> param)
 		{
 		super(kernel, param);
@@ -58,7 +61,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		setupQMatrix(problem);
 		BinaryModel<L, P> result = train(problem, weightedCp, weightedCn);
 		result.printSolutionInfo(problem);
-		System.err.println(qMatrix.perfString());
+		logger.info(qMatrix.perfString());
 		return result;
 		}
 
@@ -91,8 +94,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 	 */
 	protected abstract BinaryModel<L, P> trainOne(BinaryClassificationProblem<L, P> problem, float Cp, float Cn);
 
-//	public abstract void setupQMatrix(SvmProblem<L, P> problem);
-	// original separateFolds attempted to keep the class ratio uniform among the folds?
+	//	public abstract void setupQMatrix(SvmProblem<L, P> problem);	// original separateFolds attempted to keep the class ratio uniform among the folds?
 
 	/*
 	public FoldSpec separateFolds(BinaryClassificationProblem<P> problem, int numberOfFolds)
@@ -159,12 +161,11 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		}
 		*/
 
-/*	@Override
-	public Class getLabelClass()
-		{
-		return Boolean.class; // ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-		}*/
-/*
+	/*	@Override
+   public Class getLabelClass()
+	   {
+	   return Boolean.class; // ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+	   }*//*
 	protected Boolean[] foldPredict(BinaryClassificationProblem<P> subprob, Iterator<P> foldIterator,
 	                                int length)
 		{
@@ -181,12 +182,10 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		}
 */
 
-	// Cross-validation decision values for probability estimates
-	// ** unify with SVM.crossValidation?
+	// Cross-validation decision values for probability estimates	// ** unify with SVM.crossValidation?
 
 	private SigmoidProbabilityModel svcProbability(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
-		{
-		// ** Original implementation makes a point of not explicitly training if all of the examples are in one class anyway.  Does that matter?
+		{		// ** Original implementation makes a point of not explicitly training if all of the examples are in one class anyway.  Does that matter?
 
 		SvmParameter<L> subparam = new SvmParameter<L>(param);
 		subparam.probability = false;

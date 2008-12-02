@@ -5,6 +5,7 @@ import edu.berkeley.compbio.jlibsvm.DiscreteModel;
 import edu.berkeley.compbio.jlibsvm.SigmoidProbabilityModel;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import org.apache.log4j.Logger;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -18,6 +19,8 @@ import java.util.Properties;
 public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		implements DiscreteModel<L, P>, ContinuousModel<P>
 	{
+	private static final Logger logger = Logger.getLogger(BinaryModel.class);
+
 	public float obj;
 	public float upperBoundPositive;
 	public float upperBoundNegative;
@@ -41,7 +44,7 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 
 	public void printSolutionInfo(BinaryClassificationProblem<L, P> problem)
 		{
-		System.out.print("obj = " + obj + ", rho = " + rho + "\n");
+		logger.info("obj = " + obj + ", rho = " + rho);
 
 		// output SVs
 
@@ -69,7 +72,7 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 				}
 			}
 
-		System.out.print("nSV = " + supportVectors.size() + ", nBSV = " + nBSV + "\n");
+		logger.info("nSV = " + supportVectors.size() + ", nBSV = " + nBSV);
 		}
 
 	public L predictLabel(P x)

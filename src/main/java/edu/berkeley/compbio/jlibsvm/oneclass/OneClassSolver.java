@@ -3,6 +3,7 @@ package edu.berkeley.compbio.jlibsvm.oneclass;
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.Solver;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.List;
  */
 public class OneClassSolver<P> extends Solver<Float, P>
 	{
+	private static final Logger logger = Logger.getLogger(OneClassSolver.class);
+
 	public OneClassSolver(List<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float C, float eps, boolean shrinking)
 		{
 		super(solutionVectors, Q, C, C, eps, shrinking);
@@ -36,10 +39,9 @@ public class OneClassSolver<P> extends Solver<Float, P>
 
 		// note at this point the solution includes _all_ vectors, even if their alphas are zero
 
-		// we can't do this yet because in the regression case there are twice as many alphas as vectors
-		// model.compact();
+		// we can't do this yet because in the regression case there are twice as many alphas as vectors		// model.compact();
 
-		System.out.print("\noptimization finished, #iter = " + iter + "\n");
+		logger.info("optimization finished, #iter = " + iter);
 
 		return model;
 		}

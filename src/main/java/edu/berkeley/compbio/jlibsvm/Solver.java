@@ -37,71 +37,63 @@ public abstract class Solver<L extends Comparable, P>
 	protected Collection<SolutionVector<P>> activeSet;
 	protected Collection<SolutionVector<P>> inactiveSet;
 
-//	int activeSize;
-//	boolean[] y;
-//	float[] G;// gradient of objective function
+	//	int activeSize;//	boolean[] y;//	float[] G;// gradient of objective function
 
-//	static final byte LOWER_BOUND = 0;
-//	static final byte UPPER_BOUND = 1;
-	//	static final byte FREE = 2;
-//	Status[] alphaStatus;// LOWER_BOUND, UPPER_BOUND, FREE
+	//	static final byte LOWER_BOUND = 0;//	static final byte UPPER_BOUND = 1;	//	static final byte FREE = 2;//	Status[] alphaStatus;// LOWER_BOUND, UPPER_BOUND, FREE
 
 	/**
 	 * In the course of shrinking it's convenient to reorder the alpha array.
-	 */
-//	float[] shuffledAlpha;
+	 *///	float[] shuffledAlpha;
 
 	/**
 	 * This array maps the rearranged indices back to the original indices.
-	 */
-//	int[] shuffledExampleIndexToOriginalIndex;
+	 *///	int[] shuffledExampleIndexToOriginalIndex;
 
 
 	QMatrix<P> Q;
 	//	float[] QD;
 	float eps;
-	protected float Cp, Cn;
-//	float[] p;
+	protected float Cp, Cn;//	float[] p;
 
 	//	float[] G_bar;// gradient, if we treat free variables as 0
 	protected int numExamples;
 	boolean unshrink = false;// XXX
 	boolean shrinking;
 
-/*
-	void swap_index(int i, int j)
-		{
-		Q.swapIndex(i, j);
+	/*
+   void swap_index(int i, int j)
+	   {
+	   Q.swapIndex(i, j);
 
-		boolean b = y[i];
-		y[i] = y[j];
-		y[j] = b;
+	   boolean b = y[i];
+	   y[i] = y[j];
+	   y[j] = b;
 
-		float f = G[i];
-		G[i] = G[j];
-		G[j] = f;
+	   float f = G[i];
+	   G[i] = G[j];
+	   G[j] = f;
 
-		Status y = alphaStatus[i];
-		alphaStatus[i] = alphaStatus[j];
-		alphaStatus[j] = y;
+	   Status y = alphaStatus[i];
+	   alphaStatus[i] = alphaStatus[j];
+	   alphaStatus[j] = y;
 
-		float f1 = shuffledAlpha[i];
-		shuffledAlpha[i] = shuffledAlpha[j];
-		shuffledAlpha[j] = f1;
+	   float f1 = shuffledAlpha[i];
+	   shuffledAlpha[i] = shuffledAlpha[j];
+	   shuffledAlpha[j] = f1;
 
-		float f2 = p[i];
-		p[i] = p[j];
-		p[j] = f2;
+	   float f2 = p[i];
+	   p[i] = p[j];
+	   p[j] = f2;
 
-		int i2 = shuffledExampleIndexToOriginalIndex[i];
-		shuffledExampleIndexToOriginalIndex[i] = shuffledExampleIndexToOriginalIndex[j];
-		shuffledExampleIndexToOriginalIndex[j] = i2;
+	   int i2 = shuffledExampleIndexToOriginalIndex[i];
+	   shuffledExampleIndexToOriginalIndex[i] = shuffledExampleIndexToOriginalIndex[j];
+	   shuffledExampleIndexToOriginalIndex[j] = i2;
 
-		float g = G_bar[i];
-		G_bar[i] = G_bar[j];
-		G_bar[j] = g;
-		}
-		*/
+	   float g = G_bar[i];
+	   G_bar[i] = G_bar[j];
+	   G_bar[j] = g;
+	   }
+	   */
 
 	void reconstruct_gradient()
 		{		// reconstruct inactive elements of G from G_bar and free variables
@@ -132,14 +124,13 @@ public abstract class Solver<L extends Comparable, P>
 
 		if (2 * nr_free < activeSize)
 			{
-			System.out.print("\nWarning: using -h 0 may be faster\n");
+			logger.warn("using -h 0 may be faster");
 			}
 
 		if (nr_free * numExamples > 2 * activeSize * (numExamples - activeSize))
 			{
 			for (SolutionVector svA : inactiveSet)
-				{
-				//float[] Q_i = Q.getQ(i, activeSize);
+				{				//float[] Q_i = Q.getQ(i, activeSize);
 				for (SolutionVector svB : activeSet)
 					{
 					if (svB.isFree()) //is_free(j))
@@ -154,9 +145,7 @@ public abstract class Solver<L extends Comparable, P>
 			for (SolutionVector svA : activeSet)
 				{
 				if (svA.isFree()) //is_free(i))
-					{
-					//	float[] Q_i = Q.getQ(i, numExamples);
-					//	float alpha_i = shuffledAlpha[i];
+					{					//	float[] Q_i = Q.getQ(i, numExamples);					//	float alpha_i = shuffledAlpha[i];
 
 					for (SolutionVector svB : inactiveSet)
 						{
@@ -192,58 +181,53 @@ public abstract class Solver<L extends Comparable, P>
 		this.numExamples = allExamples.size();
 		}
 
-/*
-	public Solver(Map<P, Boolean> examples, QMatrix<P> Q, float linearTerm, float Cp, float Cn, float eps, boolean shrinking)
-		{
-		this(Q,Cp,Cn,eps,shrinking);
+	/*
+	 public Solver(Map<P, Boolean> examples, QMatrix<P> Q, float linearTerm, float Cp, float Cn, float eps, boolean shrinking)
+		 {
+		 this(Q,Cp,Cn,eps,shrinking);
 
-		this.allExamples = new HashSet<SolutionVector>();
-		for (Map.Entry<P, Boolean> example : examples.entrySet())
-			{
-			SolutionVector sv = new SolutionVector( example.getKey(), example.getValue(), linearTerm);
-			allExamples.add(sv);
-			}
+		 this.allExamples = new HashSet<SolutionVector>();
+		 for (Map.Entry<P, Boolean> example : examples.entrySet())
+			 {
+			 SolutionVector sv = new SolutionVector( example.getKey(), example.getValue(), linearTerm);
+			 allExamples.add(sv);
+			 }
 
-		this.numExamples = allExamples.size();
+		 this.numExamples = allExamples.size();
 
-		}
-
-
-	public Solver(Map<P, Boolean> examples, QMatrix<P> Q, float linearTerm, Map<P, Float> initAlpha, float Cp, float Cn, float eps, boolean shrinking)
-		{
-		this(Q, Cp, Cn, eps, shrinking);
+		 }
 
 
-		this.allExamples = new HashSet<SolutionVector>();
-		for (Map.Entry<P, Boolean> example : examples.entrySet())
-			{
-			SolutionVector sv = new SolutionVector(example.getKey(), example.getValue(), linearTerm, initAlpha.get(example.getKey()));
-			allExamples.add(sv);
-			}
+	 public Solver(Map<P, Boolean> examples, QMatrix<P> Q, float linearTerm, Map<P, Float> initAlpha, float Cp, float Cn, float eps, boolean shrinking)
+		 {
+		 this(Q, Cp, Cn, eps, shrinking);
 
-		this.numExamples = allExamples.size();
-		}
-*/
+
+		 this.allExamples = new HashSet<SolutionVector>();
+		 for (Map.Entry<P, Boolean> example : examples.entrySet())
+			 {
+			 SolutionVector sv = new SolutionVector(example.getKey(), example.getValue(), linearTerm, initAlpha.get(example.getKey()));
+			 allExamples.add(sv);
+			 }
+
+		 this.numExamples = allExamples.size();
+		 }
+ */
 
 
 	protected int optimize()
 		{
 
-//		if (shuffledAlpha == null)
-//			{
+		//		if (shuffledAlpha == null)//			{
 
-		// initialize shuffledAlpha if needed (the constructor may or may not have already set it)
-//			shuffledAlpha = new float[numExamples];
-//			}
+		// initialize shuffledAlpha if needed (the constructor may or may not have already set it)//			shuffledAlpha = new float[numExamples];//			}
 
 		// initialize alpha_status
 
-//		alphaStatus = new Status[numExamples];
-		for (SolutionVector svA : allExamples)
-			//	for (int i = 0; i < numExamples; i++)
+		//		alphaStatus = new Status[numExamples];
+		for (SolutionVector svA : allExamples)			//	for (int i = 0; i < numExamples; i++)
 			{
-			svA.updateAlphaStatus(Cp, Cn);
-			//update_alpha_status(i);
+			svA.updateAlphaStatus(Cp, Cn);			//update_alpha_status(i);
 			}
 
 
@@ -261,8 +245,7 @@ public abstract class Solver<L extends Comparable, P>
 
 		// initialize gradient
 
-		//	G = new float[numExamples];
-		//	G_bar = new float[numExamples];
+		//	G = new float[numExamples];		//	G_bar = new float[numExamples];
 		for (SolutionVector svA : allExamples)
 			{
 			svA.G = svA.linearTerm;
@@ -271,9 +254,7 @@ public abstract class Solver<L extends Comparable, P>
 		for (SolutionVector svA : allExamples)
 			{
 			if (!svA.isLowerBound()) //is_lower_bound(i))
-				{
-				//	float[] Q_i = Q.getQ(i, numExamples);
-				//	float alpha_i = shuffledAlpha[i];
+				{				//	float[] Q_i = Q.getQ(i, numExamples);				//	float alpha_i = shuffledAlpha[i];
 				for (SolutionVector svB : allExamples)
 					{
 					svB.G += svA.alpha * Q.evaluate(svA, svB);
@@ -292,8 +273,7 @@ public abstract class Solver<L extends Comparable, P>
 		// optimization step
 
 		int iter = 0;
-		int counter = Math.min(numExamples, 1000) + 1;
-		//int[] working_set = new int[2];
+		int counter = Math.min(numExamples, 1000) + 1;		//int[] working_set = new int[2];
 
 		SolutionVector<P> svA;
 		SolutionVector<P> svB;
@@ -310,38 +290,29 @@ public abstract class Solver<L extends Comparable, P>
 					{
 					do_shrinking();
 					}
-				System.err.print(".");
-				}
-//oldPair = pair;
+				logger.debug(".");
+				}//oldPair = pair;
 			SolutionVectorPair pair = selectWorkingPair();
 
 			if (pair.isOptimal) // pair already optimal
 				{				// reconstruct the whole gradient
 				reconstruct_gradient();				// reset active set size and check
-				resetActiveSet();
-				//activeSize = numExamples;
-				System.err.print("*");
-				//svA = pair.svA;
-				//svB = pair.svB;
+				resetActiveSet();				//activeSize = numExamples;
+				logger.debug("*");				//svA = pair.svA;				//svB = pair.svB;
 
 				pair = selectWorkingPair();
-				if (pair == null) // pair already optimal
-					{
-					//svA = oldPair.svA;
-					//svB = oldPair.svB;
+				if (pair.isOptimal) // pair already optimal
+					{					//svA = oldPair.svA;					//svB = oldPair.svB;
 					break;
 					}
 				else
 					{
-					counter = 1;// do shrinking next iteration
-					// leave the working pair the same as before
-					//pair = oldPair;
+					counter =
+							1;// do shrinking next iteration					// leave the working pair the same as before					//pair = oldPair;
 					}
 				}
 			svA = pair.svA;
-			svB = pair.svB;
-//			int i = working_set[0];
-//			int j = working_set[1];
+			svB = pair.svB;//			int i = working_set[0];//			int j = working_set[1];
 
 			++iter;
 
@@ -353,8 +324,7 @@ public abstract class Solver<L extends Comparable, P>
 
 			// update alpha[i] and alpha[j], handle bounds carefully
 
-			//	float[] Q_i = Q.getQ(i, activeSize);
-			//	float[] Q_j = Q.getQ(j, activeSize);
+			//	float[] Q_i = Q.getQ(i, activeSize);			//	float[] Q_j = Q.getQ(j, activeSize);
 
 			float C_i = svA.getC(Cp, Cn); //getC(i);
 			float C_j = svB.getC(Cp, Cn); //getC(j);
@@ -459,8 +429,7 @@ public abstract class Solver<L extends Comparable, P>
 			double delta_alpha_j = svB.alpha - old_alpha_j;
 
 			if (delta_alpha_i == 0 && delta_alpha_j == 0)
-				{
-				// pair was already optimal, but selectWorkingPair() didn't realize it because the numeric precision of float is insufficient with respect to eps
+				{				// pair was already optimal, but selectWorkingPair() didn't realize it because the numeric precision of float is insufficient with respect to eps
 				logger.error(
 						"Pair is optimal within available numeric precision, but this is still larger than requested eps = "
 								+ eps + ".");
@@ -479,11 +448,9 @@ public abstract class Solver<L extends Comparable, P>
 			boolean ui = svA.isUpperBound(); //is_upper_bound(i);
 			boolean uj = svB.isUpperBound(); //is_upper_bound(j);
 			svA.updateAlphaStatus(Cp, Cn); //update_alpha_status(i);
-			svB.updateAlphaStatus(Cp, Cn); //update_alpha_status(j);
-			//int k;
+			svB.updateAlphaStatus(Cp, Cn); //update_alpha_status(j);			//int k;
 			if (ui != svA.isUpperBound()) //is_upper_bound(i))
-				{
-				//Q_i = Q.getQ(i, numExamples);
+				{				//Q_i = Q.getQ(i, numExamples);
 				if (ui)
 					{
 					for (SolutionVector svC : allExamples)
@@ -501,8 +468,7 @@ public abstract class Solver<L extends Comparable, P>
 				}
 
 			if (uj != svB.isUpperBound()) //is_upper_bound(j))
-				{
-				//Q_j = Q.getQ(j, numExamples);
+				{				//Q_j = Q.getQ(j, numExamples);
 				if (uj)
 					{
 					for (SolutionVector svC : allExamples)
@@ -521,8 +487,7 @@ public abstract class Solver<L extends Comparable, P>
 			}
 
 		//System.err.println(Q.perfString());
-		return iter;
-		// activeSet;
+		return iter;		// activeSet;
 		}
 
 
@@ -532,9 +497,7 @@ public abstract class Solver<L extends Comparable, P>
 		inactiveSet = new ArrayList<SolutionVector<P>>(allExamples.size()); // it should get that big eventually
 		}
 
-	// return 1 if already optimal, return 0 otherwise
-	//boolean select_working_set(int[] working_set)
-	//	{
+	// return 1 if already optimal, return 0 otherwise	//boolean select_working_set(int[] working_set)	//	{
 
 	//	}
 
@@ -553,8 +516,7 @@ public abstract class Solver<L extends Comparable, P>
 		}
 
 	protected SolutionVectorPair selectWorkingPair()
-		{
-		/*
+		{		/*
 		return i,j such that
 		i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
 		j: mimimizes the decrease of obj value
@@ -569,9 +531,7 @@ public abstract class Solver<L extends Comparable, P>
 		double obj_diff_min = Double.POSITIVE_INFINITY;
 
 		for (SolutionVector sv : activeSet)
-			{
-			//	for (int t = 0; t < activeSize; t++)
-			//		{
+			{			//	for (int t = 0; t < activeSize; t++)			//		{
 			if (sv.targetValue) //y[t])
 				{
 				if (!sv.isUpperBound()) //is_upper_bound(t))
@@ -596,17 +556,10 @@ public abstract class Solver<L extends Comparable, P>
 				}
 			}
 
-		//int i = Gmax_idx;
-		//float[] Q_i = null;
-		//if (GmaxSV != null) //i != -1)// null Q_i not accessed: Gmax=Float.NEGATIVE_INFINITY if i=-1
-		//	{
-		//	Q_i = Q.getQ(GmaxSV, activeSize);
-		//	}
+		//int i = Gmax_idx;		//float[] Q_i = null;		//if (GmaxSV != null) //i != -1)// null Q_i not accessed: Gmax=Float.NEGATIVE_INFINITY if i=-1		//	{		//	Q_i = Q.getQ(GmaxSV, activeSize);		//	}
 
 		for (SolutionVector sv : activeSet)
-			{
-			//for (int j = 0; j < activeSize; j++)
-			//	{
+			{			//for (int j = 0; j < activeSize; j++)			//	{
 			if (sv.targetValue)
 				{
 				if (!sv.isLowerBound())
@@ -678,8 +631,7 @@ public abstract class Solver<L extends Comparable, P>
 		   {
 
 		   return new SolutionVectorPair(GmaxSV, GminSV, true);
-		   }*/
-		/*
+		   }*/		/*
 		if(Gmax + Gmax2 < Math.ulp(Gmax) )
 			{
 			logger.warn("Pair is optimal within available numeric precision of " + Math.ulp(Gmax) + ", but this is still larger than requested eps = " + eps + ".");
@@ -687,9 +639,7 @@ public abstract class Solver<L extends Comparable, P>
 			}
 			*/
 
-		//working_set[0] = Gmax_idx;
-		//working_set[1] = Gmin_idx;
-		//	return new SolutionVectorPair(GmaxSV, GminSV, false);
+		//working_set[0] = Gmax_idx;		//working_set[1] = Gmin_idx;		//	return new SolutionVectorPair(GmaxSV, GminSV, false);
 		}
 
 	void do_shrinking()
@@ -742,8 +692,7 @@ public abstract class Solver<L extends Comparable, P>
 			{
 			unshrink = true;
 			reconstruct_gradient();
-			resetActiveSet();
-			//activeSize = numExamples;
+			resetActiveSet();			//activeSize = numExamples;
 			}
 
 

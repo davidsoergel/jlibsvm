@@ -1,22 +1,23 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public class SigmoidProbabilityModel
 	{
+	private static final Logger logger = Logger.getLogger(SigmoidProbabilityModel.class);
 	float A, B;
 
-	// Platt's binary SVM Probablistic Output: an improvement from Lin et al.
-	// protected void sigmoidTrain(float[] decisionValues, boolean[] labels)
+	// Platt's binary SVM Probablistic Output: an improvement from Lin et al.	// protected void sigmoidTrain(float[] decisionValues, boolean[] labels)
 
 	public SigmoidProbabilityModel(float[] decisionValues, boolean[] labels)
 		{
 		int l = decisionValues.length;
 
-		float prior1 = 0, prior0 = 0;
-		//int i;
+		float prior1 = 0, prior0 = 0;		//int i;
 
 		for (boolean b : labels)
 			{
@@ -39,8 +40,7 @@ public class SigmoidProbabilityModel
 		float[] t = new float[l];
 		double p, q;
 		float fApB, h11, h22, h21, g1, g2, det, dA, dB, gd, stepsize;
-		float newA, newB, newf, d1, d2;
-		//	int iter;
+		float newA, newB, newf, d1, d2;		//	int iter;
 
 		// Initial Point and Initial Fun Value
 		A = 0.0f;
@@ -152,19 +152,15 @@ public class SigmoidProbabilityModel
 
 			if (stepsize < minStep)
 				{
-				System.err.print("Line search fails in two-class probability estimates\n");
+				logger.error("Line search fails in two-class probability estimates");
 				break;
 				}
 			}
 
 		if (iter >= maximumIterations)
 			{
-			System.err.print("Reaching maximal iterations in two-class probability estimates\n");
-			}
-		//	float[] probAB = new float[2];
-		//	probAB[0] = A;
-		//	probAB[1] = B;
-		//	return probAB;
+			logger.error("Reaching maximal iterations in two-class probability estimates");
+			}		//	float[] probAB = new float[2];		//	probAB[0] = A;		//	probAB[1] = B;		//	return probAB;
 		}
 
 	public float predict(float decisionValue)
