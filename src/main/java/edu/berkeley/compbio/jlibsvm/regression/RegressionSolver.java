@@ -34,7 +34,10 @@ public class RegressionSolver<P> extends Solver<Float, P>
 		//		si.rho =
 		calculate_rho(model);
 
-		// calculate objective value/*		{
+		// calculate objective value
+
+
+		/*		{
 		float v = 0;
 		for (SolutionVector svC : activeSet)
 			{
