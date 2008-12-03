@@ -14,12 +14,12 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -41,6 +41,10 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	private SymmetricHashMap2d<L, BinaryModel<L, P>> oneVsOneModels;
 	private HashMap<L, BinaryModel<L, P>> oneVsAllModels;
 
+	public enum TestMode
+		{
+			BestOneVsAll, OneVsOneVotes, OneVsOneVotesWithOneVsAllPostReject, OneVsOneVotesWithOneVsAllPreReject
+		}
 
 	// generics are a hassle here  (T[] label; makes a mess)	// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight  //** proscribed 1-D order for 2-D decision_values is error-prone
 	List<L> labels;
@@ -52,92 +56,195 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		this.numberOfClasses = numberOfClasses;
 		oneVsOneModels = new SymmetricHashMap2d<L, BinaryModel<L, P>>(numberOfClasses);
 		oneVsAllModels = new HashMap<L, BinaryModel<L, P>>(numberOfClasses);
+
+		this.oneVsAllThreshold = param.oneVsAllThreshold;
+		this.oneVsAllOnly = param.oneVsAllOnly;
+		this.voteMode = param.voteMode;
+		this.minVoteProportion = param.minVoteProportion;
 		}
 
 	// allocate this only once; it'll get cleared on every predictLabel() anyway
-	List<L> bestLabelList = new ArrayList<L>();
+	//List<L> bestLabelList = new ArrayList<L>();
 
+
+	public enum VoteMode
+		{
+			AllVsAll, ActiveVsAll, ActiveVsActive
+		}
+
+
+	// a bunch of parameters controlling prediction speed, accuracy, and likelihood of reporting "unknown"
+	double oneVsAllThreshold;
+	boolean oneVsAllOnly;
+	VoteMode voteMode;
+	double minVoteProportion;
+
+
+	/**
+	 * @param x
+	 * @return null if no good label is found, otherwise the best label.
+	 */
 	public L predictLabel(P x)
 		{
-		int i;		//float[] decisionValues = oneVsOneValues(x);
 
-		Multiset<L> votes = new HashMultiset<L>();
-		for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
+		Map<L, Float> oneVsAllProbabilities = new HashMap<L, Float>();
+
+		// stage 1: one vs all
+		// always compute these; we may need them to tie-break when voting anyway (though that only works when probabilities are turned on)
+		boolean prob = supportsProbability();
+
+		for (BinaryModel<L, P> binaryModel : oneVsAllModels.values())
 			{
-			votes.add(binaryModel.predictLabel(x));
+			// if probability info isn't available, just substitute 0 and 1
+			final float probability =
+					prob ? binaryModel.getTrueProbability(x) : (binaryModel.predictValue(x) > 0. ? 1f : 0f);
+			if (probability >= oneVsAllThreshold)
+				{
+				oneVsAllProbabilities.put(binaryModel.getTrueLabel(), probability);
+				}
 			}
 
-		// in case of a tie in the number of votes, pick one class randomly (not always the one that happens to be first)
+		if (oneVsAllProbabilities.isEmpty())
+			{
+			return null;
+			}
 
-		//	L bestLabel = null;//		Multinomial<L> bestLabelSet
+		if (oneVsAllOnly)
+			{
+			L bestLabel = null;
+			float bestProbability = 0;
+			for (Map.Entry<L, Float> entry : oneVsAllProbabilities.entrySet())
+				{
+				if (entry.getValue() > bestProbability)
+					{
+					bestLabel = entry.getKey();
+					bestProbability = entry.getValue();
+					}
+				}
+			return bestLabel;
+			}
+
+
+		// stage 2: voting
+
+		Multiset<L> votes = new HashMultiset<L>();
+
+		if (oneVsAllThreshold == 0 || voteMode == VoteMode.AllVsAll)
+			{
+			// vote using all models
+
+			// if requiredActive == 0 but there is a oneVsAll threshold, we may compute votes between two
+			// inactive classes; it may be that the winner of the voting fails the oneVsAll filter, in which
+			// case we may want to report unknown instead of reporting the best class that does pass.  This
+			// is what PhyloPythia does.
+
+			for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
+				{
+				votes.add(binaryModel.predictLabel(x));
+				}
+			}
+		else
+			{
+			//vote using only the active models one one side of the comparison, maybe on both.
+
+			Set<L> activeClasses = oneVsAllProbabilities.keySet();
+
+			int requiredActive = voteMode == VoteMode.ActiveVsAll ? 1 : 2;
+
+			for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
+				{
+				int activeCount = (activeClasses.contains(binaryModel.getTrueLabel()) ? 1 : 0) + (
+						activeClasses.contains(binaryModel.getFalseLabel()) ? 1 : 0);
+
+				if (activeCount >= requiredActive)
+					{
+					votes.add(binaryModel.predictLabel(x));
+					}
+				}
+			}
+
+
+		// stage 3: count votes
+
+		L bestLabel = null;
 		int bestCount = 0;
+		float bestOneVsAllProbability = 0;
+		int countSum = 0;
 		for (L label : votes.elementSet())
 			{
 			int count = votes.count(label);
-			if (count == bestCount)
+			countSum += count;
+
+			// in case of a tie in the number of votes, pick the one with the higher one-vs-all probability
+			// If there are two really identical classes (same probability!?) then keep the first.
+
+			Float oneVsAll = oneVsAllProbabilities.get(label)
+					;  // if this is null it means this label didn't pass the threshold earlier
+			if (count > bestCount || (count == bestCount && oneVsAll != null && oneVsAll > bestOneVsAllProbability))
 				{
-				bestLabelList.add(label);
-				}
-			if (count > bestCount)
-				{
-				bestLabelList.clear();
-				bestLabelList.add(label);				//bestLabel = label;
+				bestLabel = label;
 				bestCount = count;
+				bestOneVsAllProbability = oneVsAll;  // NPE should be impossible
 				}
 			}
-		if (bestLabelList.size() == 1)
+
+
+		// stage 5: check for inadequate evidence filters.
+		// The oneVsAllThreshold thing is partly implicit in having filtered on it earlier, but there are loopholes so it's safer to just check
+
+		if ((((double) bestCount / (double) countSum) < minVoteProportion)
+				|| bestOneVsAllProbability < oneVsAllThreshold)
 			{
-			return bestLabelList.get(0);
+			return null;
 			}
 
-		return bestLabelList.get((int) (Math.random() * bestLabelList.size()));
 
-		//return bestLabel;
+		return bestLabel;
 
 		/*
 
-				int[] vote = new int[numberOfClasses];
+									int[] vote = new int[numberOfClasses];
 
-				int pos = 0;
-				for (i = 0; i < numberOfClasses; i++)
-					{
-					for (int j = i + 1; j < numberOfClasses; j++)
-						{
-						if (decisionValues[pos++] > 0)
-							{
-							++vote[i];
-							}
-						else
-							{
-							++vote[j];
-							}
-						}
-					}
+									int pos = 0;
+									for (i = 0; i < numberOfClasses; i++)
+										{
+										for (int j = i + 1; j < numberOfClasses; j++)
+											{
+											if (decisionValues[pos++] > 0)
+												{
+												++vote[i];
+												}
+											else
+												{
+												++vote[j];
+												}
+											}
+										}
 
-				int bestVoteIndex = 0;
-				for (i = 1; i < numberOfClasses; i++)
-					{
-					if (vote[i] > vote[bestVoteIndex])
-						{
-						bestVoteIndex = i;
-						}
-					}
-				return labels.get(bestVoteIndex);*/
+									int bestVoteIndex = 0;
+									for (i = 1; i < numberOfClasses; i++)
+										{
+										if (vote[i] > vote[bestVoteIndex])
+											{
+											bestVoteIndex = i;
+											}
+										}
+									return labels.get(bestVoteIndex);*/
 		}
 
 	/*
-   private float[] oneVsOneValues(P x)
-	   {
-	   float[] decisionValues = new float[oneVsOneModels.size()];
+			   private float[] oneVsOneValues(P x)
+				   {
+				   float[] decisionValues = new float[oneVsOneModels.size()];
 
-	   int i = 0;
-	   for (BinaryModel<P> m : oneVsOneModels)
-		   {
-		   decisionValues[i] = m.predictValue(x);
-		   i++;
-		   }
-	   return decisionValues;
-	   }*/
+				   int i = 0;
+				   for (BinaryModel<P> m : oneVsOneModels)
+					   {
+					   decisionValues[i] = m.predictValue(x);
+					   i++;
+					   }
+				   return decisionValues;
+				   }*/
 
 
 	public boolean supportsProbability()
@@ -154,7 +261,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			}
 
 
-		//** ugly Map2d vs. array issue etc.; oh well, adapt for now to the old multiclassProbability signature		// the main thing is just to iterate through the Map2d in the order given by the labels list
+		//** ugly Map2d vs. array issue etc.; oh well, adapt for now to the old multiclassProbability signature
+		// the main thing is just to iterate through the Map2d in the order given by the labels list
 
 		//	float[] decisionValues = oneVsOneValues(x);
 
@@ -183,7 +291,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			}
 		float[] probabilityEstimates = multiclassProbability(numberOfClasses, pairwiseProbabilities);
 
-		// but then map back to a cleaner Map API.  Note the probabilityEstimates should come back in order corresponding to the labels list.
+		// but then map back to the cleaner Map API.  Note the probabilityEstimates should come back in order corresponding to the labels list.
 
 		Map<L, Float> result = new HashMap<L, Float>();
 		int i = 0;

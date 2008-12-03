@@ -42,6 +42,21 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		super(props);
 		}
 
+	public L getTrueLabel()
+		{
+		return trueLabel;
+		}
+
+	public L getFalseLabel()
+		{
+		return falseLabel;
+		}
+
+	public float getTrueProbability(P x)
+		{
+		return sigmoid.predict(predictValue(x));  // NPE if no sigmoid
+		}
+
 	public void printSolutionInfo(BinaryClassificationProblem<L, P> problem)
 		{
 		logger.info("obj = " + obj + ", rho = " + rho);

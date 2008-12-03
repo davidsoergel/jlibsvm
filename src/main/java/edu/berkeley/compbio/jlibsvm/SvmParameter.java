@@ -1,5 +1,7 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import edu.berkeley.compbio.jlibsvm.multi.MultiClassModel;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,6 +26,12 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 	public boolean shrinking;// use the shrinking heuristics
 	public boolean probability;// do probability estimates
 
+	// parameters for multiclass testing
+	public double oneVsAllThreshold;
+	public boolean oneVsAllOnly;
+	public MultiClassModel.VoteMode voteMode;
+	public double minVoteProportion;
+
 
 	public SvmParameter()
 		{
@@ -39,6 +47,10 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 		p = copyFrom.p;
 		shrinking = copyFrom.shrinking;
 		probability = copyFrom.probability;
+		oneVsAllOnly = copyFrom.oneVsAllOnly;
+		oneVsAllThreshold = copyFrom.oneVsAllThreshold;
+		voteMode = copyFrom.voteMode;
+		minVoteProportion = copyFrom.minVoteProportion;
 		}
 
 	public Float getWeight(L key)

@@ -124,7 +124,7 @@ public abstract class Solver<L extends Comparable, P>
 
 		if (2 * nr_free < activeSize)
 			{
-			logger.warn("using -h 0 may be faster");
+			logger.info("using -h 0 may be faster");
 			}
 
 		if (nr_free * numExamples > 2 * activeSize * (numExamples - activeSize))
