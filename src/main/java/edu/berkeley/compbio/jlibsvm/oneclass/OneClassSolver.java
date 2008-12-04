@@ -12,7 +12,7 @@ import java.util.List;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class OneClassSolver<P> extends Solver<Float, P>
+public class OneClassSolver<L, P> extends Solver<Float, P>
 	{
 	private static final Logger logger = Logger.getLogger(OneClassSolver.class);
 
@@ -22,11 +22,11 @@ public class OneClassSolver<P> extends Solver<Float, P>
 		}
 
 
-	public OneClassModel<P> Solve()
+	public OneClassModel<L, P> Solve()
 		{
 		int iter = optimize();
 
-		OneClassModel<P> model = new OneClassModel<P>();
+		OneClassModel<L, P> model = new OneClassModel<L, P>();
 
 		calculate_rho(model);
 

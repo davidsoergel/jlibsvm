@@ -182,7 +182,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		}
 */
 
-	// Cross-validation decision values for probability estimates	// ** unify with SVM.crossValidation?
+	// Cross-validation decision values for probability estimates
 
 	private SigmoidProbabilityModel svcProbability(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
 		{		// ** Original implementation makes a point of not explicitly training if all of the examples are in one class anyway.  Does that matter?

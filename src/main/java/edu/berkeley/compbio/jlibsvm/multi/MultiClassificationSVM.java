@@ -1,7 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
 import edu.berkeley.compbio.jlibsvm.SVM;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.SvmProblem;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblemImpl;
@@ -26,7 +25,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 	public MultiClassificationSVM(BinaryClassificationSVM<L, P> binarySvm, Class labelClass)
 		{
-		super(binarySvm.kernel, (SvmParameter<L>) (binarySvm.param));
+		super(binarySvm.kernel, binarySvm.param);
 		this.binarySvm = binarySvm;		//	this.labelClass = labelClass;
 		}
 
@@ -51,83 +50,121 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 	public MultiClassModel<L, P> train(MultiClassProblem<L, P> problem)
 		{
+		int numLabels = problem.getLabels().size();
 
-
-		MultiClassModel<L, P> model = new MultiClassModel<L, P>(kernel, param, problem.getLabels().size());
+		MultiClassModel<L, P> model = new MultiClassModel<L, P>(kernel, param, numLabels);
 
 		Map<L, Float> weights = prepareWeights(problem);
 
-		// create and train all vs all classifiers
-
-
-		int numLabels = problem.getLabels().size();
-		logger.info("Training " + numLabels * (numLabels - 1) + " one-vs-one classifiers for " + numLabels + " labels");
-
-		Map<L, Set<P>> examplesByLabel = problem.getExamplesByLabel();
-		for (L label1 : problem.getLabels())
+		if (param.multiclassMode != MultiClassModel.MulticlassMode.OneVsAllOnly)
 			{
-			for (L label2 : problem.getLabels())
+			// create and train one-class classifiers
+
+			logger.info("Training one-vs-all classifiers for " + numLabels + " labels");
+
+			float weightSum = 0;
+			for (Float f : weights.values())
 				{
-				if (label1.compareTo(label2) < 0)// avoid redundant pairs
+				weightSum += f;
+				}
+
+			LabelInverter<L> labelInverter = problem.getLabelInverter();
+
+			for (L label1 : problem.getLabels())
+				{
+				Map<P, L> subExamples = new HashMap<P, L>(problem.getExamples().size());
+				L notLabel1 = labelInverter.invert(label1);
+
+				for (Map.Entry<P, L> entry : problem.getExamples().entrySet())
 					{
-					final Set<P> label1Examples = examplesByLabel.get(label1);
-					final Set<P> label2Examples = examplesByLabel.get(label2);
+					subExamples.put(entry.getKey(), entry.getValue() == label1 ? label1 : notLabel1);
+					}
 
-					// PERF constructing each example set explicitly sucks, especially since they'll later be rebuilt with Boolean values anyway;  can we make a UnionMap or something?
-					Map<P, L> subExamples = new HashMap<P, L>(label1Examples.size() + label2Examples.size());
+				BinaryClassificationProblem<L, P> subProblem =
+						new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples);
 
-					for (P label1Example : label1Examples)
+				model.putOneVsAllModel(label1, binarySvm.train(subProblem, weights.get(label1),
+				                                               weightSum - weights.get(label1)));
+				}
+			}
+
+		if (param.multiclassMode != MultiClassModel.MulticlassMode.OneClassOnly)
+			{
+			// create and train one vs all classifiers
+
+			logger.info("Training one-vs-all classifiers for " + numLabels + " labels");
+
+			float weightSum = 0;
+			for (Float f : weights.values())
+				{
+				weightSum += f;
+				}
+
+			LabelInverter<L> labelInverter = problem.getLabelInverter();
+
+			for (L label1 : problem.getLabels())
+				{
+				Map<P, L> subExamples = new HashMap<P, L>(problem.getExamples().size());
+				L notLabel1 = labelInverter.invert(label1);
+
+				for (Map.Entry<P, L> entry : problem.getExamples().entrySet())
+					{
+					subExamples.put(entry.getKey(), entry.getValue() == label1 ? label1 : notLabel1);
+					}
+
+				BinaryClassificationProblem<L, P> subProblem =
+						new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples);
+
+				model.putOneVsAllModel(label1, binarySvm.train(subProblem, weights.get(label1),
+				                                               weightSum - weights.get(label1)));
+				}
+			}
+
+		if (param.multiclassMode != MultiClassModel.MulticlassMode.OneVsAllOnly
+				&& param.multiclassMode != MultiClassModel.MulticlassMode.OneClassOnly)
+			{
+
+			// create and train all vs all classifiers
+
+			logger.info(
+					"Training " + numLabels * (numLabels - 1) + " one-vs-one classifiers for " + numLabels + " labels");
+
+			Map<L, Set<P>> examplesByLabel = problem.getExamplesByLabel();
+			for (L label1 : problem.getLabels())
+				{
+				for (L label2 : problem.getLabels())
+					{
+					if (label1.compareTo(label2) < 0)// avoid redundant pairs
 						{
-						subExamples.put(label1Example, label1);
+						final Set<P> label1Examples = examplesByLabel.get(label1);
+						final Set<P> label2Examples = examplesByLabel.get(label2);
+
+						// PERF constructing each example set explicitly sucks, especially since they'll later be rebuilt with Boolean values anyway;  can we make a UnionMap or something?
+						Map<P, L> subExamples = new HashMap<P, L>(label1Examples.size() + label2Examples.size());
+
+						for (P label1Example : label1Examples)
+							{
+							subExamples.put(label1Example, label1);
+							}
+						for (P label2Example : label2Examples)
+							{
+							subExamples.put(label2Example, label2);
+							}
+
+						// Map<P,L> subExamples = new BinaryMap<P,L>(label1Examples, label1, label2Examples, label2);
+
+						//BinaryClassificationProblem<P> subProblem = new BinaryClassificationProblem<P>(label1Examples, label2Examples);
+
+						BinaryClassificationProblem<L, P> subProblem =
+								new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples);
+
+						final BinaryModel<L, P> binaryModel =
+								binarySvm.train(subProblem, weights.get(label1), weights.get(label2));
+
+						model.putOneVsOneModel(label1, label2, binaryModel);
 						}
-					for (P label2Example : label2Examples)
-						{
-						subExamples.put(label2Example, label2);
-						}
-
-					// Map<P,L> subExamples = new BinaryMap<P,L>(label1Examples, label1, label2Examples, label2);
-
-					//BinaryClassificationProblem<P> subProblem = new BinaryClassificationProblem<P>(label1Examples, label2Examples);
-
-					BinaryClassificationProblem<L, P> subProblem =
-							new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples);
-
-					final BinaryModel<L, P> binaryModel =
-							binarySvm.train(subProblem, weights.get(label1), weights.get(label2));
-
-					model.putOneVsOneModel(label1, label2, binaryModel);
 					}
 				}
-			}
-
-
-		// create and train one vs all classifiers
-
-		logger.info("Training one-vs-all classifiers for " + numLabels + " labels");
-
-		float weightSum = 0;
-		for (Float f : weights.values())
-			{
-			weightSum += f;
-			}
-
-		LabelInverter<L> labelInverter = problem.getLabelInverter();
-
-		for (L label1 : problem.getLabels())
-			{
-			Map<P, L> subExamples = new HashMap<P, L>(problem.getExamples().size());
-			L notLabel1 = labelInverter.invert(label1);
-
-			for (Map.Entry<P, L> entry : problem.getExamples().entrySet())
-				{
-				subExamples.put(entry.getKey(), entry.getValue() == label1 ? label1 : notLabel1);
-				}
-
-			BinaryClassificationProblem<L, P> subProblem =
-					new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples);
-
-			model.putOneVsAllModel(label1,
-			                       binarySvm.train(subProblem, weights.get(label1), weightSum - weights.get(label1)));
 			}
 
 		return model;

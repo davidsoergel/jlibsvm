@@ -186,7 +186,8 @@ public class svm_predict
 				{
 				if (model instanceof MultiClassModel)
 					{
-					if (!((MultiClassModel) model).supportsProbability()) //svm.svm_check_probability_model(model)==0)
+					if (!((MultiClassModel) model)
+							.supportsOneVsOneProbability()) //svm.svm_check_probability_model(model)==0)
 						{
 						System.err.print("Model does not support probability estimates\n");
 						System.exit(1);
@@ -209,7 +210,7 @@ public class svm_predict
 				}
 			else
 				{
-				if (model instanceof MultiClassModel && ((MultiClassModel) model).supportsProbability())
+				if (model instanceof MultiClassModel && ((MultiClassModel) model).supportsOneVsOneProbability())
 					{
 					System.out.print("Model supports probability estimates, but disabled in prediction.\n");
 					}

@@ -3,6 +3,7 @@ package edu.berkeley.compbio.jlibsvm.regression;
 import edu.berkeley.compbio.jlibsvm.ExplicitSvmProblem;
 import edu.berkeley.compbio.jlibsvm.SVM;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
+import edu.berkeley.compbio.jlibsvm.SvmProblem;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import org.apache.log4j.Logger;
 
@@ -12,7 +13,7 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class RegressionSVM<P> extends SVM<Float, P, RegressionProblem<P>>
+public abstract class RegressionSVM<P, R extends SvmProblem<Float, P>> extends SVM<Float, P, R>
 	{
 	private static final Logger logger = Logger.getLogger(RegressionSVM.class);
 
@@ -21,7 +22,7 @@ public abstract class RegressionSVM<P> extends SVM<Float, P, RegressionProblem<P
 		super(kernel, param);
 		}
 
-	public abstract RegressionModel<P> train(RegressionProblem<P> problem);
+	public abstract RegressionModel<P> train(R problem);
 
 	/*	@Override
    public Class getLabelClass()
@@ -59,8 +60,7 @@ public abstract class RegressionSVM<P> extends SVM<Float, P, RegressionProblem<P
 		boolean paramProbability = param.probability;
 		param.probability = false;
 
-		Map<P, Float> ymv =
-				continuousCrossValidation((ExplicitSvmProblem<Float, P, RegressionProblem<P>>) problem, numberOfFolds);
+		Map<P, Float> ymv = continuousCrossValidation((ExplicitSvmProblem<Float, P, R>) problem, numberOfFolds);
 
 		param.probability = paramProbability;
 

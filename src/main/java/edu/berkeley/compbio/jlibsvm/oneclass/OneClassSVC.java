@@ -4,7 +4,6 @@ import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import edu.berkeley.compbio.jlibsvm.regression.RegressionProblem;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
 import org.apache.log4j.Logger;
 
@@ -16,7 +15,7 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class OneClassSVC<P> extends RegressionSVM<P>
+public class OneClassSVC<L, P> extends RegressionSVM<P, OneClassProblem<L, P>>
 	{
 	private static final Logger logger = Logger.getLogger(OneClassSVC.class);
 
@@ -35,7 +34,7 @@ public class OneClassSVC<P> extends RegressionSVM<P>
 			}
 		}
 
-	public OneClassModel<P> train(RegressionProblem<P> problem)
+	public OneClassModel<L, P> train(OneClassProblem<L, P> problem)
 		{
 /*		int l = problem.getNumExamples();
 		float[] zeros = new float[l];
@@ -99,12 +98,13 @@ public class OneClassSVC<P> extends RegressionSVM<P>
 			solutionVectors.add(sv);
 			}
 
-		OneClassSolver<P> s = new OneClassSolver<P>(solutionVectors, qMatrix, 1.0f, param.eps, param.shrinking);
+		OneClassSolver<L, P> s = new OneClassSolver<L, P>(solutionVectors, qMatrix, 1.0f, param.eps, param.shrinking);
 
 
-		OneClassModel<P> model = s.Solve(); //new RegressionModel<P>(binaryModel);
+		OneClassModel<L, P> model = s.Solve(); //new RegressionModel<P>(binaryModel);
 		model.kernel = kernel;
 		model.param = param;
+		model.label = problem.getLabel();
 		model.setSvmType(getSvmType());
 		model.compact();
 

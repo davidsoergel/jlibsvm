@@ -8,6 +8,7 @@ import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.oneclass.OneClassModel;
 import org.apache.log4j.Logger;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -29,24 +30,29 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	{
 	private static final Logger logger = Logger.getLogger(MultiClassModel.class);
 
-
 	private int numberOfClasses;
 
-	//private float[] probA;// pairwise probability information	//private float[] probB;
+	//private float[] probA;
+	// pairwise probability information
+	//private float[] probB;
 
-	//BinaryModel<P>[] oneVsOneModels;   // don't like array vs collection, but it's consistent with the rest for now
+	//BinaryModel<P>[] oneVsOneModels;
+	// don't like array vs collection, but it's consistent with the rest for now
 
 	//	private List<BinaryModel<P>> oneVsOneModels = new ArrayList<BinaryModel<P>>();
 
 	private SymmetricHashMap2d<L, BinaryModel<L, P>> oneVsOneModels;
 	private HashMap<L, BinaryModel<L, P>> oneVsAllModels;
+	private HashMap<L, OneClassModel<L, P>> oneClassModels;
 
 	public enum TestMode
 		{
 			BestOneVsAll, OneVsOneVotes, OneVsOneVotesWithOneVsAllPostReject, OneVsOneVotesWithOneVsAllPreReject
 		}
 
-	// generics are a hassle here  (T[] label; makes a mess)	// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight  //** proscribed 1-D order for 2-D decision_values is error-prone
+	// generics are a hassle here  (T[] label; makes a mess)
+	// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight
+	//** proscribed 1-D order for 2-D decision_values is error-prone
 	List<L> labels;
 
 
@@ -57,39 +63,62 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		oneVsOneModels = new SymmetricHashMap2d<L, BinaryModel<L, P>>(numberOfClasses);
 		oneVsAllModels = new HashMap<L, BinaryModel<L, P>>(numberOfClasses);
 
+		//this.oneClassVeto = param.oneClassVeto;
+		//this.oneClassOnly = param.oneClassOnly;
+		this.oneClassThreshold = param.oneClassThreshold;
+
+		//this.oneVsAllVeto = param.oneVsAllVeto;
+		//this.oneVsAllOnly = param.oneVsAllOnly;
 		this.oneVsAllThreshold = param.oneVsAllThreshold;
-		this.oneVsAllOnly = param.oneVsAllOnly;
-		this.voteMode = param.voteMode;
+
+		this.multiclassMode = param.multiclassMode;
 		this.minVoteProportion = param.minVoteProportion;
 		}
 
 	// allocate this only once; it'll get cleared on every predictLabel() anyway	//List<L> bestLabelList = new ArrayList<L>();
 
 
-	public enum VoteMode
+	public enum MulticlassMode
 		{
-			AllVsAll, ActiveVsAll, ActiveVsActive
+			OneClassOnly, OneVsAllOnly, AllVsAll, FilteredVsAll, FilteredVsFiltered
 		}
 
 
 	// a bunch of parameters controlling prediction speed, accuracy, and likelihood of reporting "unknown"
+	//	boolean oneClassVeto;
+	//	boolean oneClassOnly;
+	double oneClassThreshold;
+
+	//	boolean oneVsAllVeto;
+	//	boolean oneVsAllOnly;
 	double oneVsAllThreshold;
-	boolean oneVsAllOnly;
-	VoteMode voteMode;
+
+	MulticlassMode multiclassMode;
 	double minVoteProportion;
 
 
-	/**
-	 * @param x
-	 * @return null if no good label is found, otherwise the best label.
-	 */
-	public L predictLabel(P x)
+	public Map<L, Float> computeOneClassProbabilities(P x)
 		{
+		Map<L, Float> oneClassProbabilities = new HashMap<L, Float>();
 
+		//	boolean oneClassProb = supportsOneClassProbability();
+
+		for (OneClassModel<L, P> oneClassModel : oneClassModels.values())
+			{
+			final float probability = oneClassModel.getProbability(x);
+			if (probability >= oneClassThreshold)
+				{
+				oneClassProbabilities.put(oneClassModel.getLabel(), probability);
+				}
+			}
+		return oneClassProbabilities;
+		}
+
+	public Map<L, Float> computeOneVsAllProbabilities(P x)
+		{
 		Map<L, Float> oneVsAllProbabilities = new HashMap<L, Float>();
 
-		// stage 1: one vs all		// always compute these; we may need them to tie-break when voting anyway (though that only works when probabilities are turned on)
-		boolean prob = supportsProbability();
+		boolean prob = supportsOneVsOneProbability();
 
 		for (BinaryModel<L, P> binaryModel : oneVsAllModels.values())
 			{			// if probability info isn't available, just substitute 1 and 0.
@@ -100,13 +129,54 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				oneVsAllProbabilities.put(binaryModel.getTrueLabel(), probability);
 				}
 			}
+		return oneVsAllProbabilities;
+		}
 
-		if (oneVsAllProbabilities.isEmpty())
+	/**
+	 * @param x
+	 * @return null if no good label is found, otherwise the best label.
+	 */
+	public L predictLabel(P x)
+		{
+		// stage 1: one-class
+		// always compute these; we may need them to tie-break when voting anyway (though that only works when probabilities are turned on)
+
+		Map<L, Float> oneClassProbabilities = computeOneClassProbabilities(x);
+
+		if (oneClassThreshold > 0 && oneClassProbabilities.isEmpty())
 			{
 			return null;
 			}
 
-		if (oneVsAllOnly)
+		if (multiclassMode == MulticlassMode.OneClassOnly)
+			{
+			L bestLabel = null;
+			float bestProbability = 0;
+			for (Map.Entry<L, Float> entry : oneClassProbabilities.entrySet())
+				{
+				if (entry.getValue() > bestProbability)
+					{
+					bestLabel = entry.getKey();
+					bestProbability = entry.getValue();
+					}
+				}
+			return bestLabel;
+			}
+
+		// now oneClassProbabilities is populated with all of the classes that pass the threshold (maybe all of them).
+
+
+		// stage 2: one vs all
+		// always compute these; we may need them to tie-break when voting anyway (though that only works when probabilities are turned on)
+
+		Map<L, Float> oneVsAllProbabilities = computeOneVsAllProbabilities(x);
+
+		if (oneVsAllThreshold > 0 && oneVsAllProbabilities.isEmpty())
+			{
+			return null;
+			}
+
+		if (multiclassMode == MulticlassMode.OneVsAllOnly)
 			{
 			L bestLabel = null;
 			float bestProbability = 0;
@@ -121,15 +191,21 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			return bestLabel;
 			}
 
+		// now oneVsAllProbabilities is populated with all of the classes that pass the threshold (maybe all of them).
 
-		// stage 2: voting
+
+		// stage 3: voting
 
 		Multiset<L> votes = new HashMultiset<L>();
 
-		if (oneVsAllThreshold <= 0 || voteMode == VoteMode.AllVsAll)
-			{			// vote using all models
+		if ((oneClassThreshold <= 0 && oneVsAllThreshold <= 0) || multiclassMode == MulticlassMode.AllVsAll)
+			{
+			// vote using all models
 
-			// if requiredActive == 0 but there is a oneVsAll threshold, we may compute votes between two			// inactive classes; it may be that the winner of the voting fails the oneVsAll filter, in which			// case we may want to report unknown instead of reporting the best class that does pass.  This			// is what PhyloPythia does.
+			// if requiredActive == 0 but there is a oneVsAll threshold, we may compute votes between two
+			// inactive classes; it may be that the winner of the voting fails the oneVsAll filter, in which
+			// case we may want to report unknown instead of reporting the best class that does pass.  This
+			// is what PhyloPythia does.
 
 			for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
 				{
@@ -137,11 +213,16 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				}
 			}
 		else
-			{			//vote using only the active models one one side of the comparison, maybe on both.
+			{
+			//vote using only the active models one one side of the comparison, maybe on both.
 
-			Set<L> activeClasses = oneVsAllProbabilities.keySet();
+			// compute remainder set after vetos
+			Set<L> activeClasses = oneClassProbabilities.keySet();
+			activeClasses.retainAll(oneVsAllProbabilities.keySet());
 
-			int requiredActive = voteMode == VoteMode.ActiveVsAll ? 1 : 2;
+			int requiredActive = multiclassMode == MulticlassMode.FilteredVsAll ? 1 : 2;
+
+			// assert requiredActive == 2 ? voteMode = VoteMode.FilteredVsFiltered
 
 			for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
 				{
@@ -156,31 +237,43 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			}
 
 
-		// stage 3: count votes
+		// stage 4: count votes
 
 		L bestLabel = null;
 		int bestCount = 0;
 		float bestOneVsAllProbability = 0;
+		float bestOneClassProbability = 0;
 		int countSum = 0;
 		for (L label : votes.elementSet())
 			{
 			int count = votes.count(label);
 			countSum += count;
 
-			// in case of a tie in the number of votes, pick the one with the higher one-vs-all probability			// If there are two really identical classes (same probability!?) then keep the first.
+			// primary sort by number of votes
+			// secondary sort by one-vs-all probability, if available
+			// tertiary sort be one-class probability, if available
 
-			Float oneVsAll = oneVsAllProbabilities.get(label)
-					;  // if this is null it means this label didn't pass the threshold earlier
-			if (count > bestCount || (count == bestCount && oneVsAll != null && oneVsAll > bestOneVsAllProbability))
+			// if this is null it means this label didn't pass the threshold earlier
+			Float oneVsAll = oneVsAllProbabilities.get(label);
+			oneVsAll = oneVsAll == null ? 0f : oneVsAll;
+
+			// if this is null it means this label didn't pass the threshold earlier
+			Float oneClass = oneClassProbabilities.get(label);
+			oneClass = oneClass == null ? 0f : oneClass;
+
+			if (count > bestCount || (count == bestCount && (oneVsAll > bestOneVsAllProbability
+					|| oneClass > bestOneClassProbability)))
 				{
 				bestLabel = label;
 				bestCount = count;
-				bestOneVsAllProbability = oneVsAll;  // NPE should be impossible
+				bestOneVsAllProbability = oneVsAll;
+				bestOneClassProbability = oneClass;
 				}
 			}
 
 
-		// stage 5: check for inadequate evidence filters.		// The oneVsAllThreshold thing is partly implicit in having filtered on it earlier, but there are loopholes so it's safer to just check
+		// stage 5: check for inadequate evidence filters.
+		// The oneVsAllThreshold thing is partly implicit in having filtered on it earlier, but there are loopholes so it's safer to just check
 
 		if ((((double) bestCount / (double) countSum) < minVoteProportion)
 				|| bestOneVsAllProbability < oneVsAllThreshold)
@@ -237,21 +330,27 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				   }*/
 
 
-	public boolean supportsProbability()
+	public boolean supportsOneVsOneProbability()
 		{		// just check the first model and assume the rest are the same
 		return oneVsOneModels.valueIterator().next().sigmoid != null;//		return probA != null && probB != null;
 		}
 
+	/*
+	public boolean supportsOneClassProbability()
+		{		// just check the first model and assume the rest are the same
+		return oneClassModels.valueIterator().next().sigmoid != null;//		return probA != null && probB != null;
+		}
+*/
 
 	public Map<L, Float> predictProbability(P x)
 		{
-		if (!supportsProbability())
+		if (!supportsOneVsOneProbability())
 			{
 			throw new SvmException("Can't make probability predictions");
 			}
 
-
-		//** ugly Map2d vs. array issue etc.; oh well, adapt for now to the old multiclassProbability signature		// the main thing is just to iterate through the Map2d in the order given by the labels list
+		//** ugly Map2d vs. array issue etc.; oh well, adapt for now to the old multiclassProbability signature
+		// the main thing is just to iterate through the Map2d in the order given by the labels list
 
 		//	float[] decisionValues = oneVsOneValues(x);
 
@@ -305,16 +404,18 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				bestProb = entry.getValue();
 				}
 			}
-		return bestLabel;		/*
-				int bestProbabilityIndex = 0;
-				for (int i = 1; i < numberOfClasses; i++)
-					{
-					if (labelProbabilities[i] > labelProbabilities[bestProbabilityIndex])
-						{
-						bestProbabilityIndex = i;
-						}
-					}
-				return (L) label[bestProbabilityIndex];*/
+		return bestLabel;
+
+		/*
+						int bestProbabilityIndex = 0;
+						for (int i = 1; i < numberOfClasses; i++)
+							{
+							if (labelProbabilities[i] > labelProbabilities[bestProbabilityIndex])
+								{
+								bestProbabilityIndex = i;
+								}
+							}
+						return (L) label[bestProbabilityIndex];*/
 		}
 
 
@@ -345,7 +446,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				}
 			}
 		for (iter = 0; iter < maximumIterations; iter++)
-			{			// stopping condition, recalculate QP,pQP for numerical accuracy
+			{
+			// stopping condition, recalculate QP,pQP for numerical accuracy
 			pQp = 0;
 			for (t = 0; t < k; t++)
 				{
@@ -392,29 +494,33 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	public MultiClassModel(Properties props)
 		{
 		super(props);
-		throw new NotImplementedException();		/*
-		numberOfClasses = Integer.parseInt(props.getProperty("nr_class"));
+		throw new NotImplementedException();
 
-		StringTokenizer st = new StringTokenizer(props.getProperty("rho"));
+		/*
+				numberOfClasses = Integer.parseInt(props.getProperty("nr_class"));
 
-		//ArrayList<BinaryModel<P>> models = new ArrayList<BinaryModel<P>>();
-		while (st.hasMoreTokens())
-			{
-			BinaryModel<P> m = new BinaryModel<P>(kernel, param);
-			m.rho = Float.parseFloat(st.nextToken());
-			// no SVs yet
-			oneVsOneModels.add(m);
-			}
-		//oneVsOneModels = models.toArray(new BinaryModel<P>[]{});
+				StringTokenizer st = new StringTokenizer(props.getProperty("rho"));
 
-		probA = parseFloatArray(props.getProperty("probA"));
-		probB = parseFloatArray(props.getProperty("probB"));*/
+				//ArrayList<BinaryModel<P>> models = new ArrayList<BinaryModel<P>>();
+				while (st.hasMoreTokens())
+					{
+					BinaryModel<P> m = new BinaryModel<P>(kernel, param);
+					m.rho = Float.parseFloat(st.nextToken());
+					// no SVs yet
+					oneVsOneModels.add(m);
+					}
+				//oneVsOneModels = models.toArray(new BinaryModel<P>[]{});
+
+				probA = parseFloatArray(props.getProperty("probA"));
+				probB = parseFloatArray(props.getProperty("probB"));*/
 		}
 
 
 	public void writeToStream(DataOutputStream fp) throws IOException
 		{
-		throw new NotImplementedException();		/*
+		throw new NotImplementedException();
+
+		/*
 		super.writeToStream(fp);
 
 		fp.writeBytes("nr_class " + numberOfClasses + "\n");
@@ -461,7 +567,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		fp.writeBytes("SV\n");
 		fp.writeBytes("Saving multi-class support vectors is not implemented yet");
 
-		//** Implement support vector I/O		// the original format is a spaghetti
+		//** Implement support vector I/O
+		// the original format is a spaghetti
 
 		}
 

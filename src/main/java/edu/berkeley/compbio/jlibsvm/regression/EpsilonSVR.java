@@ -13,7 +13,7 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class EpsilonSVR<P> extends RegressionSVM<P>
+public class EpsilonSVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 	{
 
 	public EpsilonSVR(KernelFunction<P> kernel, SvmParameter param)

@@ -14,7 +14,7 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class Nu_SVR<P> extends RegressionSVM<P>
+public class Nu_SVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 	{
 	private static final Logger logger = Logger.getLogger(Nu_SVR.class);
 
