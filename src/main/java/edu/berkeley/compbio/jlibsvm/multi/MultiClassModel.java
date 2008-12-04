@@ -63,8 +63,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		this.minVoteProportion = param.minVoteProportion;
 		}
 
-	// allocate this only once; it'll get cleared on every predictLabel() anyway
-	//List<L> bestLabelList = new ArrayList<L>();
+	// allocate this only once; it'll get cleared on every predictLabel() anyway	//List<L> bestLabelList = new ArrayList<L>();
 
 
 	public enum VoteMode
@@ -89,13 +88,11 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		Map<L, Float> oneVsAllProbabilities = new HashMap<L, Float>();
 
-		// stage 1: one vs all
-		// always compute these; we may need them to tie-break when voting anyway (though that only works when probabilities are turned on)
+		// stage 1: one vs all		// always compute these; we may need them to tie-break when voting anyway (though that only works when probabilities are turned on)
 		boolean prob = supportsProbability();
 
 		for (BinaryModel<L, P> binaryModel : oneVsAllModels.values())
-			{
-			// if probability info isn't available, just substitute 0 and 1
+			{			// if probability info isn't available, just substitute 1 and 0.
 			final float probability =
 					prob ? binaryModel.getTrueProbability(x) : (binaryModel.predictValue(x) > 0. ? 1f : 0f);
 			if (probability >= oneVsAllThreshold)
@@ -129,14 +126,10 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		Multiset<L> votes = new HashMultiset<L>();
 
-		if (oneVsAllThreshold == 0 || voteMode == VoteMode.AllVsAll)
-			{
-			// vote using all models
+		if (oneVsAllThreshold <= 0 || voteMode == VoteMode.AllVsAll)
+			{			// vote using all models
 
-			// if requiredActive == 0 but there is a oneVsAll threshold, we may compute votes between two
-			// inactive classes; it may be that the winner of the voting fails the oneVsAll filter, in which
-			// case we may want to report unknown instead of reporting the best class that does pass.  This
-			// is what PhyloPythia does.
+			// if requiredActive == 0 but there is a oneVsAll threshold, we may compute votes between two			// inactive classes; it may be that the winner of the voting fails the oneVsAll filter, in which			// case we may want to report unknown instead of reporting the best class that does pass.  This			// is what PhyloPythia does.
 
 			for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
 				{
@@ -144,8 +137,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				}
 			}
 		else
-			{
-			//vote using only the active models one one side of the comparison, maybe on both.
+			{			//vote using only the active models one one side of the comparison, maybe on both.
 
 			Set<L> activeClasses = oneVsAllProbabilities.keySet();
 
@@ -175,8 +167,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			int count = votes.count(label);
 			countSum += count;
 
-			// in case of a tie in the number of votes, pick the one with the higher one-vs-all probability
-			// If there are two really identical classes (same probability!?) then keep the first.
+			// in case of a tie in the number of votes, pick the one with the higher one-vs-all probability			// If there are two really identical classes (same probability!?) then keep the first.
 
 			Float oneVsAll = oneVsAllProbabilities.get(label)
 					;  // if this is null it means this label didn't pass the threshold earlier
@@ -189,8 +180,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			}
 
 
-		// stage 5: check for inadequate evidence filters.
-		// The oneVsAllThreshold thing is partly implicit in having filtered on it earlier, but there are loopholes so it's safer to just check
+		// stage 5: check for inadequate evidence filters.		// The oneVsAllThreshold thing is partly implicit in having filtered on it earlier, but there are loopholes so it's safer to just check
 
 		if ((((double) bestCount / (double) countSum) < minVoteProportion)
 				|| bestOneVsAllProbability < oneVsAllThreshold)
@@ -261,8 +251,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			}
 
 
-		//** ugly Map2d vs. array issue etc.; oh well, adapt for now to the old multiclassProbability signature
-		// the main thing is just to iterate through the Map2d in the order given by the labels list
+		//** ugly Map2d vs. array issue etc.; oh well, adapt for now to the old multiclassProbability signature		// the main thing is just to iterate through the Map2d in the order given by the labels list
 
 		//	float[] decisionValues = oneVsOneValues(x);
 

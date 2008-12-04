@@ -116,10 +116,11 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		for (L label1 : problem.getLabels())
 			{
 			Map<P, L> subExamples = new HashMap<P, L>(problem.getExamples().size());
+			L notLabel1 = labelInverter.invert(label1);
 
 			for (Map.Entry<P, L> entry : problem.getExamples().entrySet())
 				{
-				subExamples.put(entry.getKey(), entry.getValue() == label1 ? label1 : labelInverter.invert(label1));
+				subExamples.put(entry.getKey(), entry.getValue() == label1 ? label1 : notLabel1);
 				}
 
 			BinaryClassificationProblem<L, P> subProblem =
