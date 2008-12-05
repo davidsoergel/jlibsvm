@@ -353,7 +353,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 					}
 				}
 			}
-		{
+
 		Formatter f = new Formatter();
 		f.format("Binary classifier for %s vs. %s: TP=%.2f FP=%.2f FN=%.2f TN=%.2f", trueLabel, problem.getFalseLabel(),
 		         ((float) tp / i), ((float) fp / i), ((float) fn / i), ((float) tn / i));
@@ -365,4 +365,4 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 
 		return new SigmoidProbabilityModel(decisionValueArray, labelArray);
 		}
-		}
+	}

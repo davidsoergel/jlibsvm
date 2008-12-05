@@ -6,19 +6,19 @@ package edu.berkeley.compbio.jlibsvm.kernel;
  */
 public abstract class GammaKernel<T> implements KernelFunction<T>
 	{
-	public float gamma;
+	public double gamma;
 
-	public GammaKernel(float gamma)
+	public GammaKernel(double gamma)
 		{
 		this.gamma = gamma;
 		}
 
-	public void setGamma(float gamma)
+	public void setGamma(double gamma)
 		{
 		this.gamma = gamma;
 		}
 
-	public float getGamma()
+	public double getGamma()
 		{
 		return gamma;
 		}

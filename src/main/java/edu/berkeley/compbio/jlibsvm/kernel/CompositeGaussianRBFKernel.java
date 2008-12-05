@@ -8,7 +8,7 @@ public class CompositeGaussianRBFKernel<T> extends GammaKernel<T>
 	{
 	KernelFunction<T> underlyingKernel;
 
-	public CompositeGaussianRBFKernel(float gamma, KernelFunction<T> underlyingKernel)
+	public CompositeGaussianRBFKernel(double gamma, KernelFunction<T> underlyingKernel)
 		{
 		super(gamma);
 		this.underlyingKernel = underlyingKernel;
