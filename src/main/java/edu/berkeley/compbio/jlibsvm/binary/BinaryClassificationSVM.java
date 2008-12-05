@@ -81,7 +81,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		BinaryModel<L, P> result = trainOne(problem, Cp, Cn);
 		if (param.probability)
 			{
-			result.sigmoid = svcProbability(problem, Cp, Cn);
+			result.sigmoid = svcProbability(problem, Cp, Cn, result);
 			}
 		return result;
 		}
@@ -186,7 +186,8 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 
 	// Cross-validation decision values for probability estimates
 
-	private SigmoidProbabilityModel svcProbability(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
+	private SigmoidProbabilityModel svcProbability(BinaryClassificationProblem<L, P> problem, float Cp, float Cn,
+	                                               BinaryModel<L, P> model)
 		{		// ** Original implementation makes a point of not explicitly training if all of the examples are in one class anyway.  Does that matter?
 
 		SvmParameter<L> subparam = new SvmParameter<L>(param);
@@ -327,36 +328,39 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 
 		// while we're at it, since we've done a cross-validation anyway, we may as well report the accuracy.
 
-		int tp = 0, tn = 0, fp = 0, fn = 0;
+		int tt = 0, ff = 0, ft = 0, tf = 0;
 		for (int j = 0; j < i; j++)
 			{
 			if (decisionValueArray[j] > 0)
 				{
 				if (labelArray[j])
 					{
-					tp++;
+					tt++;
 					}
 				else
 					{
-					fp++;
+					ft++;
 					}
 				}
 			else
 				{
 				if (labelArray[j])
 					{
-					fn++;
+					tf++;
 					}
 				else
 					{
-					tn++;
+					ff++;
 					}
 				}
 			}
 
+		BinaryModel.CrossValidationResults cv = model.newCrossValidationResults(i, tt, ft, tf, ff);
+
 		Formatter f = new Formatter();
 		f.format("Binary classifier for %s vs. %s: TP=%.2f FP=%.2f FN=%.2f TN=%.2f", trueLabel, problem.getFalseLabel(),
-		         ((float) tp / i), ((float) fp / i), ((float) fn / i), ((float) tn / i));
+		         cv.TrueTrueRate(), cv.FalseTrueRate(), cv.TrueFalseRate(), cv.FalseFalseRate());
+
 
 		//	logger.info("Binary classifier for " + trueLabel + " vs. " + problem.getFalseLabel() + ": TP="+((float)tp/i) + ": FP="
 		//			+ ((float) fp / i) + ": FN=" + ((float) fn / i) + ": TN=" + ((float) tn / i) );

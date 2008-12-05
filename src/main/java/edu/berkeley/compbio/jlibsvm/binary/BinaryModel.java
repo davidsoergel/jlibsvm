@@ -21,6 +21,49 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 	{
 	private static final Logger logger = Logger.getLogger(BinaryModel.class);
 
+	CrossValidationResults cv;
+
+	public CrossValidationResults newCrossValidationResults(int i, int tt, int ft, int tf, int ff)
+		{
+		cv = new CrossValidationResults(i, tt, ft, tf, ff);
+		return cv;
+		}
+
+	public class CrossValidationResults
+		{
+		int numExamples;
+		int tt, tf, ft, ff;
+
+		public CrossValidationResults(int numExamples, int tt, int tf, int ft, int ff)
+			{
+			this.numExamples = numExamples;
+			this.tt = tt;
+			this.tf = tf;
+			this.ft = ft;
+			this.ff = ff;
+			}
+
+		float TrueTrueRate()
+			{
+			return (float) tt / (float) numExamples;
+			}
+
+		float TrueFalseRate()
+			{
+			return (float) tf / (float) numExamples;
+			}
+
+		float FalseTrueRate()
+			{
+			return (float) ft / (float) numExamples;
+			}
+
+		float FalseFalseRate()
+			{
+			return (float) ff / (float) numExamples;
+			}
+		}
+
 	public float obj;
 	public float upperBoundPositive;
 	public float upperBoundNegative;
