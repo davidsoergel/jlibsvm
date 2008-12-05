@@ -94,7 +94,7 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P>> e
 				predictions.put(p, model.predictValue(p));
 				}
 			}
-		logger.info(qMatrix.perfString());
+		//logger.info(qMatrix.perfString());
 		return predictions;
 		}
 
@@ -117,44 +117,46 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P>> e
 				predictions.put(p, model.predictLabel(p));
 				}
 			}
-		logger.info(qMatrix.perfString());		/*
-		FoldSpec fs = separateFolds(problem, numberOfFolds);
+		//logger.info(qMatrix.perfString());
 
-		// stratified cv may not give leave-one-out rate
-		// Each class to l folds -> some folds may have zero elements
+		/*
+		 FoldSpec fs = separateFolds(problem, numberOfFolds);
 
-
-		for (int i = 0; i < numberOfFolds; i++)
-			{
-			int begin = fs.foldStart[i];
-			int end = fs.foldStart[i + 1];
+		 // stratified cv may not give leave-one-out rate
+		 // Each class to l folds -> some folds may have zero elements
 
 
-			int subprobLength = problem.getNumExamples() - (end - begin);
+		 for (int i = 0; i < numberOfFolds; i++)
+			 {
+			 int begin = fs.foldStart[i];
+			 int end = fs.foldStart[i + 1];
 
-			R subprob = problem.newSubProblem(subprobLength);
 
-			int k = 0;
-			for (int j = 0; j < begin; j++)
-				{
-				subprob.examples[k] = problem.examples[fs.perm[j]];
-				subprob.targetValues[k] = problem.targetValues[fs.perm[j]];
-				++k;
-				}
-			for (int j = end; j < fs.perm.length; j++)
-				{
-				subprob.examples[k] = problem.examples[fs.perm[j]];
-				subprob.targetValues[k] = problem.targetValues[fs.perm[j]];
-				++k;
-				}
+			 int subprobLength = problem.getNumExamples() - (end - begin);
 
-			//L[] foldPredictions =
-					predictions.putAll(foldPredict(subprob, new FoldIterator(problem, fs.perm, begin, end), end - begin));		for (int j = begin; j < end; j++)
-				{
-				predictions[fs.perm[j]] = foldPredictions[j - begin];
-				}
-			}
-	*/		// now predictions contains the prediction for each point based on training with e.g. 80% of the other points (for 5-fold).
+			 R subprob = problem.newSubProblem(subprobLength);
+
+			 int k = 0;
+			 for (int j = 0; j < begin; j++)
+				 {
+				 subprob.examples[k] = problem.examples[fs.perm[j]];
+				 subprob.targetValues[k] = problem.targetValues[fs.perm[j]];
+				 ++k;
+				 }
+			 for (int j = end; j < fs.perm.length; j++)
+				 {
+				 subprob.examples[k] = problem.examples[fs.perm[j]];
+				 subprob.targetValues[k] = problem.targetValues[fs.perm[j]];
+				 ++k;
+				 }
+
+			 //L[] foldPredictions =
+					 predictions.putAll(foldPredict(subprob, new FoldIterator(problem, fs.perm, begin, end), end - begin));		for (int j = begin; j < end; j++)
+				 {
+				 predictions[fs.perm[j]] = foldPredictions[j - begin];
+				 }
+			 }
+	 */		// now predictions contains the prediction for each point based on training with e.g. 80% of the other points (for 5-fold).
 		return predictions;
 		}
 

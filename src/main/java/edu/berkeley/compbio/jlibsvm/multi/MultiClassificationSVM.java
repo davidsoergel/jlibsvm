@@ -54,69 +54,59 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 		MultiClassModel<L, P> model = new MultiClassModel<L, P>(kernel, param, numLabels);
 
+
 		Map<L, Float> weights = prepareWeights(problem);
 
+		/*
 		if (param.multiclassMode != MultiClassModel.MulticlassMode.OneVsAllOnly)
 			{
 			// create and train one-class classifiers
 
-			logger.info("Training one-vs-all classifiers for " + numLabels + " labels");
+			logger.info("Training one-class classifiers for " + numLabels + " labels");
 
-			float weightSum = 0;
-			for (Float f : weights.values())
+			for (Map.Entry<L,Set<P>> entry : problem.getExamplesByLabel().entrySet())
 				{
-				weightSum += f;
-				}
+				Map<P, Float> subExamples = new HashMap<P, Float>(problem.getExamples().size());
 
-			LabelInverter<L> labelInverter = problem.getLabelInverter();
-
-			for (L label1 : problem.getLabels())
-				{
-				Map<P, L> subExamples = new HashMap<P, L>(problem.getExamples().size());
-				L notLabel1 = labelInverter.invert(label1);
-
-				for (Map.Entry<P, L> entry : problem.getExamples().entrySet())
+				for (P point : entry.getValue())
 					{
-					subExamples.put(entry.getKey(), entry.getValue() == label1 ? label1 : notLabel1);
+					subExamples.put(point, 1f);
 					}
 
-				BinaryClassificationProblem<L, P> subProblem =
-						new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples);
+				OneClassProblem<L, P> subProblem =
+						new OneClassProblemImpl<L, P>(subExamples, entry.getKey());
 
-				model.putOneVsAllModel(label1, binarySvm.train(subProblem, weights.get(label1),
-				                                               weightSum - weights.get(label1)));
+				model.putOneClassModel(entry.getKey(), oneClassSvm.train(subProblem));
 				}
 			}
-
+*/
 		if (param.multiclassMode != MultiClassModel.MulticlassMode.OneClassOnly)
 			{
 			// create and train one vs all classifiers
 
 			logger.info("Training one-vs-all classifiers for " + numLabels + " labels");
 
-			float weightSum = 0;
-			for (Float f : weights.values())
-				{
-				weightSum += f;
-				}
-
 			LabelInverter<L> labelInverter = problem.getLabelInverter();
-
-			for (L label1 : problem.getLabels())
+			for (L label : problem.getLabels())
 				{
 				Map<P, L> subExamples = new HashMap<P, L>(problem.getExamples().size());
-				L notLabel1 = labelInverter.invert(label1);
+				L notLabel = labelInverter.invert(label);
 
 				for (Map.Entry<P, L> entry : problem.getExamples().entrySet())
 					{
-					subExamples.put(entry.getKey(), entry.getValue() == label1 ? label1 : notLabel1);
+					subExamples.put(entry.getKey(), entry.getValue() == label ? label : notLabel);
 					}
 
 				BinaryClassificationProblem<L, P> subProblem =
 						new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples);
 
-				model.putOneVsAllModel(label1, binarySvm.train(subProblem, weights.get(label1),
-				                                               weightSum - weights.get(label1)));
+				//** Unbalanced data: see prepareWeights
+				// since these will be extremely unbalanced, this should nearly guarantee that no positive examples are misclassified.
+
+				//float costOfNegativeMisclassification = weights.get(label);
+				//float costOfPositiveMisclassification = weights.get(notLabel);
+
+				model.putOneVsAllModel(label, binarySvm.train(subProblem, weights.get(label), weights.get(notLabel)));
 				}
 			}
 
@@ -158,6 +148,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 						BinaryClassificationProblem<L, P> subProblem =
 								new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples);
 
+						//** Unbalanced data: see prepareWeights
 						final BinaryModel<L, P> binaryModel =
 								binarySvm.train(subProblem, weights.get(label1), weights.get(label2));
 
@@ -171,12 +162,53 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		}
 
 	private Map<L, Float> prepareWeights(MultiClassProblem<L, P> problem)
-		{		// use param.C as the default weight...
+		{
+		LabelInverter<L> labelInverter = problem.getLabelInverter();
+
 		Map<L, Float> weights = new HashMap<L, Float>();
+
+		//** Unbalanced data: redistribute the misclassification cost C according to
+		// the numbers of examples in each class, so that each class has the same total
+		// misclassification weight assigned to it and the average is param.C
+
+		int numExamples = problem.getExamples().size();
+
+		final Map<L, Set<P>> examplesByLabel = problem.getExamplesByLabel();
+
+		int numClasses = examplesByLabel.size();
+
+		float totalCPerClass = param.C * numExamples / numClasses;
+		//float totalCPerRemainder = totalCPerClass * (numClasses - 1);
+
+		for (Map.Entry<L, Set<P>> entry : examplesByLabel.entrySet())
+			{
+			L label = entry.getKey();
+			Set<P> examples = entry.getValue();
+			float weight = totalCPerClass / examples.size();
+
+			weights.put(label, weight);
+
+
+			//** For one-vs-all, we want the inverse class to have the same total weight as the positive class.
+			//** Note scaling problem: we can't scale up the positive class, so we have to scale down the negative class
+			//** i.e. we pretend that all of the negative examples are in one class, and so have totalCPerClass.
+
+			L inverse = labelInverter.invert(label);
+			float inverseWeight = totalCPerClass / (numExamples - examples.size());
+			weights.put(inverse, inverseWeight);
+			}
+
+		if (!param.getWeights().isEmpty())
+			{
+			logger.warn("Ignoring provided class weights; we compute them from C and the number of examples");
+			}
+/*
+		// use param.C as the default weight...
 		for (L label : problem.getLabels())
 			{
 			weights.put(label, param.C);
 			}
+
 
 		// ... but if any weights are provided, apply them
 		for (Map.Entry<L, Float> weightEntry : param.getWeights().entrySet())
@@ -191,7 +223,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				{
 				logger.warn("class label " + key + " specified in weight is not found");
 				}
-			}
+			}*/
 		return weights;
 		}
 

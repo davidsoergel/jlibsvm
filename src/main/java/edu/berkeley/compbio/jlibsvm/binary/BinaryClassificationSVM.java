@@ -8,6 +8,7 @@ import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import org.apache.log4j.Logger;
 
+import java.util.Formatter;
 import java.util.Map;
 
 /**
@@ -29,8 +30,9 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		 {
 		 return new Boolean[length];
 		 }
- */ L trueLabel;
-	L falseLabel;
+ */
+	//L trueLabel;
+	//L falseLabel;
 
 	public BinaryModel<L, P> train(BinaryClassificationProblem<L, P> problem)
 		{
@@ -39,21 +41,21 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 			throw new SvmException("Can't do binary classification; " + problem.getLabels().size() + " classes found");
 			}
 
-		falseLabel = problem.getLabels().get(0);
-		trueLabel = problem.getLabels().get(1);
+		//	falseLabel = problem.getLabels().get(0);
+		//	trueLabel = problem.getLabels().get(1);
 
 		// calculate weighted C
 
 		float weightedCp = param.C;
 		float weightedCn = param.C;
 
-		Float weightP = param.getWeight(trueLabel);
+		Float weightP = param.getWeight(problem.getTrueLabel());
 		if (weightP != null)
 			{
 			weightedCp *= weightP;
 			}
 
-		Float weightN = param.getWeight(falseLabel);
+		Float weightN = param.getWeight(problem.getFalseLabel());
 		if (weightN != null)
 			{
 			weightedCn *= weightN;
@@ -61,7 +63,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		setupQMatrix(problem);
 		BinaryModel<L, P> result = train(problem, weightedCp, weightedCn);
 		result.printSolutionInfo(problem);
-		logger.info(qMatrix.perfString());
+		//logger.info(qMatrix.perfString());
 		return result;
 		}
 
@@ -191,8 +193,8 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		subparam.probability = false;
 		subparam.C = 1.0f;
 
-		subparam.putWeight(trueLabel, Cp);
-		subparam.putWeight(falseLabel, Cn);
+		subparam.putWeight(problem.getTrueLabel(), Cp);
+		subparam.putWeight(problem.getFalseLabel(), Cn);
 
 
 		// ugly hack to temporarily replace the parameters.  This only works because train() is ultimately a method on this very object.
@@ -310,15 +312,57 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 
 		// convert to arrays
 
+
 		int i = 0;
 		float[] decisionValueArray = new float[decisionValues.size()];
 		boolean[] labelArray = new boolean[decisionValues.size()];
+		L trueLabel = problem.getTrueLabel();
 		for (P point : decisionValues.keySet())
 			{
 			decisionValueArray[i] = decisionValues.get(point);
 			labelArray[i] = problem.getTargetValue(point).equals(trueLabel);
+			i++;
 			}
+
+
+		// while we're at it, since we've done a cross-validation anyway, we may as well report the accuracy.
+
+		int tp = 0, tn = 0, fp = 0, fn = 0;
+		for (int j = 0; j < i; j++)
+			{
+			if (decisionValueArray[j] > 0)
+				{
+				if (labelArray[j])
+					{
+					tp++;
+					}
+				else
+					{
+					fp++;
+					}
+				}
+			else
+				{
+				if (labelArray[j])
+					{
+					fn++;
+					}
+				else
+					{
+					tn++;
+					}
+				}
+			}
+		{
+		Formatter f = new Formatter();
+		f.format("Binary classifier for %s vs. %s: TP=%.2f FP=%.2f FN=%.2f TN=%.2f", trueLabel, problem.getFalseLabel(),
+		         ((float) tp / i), ((float) fp / i), ((float) fn / i), ((float) tn / i));
+
+		//	logger.info("Binary classifier for " + trueLabel + " vs. " + problem.getFalseLabel() + ": TP="+((float)tp/i) + ": FP="
+		//			+ ((float) fp / i) + ": FN=" + ((float) fn / i) + ": TN=" + ((float) tn / i) );
+
+		logger.info(f.out().toString());
 
 		return new SigmoidProbabilityModel(decisionValueArray, labelArray);
 		}
-	}
+		}

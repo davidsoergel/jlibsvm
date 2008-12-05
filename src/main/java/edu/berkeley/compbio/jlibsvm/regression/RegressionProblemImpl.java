@@ -7,6 +7,7 @@ import edu.berkeley.compbio.jlibsvm.SvmException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -24,6 +25,12 @@ public class RegressionProblemImpl<P> extends MutableSvmProblemImpl<Float, P, Re
 	public RegressionProblemImpl(int numExamples)
 		{
 		super(numExamples);
+		//	targetValues = new Float[numExamples];
+		}
+
+	public RegressionProblemImpl(Map<P, Float> examples)
+		{
+		super(examples);
 		//	targetValues = new Float[numExamples];
 		}
 

@@ -27,9 +27,9 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 	public boolean probability;// do probability estimates
 
 	// parameters for multiclass testing
-	public boolean oneClassOnly;
-	public double oneClassThreshold;
-	public boolean oneVsAllOnly;
+//	public boolean oneClassOnly;
+//	public double oneClassThreshold;
+	//	public boolean oneVsAllOnly;
 	public double oneVsAllThreshold;
 	public MultiClassModel.MulticlassMode multiclassMode;
 	public double minVoteProportion;
@@ -49,7 +49,7 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 		p = copyFrom.p;
 		shrinking = copyFrom.shrinking;
 		probability = copyFrom.probability;
-		oneVsAllOnly = copyFrom.oneVsAllOnly;
+//		oneVsAllOnly = copyFrom.oneVsAllOnly;
 		oneVsAllThreshold = copyFrom.oneVsAllThreshold;
 		multiclassMode = copyFrom.multiclassMode;
 		minVoteProportion = copyFrom.minVoteProportion;

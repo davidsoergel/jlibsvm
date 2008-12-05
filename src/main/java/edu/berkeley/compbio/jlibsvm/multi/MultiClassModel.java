@@ -8,7 +8,6 @@ import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import edu.berkeley.compbio.jlibsvm.oneclass.OneClassModel;
 import org.apache.log4j.Logger;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -43,7 +42,9 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 	private SymmetricHashMap2d<L, BinaryModel<L, P>> oneVsOneModels;
 	private HashMap<L, BinaryModel<L, P>> oneVsAllModels;
-	private HashMap<L, OneClassModel<L, P>> oneClassModels;
+
+	//** add back one-class filter?
+//	private HashMap<L, OneClassModel<L, P>> oneClassModels;
 
 	public enum TestMode
 		{
@@ -62,10 +63,11 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		this.numberOfClasses = numberOfClasses;
 		oneVsOneModels = new SymmetricHashMap2d<L, BinaryModel<L, P>>(numberOfClasses);
 		oneVsAllModels = new HashMap<L, BinaryModel<L, P>>(numberOfClasses);
+//		oneClassModels = new HashMap<L, OneClassModel<L, P>>(numberOfClasses);
 
 		//this.oneClassVeto = param.oneClassVeto;
 		//this.oneClassOnly = param.oneClassOnly;
-		this.oneClassThreshold = param.oneClassThreshold;
+//		this.oneClassThreshold = param.oneClassThreshold;
 
 		//this.oneVsAllVeto = param.oneVsAllVeto;
 		//this.oneVsAllOnly = param.oneVsAllOnly;
@@ -97,7 +99,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	double minVoteProportion;
 
 
-	public Map<L, Float> computeOneClassProbabilities(P x)
+/*	public Map<L, Float> computeOneClassProbabilities(P x)
 		{
 		Map<L, Float> oneClassProbabilities = new HashMap<L, Float>();
 
@@ -112,16 +114,17 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				}
 			}
 		return oneClassProbabilities;
-		}
+		}*/
 
 	public Map<L, Float> computeOneVsAllProbabilities(P x)
 		{
 		Map<L, Float> oneVsAllProbabilities = new HashMap<L, Float>();
 
-		boolean prob = supportsOneVsOneProbability();
+		boolean prob = supportsOneVsAllProbability();
 
 		for (BinaryModel<L, P> binaryModel : oneVsAllModels.values())
-			{			// if probability info isn't available, just substitute 1 and 0.
+			{
+			// if probability info isn't available, just substitute 1 and 0.
 			final float probability =
 					prob ? binaryModel.getTrueProbability(x) : (binaryModel.predictValue(x) > 0. ? 1f : 0f);
 			if (probability >= oneVsAllThreshold)
@@ -138,6 +141,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	 */
 	public L predictLabel(P x)
 		{
+		/*
 		// stage 1: one-class
 		// always compute these; we may need them to tie-break when voting anyway (though that only works when probabilities are turned on)
 
@@ -164,7 +168,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			}
 
 		// now oneClassProbabilities is populated with all of the classes that pass the threshold (maybe all of them).
-
+		*/
 
 		// stage 2: one vs all
 		// always compute these; we may need them to tie-break when voting anyway (though that only works when probabilities are turned on)
@@ -217,8 +221,10 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			//vote using only the active models one one side of the comparison, maybe on both.
 
 			// compute remainder set after vetos
-			Set<L> activeClasses = oneClassProbabilities.keySet();
-			activeClasses.retainAll(oneVsAllProbabilities.keySet());
+			//Set<L> activeClasses = oneClassProbabilities.keySet();
+			//activeClasses.retainAll(oneVsAllProbabilities.keySet());
+
+			Set<L> activeClasses = oneVsAllProbabilities.keySet();
 
 			int requiredActive = multiclassMode == MulticlassMode.FilteredVsAll ? 1 : 2;
 
@@ -242,7 +248,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		L bestLabel = null;
 		int bestCount = 0;
 		float bestOneVsAllProbability = 0;
-		float bestOneClassProbability = 0;
+		//float bestOneClassProbability = 0;
 		int countSum = 0;
 		for (L label : votes.elementSet())
 			{
@@ -258,16 +264,16 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			oneVsAll = oneVsAll == null ? 0f : oneVsAll;
 
 			// if this is null it means this label didn't pass the threshold earlier
-			Float oneClass = oneClassProbabilities.get(label);
-			oneClass = oneClass == null ? 0f : oneClass;
+			//	Float oneClass = oneClassProbabilities.get(label);
+			//	oneClass = oneClass == null ? 0f : oneClass;
 
-			if (count > bestCount || (count == bestCount && (oneVsAll > bestOneVsAllProbability
-					|| oneClass > bestOneClassProbability)))
+			if (count > bestCount || (count == bestCount && (oneVsAll > bestOneVsAllProbability)))
+				//	|| oneClass > bestOneClassProbability)))
 				{
 				bestLabel = label;
 				bestCount = count;
 				bestOneVsAllProbability = oneVsAll;
-				bestOneClassProbability = oneClass;
+				//	bestOneClassProbability = oneClass;
 				}
 			}
 
@@ -331,10 +337,16 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 
 	public boolean supportsOneVsOneProbability()
-		{		// just check the first model and assume the rest are the same
+		{
+		// just check the first model and assume the rest are the same
 		return oneVsOneModels.valueIterator().next().sigmoid != null;//		return probA != null && probB != null;
 		}
 
+	public boolean supportsOneVsAllProbability()
+		{
+		// just check the first model and assume the rest are the same
+		return oneVsAllModels.values().iterator().next().sigmoid != null;//		return probA != null && probB != null;
+		}
 	/*
 	public boolean supportsOneClassProbability()
 		{		// just check the first model and assume the rest are the same
@@ -582,6 +594,11 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		oneVsAllModels.put(label1, binaryModel);
 		}
 
+/*	public void putOneClassModel(L label1, OneClassModel<L, P> oneclassModel)
+		{
+		oneClassModels.put(label1, oneclassModel);
+		}
+*/
 
 	private class SymmetricHashMap2d<K extends Comparable, V>
 		{

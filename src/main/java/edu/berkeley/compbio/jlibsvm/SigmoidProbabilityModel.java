@@ -11,7 +11,9 @@ public class SigmoidProbabilityModel
 	private static final Logger logger = Logger.getLogger(SigmoidProbabilityModel.class);
 	float A, B;
 
-	// Platt's binary SVM Probablistic Output: an improvement from Lin et al.	// protected void sigmoidTrain(float[] decisionValues, boolean[] labels)
+	// Platt's binary SVM Probablistic Output: an improvement from Lin et al.
+
+	// protected void sigmoidTrain(float[] decisionValues, boolean[] labels)
 
 	public SigmoidProbabilityModel(float[] decisionValues, boolean[] labels)
 		{
@@ -117,7 +119,9 @@ public class SigmoidProbabilityModel
 			gd = g1 * dA + g2 * dB;
 
 
-			stepsize = 1;// Line Search
+			stepsize = 1;
+
+			// Line Search
 			while (stepsize >= minStep)
 				{
 				newA = A + stepsize * dA;
@@ -136,7 +140,8 @@ public class SigmoidProbabilityModel
 						{
 						newf += (t[i] - 1) * fApB + Math.log(1 + Math.exp(fApB));
 						}
-					}				// Check sufficient decrease
+					}
+				// Check sufficient decrease
 				if (newf < fval + 0.0001 * stepsize * gd)
 					{
 					A = newA;

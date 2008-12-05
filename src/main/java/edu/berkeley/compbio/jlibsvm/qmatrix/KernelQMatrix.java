@@ -172,11 +172,11 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 		int numExamples;
 		int maxCachedRank;
 
-		int hits = 0;
-		int misses = 0;
-		int widemisses = 0;
-		int diagonalhits = 0;
-		int diagonalmisses = 0;
+		long hits = 0;
+		long misses = 0;
+		long widemisses = 0;
+		long diagonalhits = 0;
+		long diagonalmisses = 0;
 
 		public RecentActivitySquareCache(int numExamples, int cacheRowsSquared)
 			{
