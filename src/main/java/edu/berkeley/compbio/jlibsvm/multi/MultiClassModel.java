@@ -46,10 +46,6 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	//** add back one-class filter?
 //	private HashMap<L, OneClassModel<L, P>> oneClassModels;
 
-	public enum TestMode
-		{
-			BestOneVsAll, OneVsOneVotes, OneVsOneVotesWithOneVsAllPostReject, OneVsOneVotesWithOneVsAllPreReject
-		}
 
 	// generics are a hassle here  (T[] label; makes a mess)
 	// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight
@@ -73,29 +69,36 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		//this.oneVsAllOnly = param.oneVsAllOnly;
 		this.oneVsAllThreshold = param.oneVsAllThreshold;
 
-		this.multiclassMode = param.multiclassMode;
+		this.oneVsAllMode = param.oneVsAllMode;
+		this.allVsAllMode = param.allVsAllMode;
 		this.minVoteProportion = param.minVoteProportion;
 		}
 
 	// allocate this only once; it'll get cleared on every predictLabel() anyway	//List<L> bestLabelList = new ArrayList<L>();
 
 
-	public enum MulticlassMode
+	public enum OneVsAllMode
 		{
-			OneClassOnly, OneVsAllOnly, AllVsAll, FilteredVsAll, FilteredVsFiltered
+			None, Best, Veto, BreakTies, VetoAndBreakTies
+		}
+
+	public enum AllVsAllMode
+		{
+			None, AllVsAll, FilteredVsAll, FilteredVsFiltered
 		}
 
 
 	// a bunch of parameters controlling prediction speed, accuracy, and likelihood of reporting "unknown"
 	//	boolean oneClassVeto;
 	//	boolean oneClassOnly;
-	double oneClassThreshold;
+	//double oneClassThreshold;
 
+	OneVsAllMode oneVsAllMode;
 	//	boolean oneVsAllVeto;
 	//	boolean oneVsAllOnly;
 	double oneVsAllThreshold;
 
-	MulticlassMode multiclassMode;
+	AllVsAllMode allVsAllMode;
 	double minVoteProportion;
 
 
@@ -171,16 +174,17 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		*/
 
 		// stage 2: one vs all
-		// always compute these; we may need them to tie-break when voting anyway (though that only works when probabilities are turned on)
 
-		Map<L, Float> oneVsAllProbabilities = computeOneVsAllProbabilities(x);
+		Map<L, Float> oneVsAllProbabilities = oneVsAllMode == OneVsAllMode.None ? null : computeOneVsAllProbabilities(x)
+				;
 
-		if (oneVsAllThreshold > 0 && oneVsAllProbabilities.isEmpty())
+		if ((oneVsAllMode == OneVsAllMode.Veto || oneVsAllMode == OneVsAllMode.VetoAndBreakTies)
+				&& oneVsAllProbabilities.isEmpty())
 			{
 			return null;
 			}
 
-		if (multiclassMode == MulticlassMode.OneVsAllOnly)
+		if (oneVsAllMode == OneVsAllMode.Best)
 			{
 			L bestLabel = null;
 			float bestProbability = 0;
@@ -195,6 +199,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			return bestLabel;
 			}
 
+
 		// now oneVsAllProbabilities is populated with all of the classes that pass the threshold (maybe all of them).
 
 
@@ -202,7 +207,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		Multiset<L> votes = new HashMultiset<L>();
 
-		if ((oneClassThreshold <= 0 && oneVsAllThreshold <= 0) || multiclassMode == MulticlassMode.AllVsAll)
+		//(oneClassThreshold <= 0 && oneVsAllThreshold <= 0) ||
+		if (allVsAllMode == AllVsAllMode.AllVsAll)
 			{
 			// vote using all models
 
@@ -224,9 +230,10 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			//Set<L> activeClasses = oneClassProbabilities.keySet();
 			//activeClasses.retainAll(oneVsAllProbabilities.keySet());
 
-			Set<L> activeClasses = oneVsAllProbabilities.keySet();
+			Set<L> activeClasses =
+					oneVsAllProbabilities != null ? oneVsAllProbabilities.keySet() : oneVsOneModels.keySet();
 
-			int requiredActive = multiclassMode == MulticlassMode.FilteredVsAll ? 1 : 2;
+			int requiredActive = allVsAllMode == AllVsAllMode.FilteredVsAll ? 1 : 2;
 
 			// assert requiredActive == 2 ? voteMode = VoteMode.FilteredVsFiltered
 
@@ -259,9 +266,13 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			// secondary sort by one-vs-all probability, if available
 			// tertiary sort be one-class probability, if available
 
-			// if this is null it means this label didn't pass the threshold earlier
-			Float oneVsAll = oneVsAllProbabilities.get(label);
-			oneVsAll = oneVsAll == null ? 0f : oneVsAll;
+			Float oneVsAll = 0f;
+			if (oneVsAllMode == OneVsAllMode.VetoAndBreakTies)
+				{
+				// if this is null it means this label didn't pass the threshold earlier
+				oneVsAll = oneVsAllProbabilities.get(label);
+				oneVsAll = oneVsAll == null ? 0f : oneVsAll;
+				}
 
 			// if this is null it means this label didn't pass the threshold earlier
 			//	Float oneClass = oneClassProbabilities.get(label);
@@ -694,6 +705,11 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				}
 
 			l2Map.put(k2, value);
+			}
+
+		public Set<K> keySet()
+			{
+			return l1Map.keySet();
 			}
 		}
 	}

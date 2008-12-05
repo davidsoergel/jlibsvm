@@ -80,7 +80,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				}
 			}
 */
-		if (param.multiclassMode != MultiClassModel.MulticlassMode.OneClassOnly)
+		if (param.oneVsAllMode != MultiClassModel.OneVsAllMode.None)
 			{
 			// create and train one vs all classifiers
 
@@ -110,10 +110,8 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				}
 			}
 
-		if (param.multiclassMode != MultiClassModel.MulticlassMode.OneVsAllOnly
-				&& param.multiclassMode != MultiClassModel.MulticlassMode.OneClassOnly)
+		if (param.allVsAllMode != MultiClassModel.AllVsAllMode.None)
 			{
-
 			// create and train all vs all classifiers
 
 			logger.info(
@@ -129,7 +127,8 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 						final Set<P> label1Examples = examplesByLabel.get(label1);
 						final Set<P> label2Examples = examplesByLabel.get(label2);
 
-						// PERF constructing each example set explicitly sucks, especially since they'll later be rebuilt with Boolean values anyway;  can we make a UnionMap or something?
+						// PERF constructing each example set explicitly sucks, especially since they'll later be rebuilt with Boolean values anyway;
+						// can we make a UnionMap or something?
 						Map<P, L> subExamples = new HashMap<P, L>(label1Examples.size() + label2Examples.size());
 
 						for (P label1Example : label1Examples)
