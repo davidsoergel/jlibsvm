@@ -44,7 +44,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	private HashMap<L, BinaryModel<L, P>> oneVsAllModels;
 
 	//** add back one-class filter?
-//	private HashMap<L, OneClassModel<L, P>> oneClassModels;
+	//	private HashMap<L, OneClassModel<L, P>> oneClassModels;
 
 
 	// generics are a hassle here  (T[] label; makes a mess)
@@ -59,11 +59,11 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		this.numberOfClasses = numberOfClasses;
 		oneVsOneModels = new SymmetricHashMap2d<L, BinaryModel<L, P>>(numberOfClasses);
 		oneVsAllModels = new HashMap<L, BinaryModel<L, P>>(numberOfClasses);
-//		oneClassModels = new HashMap<L, OneClassModel<L, P>>(numberOfClasses);
+		//		oneClassModels = new HashMap<L, OneClassModel<L, P>>(numberOfClasses);
 
 		//this.oneClassVeto = param.oneClassVeto;
 		//this.oneClassOnly = param.oneClassOnly;
-//		this.oneClassThreshold = param.oneClassThreshold;
+		//		this.oneClassThreshold = param.oneClassThreshold;
 
 		//this.oneVsAllVeto = param.oneVsAllVeto;
 		//this.oneVsAllOnly = param.oneVsAllOnly;
@@ -102,22 +102,22 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	double minVoteProportion;
 
 
-/*	public Map<L, Float> computeOneClassProbabilities(P x)
-		{
-		Map<L, Float> oneClassProbabilities = new HashMap<L, Float>();
+	/*	public Map<L, Float> computeOneClassProbabilities(P x)
+	   {
+	   Map<L, Float> oneClassProbabilities = new HashMap<L, Float>();
 
-		//	boolean oneClassProb = supportsOneClassProbability();
+	   //	boolean oneClassProb = supportsOneClassProbability();
 
-		for (OneClassModel<L, P> oneClassModel : oneClassModels.values())
-			{
-			final float probability = oneClassModel.getProbability(x);
-			if (probability >= oneClassThreshold)
-				{
-				oneClassProbabilities.put(oneClassModel.getLabel(), probability);
-				}
-			}
-		return oneClassProbabilities;
-		}*/
+	   for (OneClassModel<L, P> oneClassModel : oneClassModels.values())
+		   {
+		   final float probability = oneClassModel.getProbability(x);
+		   if (probability >= oneClassThreshold)
+			   {
+			   oneClassProbabilities.put(oneClassModel.getLabel(), probability);
+			   }
+		   }
+	   return oneClassProbabilities;
+	   }*/
 
 	public Map<L, Float> computeOneVsAllProbabilities(P x)
 		{
@@ -605,11 +605,11 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		oneVsAllModels.put(label1, binaryModel);
 		}
 
-/*	public void putOneClassModel(L label1, OneClassModel<L, P> oneclassModel)
-		{
-		oneClassModels.put(label1, oneclassModel);
-		}
-*/
+	/*	public void putOneClassModel(L label1, OneClassModel<L, P> oneclassModel)
+		 {
+		 oneClassModels.put(label1, oneclassModel);
+		 }
+ */
 
 	private class SymmetricHashMap2d<K extends Comparable, V>
 		{
