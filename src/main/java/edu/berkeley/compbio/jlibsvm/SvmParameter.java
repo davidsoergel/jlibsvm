@@ -35,6 +35,7 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 	public MultiClassModel.OneVsAllMode oneVsAllMode;
 	public MultiClassModel.AllVsAllMode allVsAllMode;
 	public double minVoteProportion;
+	public int falseClassSVlimit;
 
 
 	public SvmParameter()
@@ -56,6 +57,7 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 		oneVsAllMode = copyFrom.oneVsAllMode;
 		allVsAllMode = copyFrom.allVsAllMode;
 		minVoteProportion = copyFrom.minVoteProportion;
+		falseClassSVlimit = copyFrom.falseClassSVlimit;
 		}
 
 	public Float getWeight(L key)

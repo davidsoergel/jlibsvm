@@ -159,9 +159,12 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 
 		// map from the SV index to the order of most recent activity (most active SVs first).
 		int[] svIdToRank;
+
+		// one of these is active at any given time, we swap them on alternating rounds
 		int[] rankToSvIdA;
 		int[] rankToSvIdB;
 
+		// one of these is active at any given time, we swap them on alternating rounds
 		int[] rankToCacheIndexA;
 		int[] rankToCacheIndexB;
 
@@ -210,7 +213,7 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 			diagonal = new float[numExamples];
 			Arrays.fill(diagonal, NOTCACHED);
 
-			// allocate triangular cache
+			// allocate triangular cache.  Does not include the diagonal!
 			data = new float[maxCachedRank][];
 			for (int i = 0; i < maxCachedRank; i++)
 				{
@@ -327,8 +330,9 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 
 		private void invalidate(int cacheIndex)
 			{
-			Arrays.fill(data[cacheIndex], NOTCACHED);
-			for (int i = cacheIndex; i < maxCachedRank; i++)
+			diagonal[cacheIndex] = NOTCACHED;  // the diagonal cell
+			Arrays.fill(data[cacheIndex], NOTCACHED);  // the matching row
+			for (int i = cacheIndex + 1; i < maxCachedRank; i++)  // the matching column
 				{
 				data[i][cacheIndex] = NOTCACHED;
 				}

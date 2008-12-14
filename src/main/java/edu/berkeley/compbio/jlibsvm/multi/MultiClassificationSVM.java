@@ -9,7 +9,11 @@ import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.labelinverter.LabelInverter;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -92,9 +96,27 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				Map<P, L> subExamples = new HashMap<P, L>(problem.getExamples().size());
 				L notLabel = labelInverter.invert(label);
 
-				for (Map.Entry<P, L> entry : problem.getExamples().entrySet())
+				Collection<Map.Entry<P, L>> entries = problem.getExamples().entrySet();
+				if (param.falseClassSVlimit != 0)
 					{
-					subExamples.put(entry.getKey(), entry.getValue() == label ? label : notLabel);
+					// guarantee entries in random order if limiting the number of false examples
+					List<Map.Entry<P, L>> entryList = new ArrayList<Map.Entry<P, L>>(entries);
+					Collections.shuffle(entryList);
+					entries = entryList;
+					}
+
+				int falseExamples = 0;
+				for (Map.Entry<P, L> entry : entries)
+					{
+					if (entry.getValue() == label)
+						{
+						subExamples.put(entry.getKey(), label);
+						}
+					else if (param.falseClassSVlimit == 0 || falseExamples <= param.falseClassSVlimit)
+						{
+						subExamples.put(entry.getKey(), notLabel);
+						falseExamples++;
+						}
 					}
 
 				BinaryClassificationProblem<L, P> subProblem =
@@ -176,9 +198,12 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 		int numClasses = examplesByLabel.size();
 
+		// first figure out the average total C for each class if the samples were uniformly distributed
 		float totalCPerClass = param.C * numExamples / numClasses;
 		//float totalCPerRemainder = totalCPerClass * (numClasses - 1);
 
+
+		// then assign the proper C per _sample_ within each class by distributing the per-class C
 		for (Map.Entry<L, Set<P>> entry : examplesByLabel.entrySet())
 			{
 			L label = entry.getKey();
@@ -188,12 +213,17 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			weights.put(label, weight);
 
 
-			//** For one-vs-all, we want the inverse class to have the same total weight as the positive class.
+			//** For one-vs-all, we want the inverse class to have the same total weight as the positive class, i.e. totalCPerClass.
 			//** Note scaling problem: we can't scale up the positive class, so we have to scale down the negative class
 			//** i.e. we pretend that all of the negative examples are in one class, and so have totalCPerClass.
 
 			L inverse = labelInverter.invert(label);
-			float inverseWeight = totalCPerClass / (numExamples - examples.size());
+			int numFalseExamples = param.falseClassSVlimit;
+			if (numFalseExamples == 0)
+				{
+				numFalseExamples = numExamples - examples.size();
+				}
+			float inverseWeight = totalCPerClass / numFalseExamples;
 			weights.put(inverse, inverseWeight);
 			}
 
