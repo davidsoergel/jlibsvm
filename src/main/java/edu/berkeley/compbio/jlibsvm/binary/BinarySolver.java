@@ -62,7 +62,9 @@ public class BinarySolver<L extends Comparable, P> extends Solver<L, P>
 		model.upperBoundPositive = Cp;
 		model.upperBoundNegative = Cn;
 
-		logger.info("optimization finished, #iter = " + iter);
+
+		// ** logging output disabled for now
+		//logger.info("optimization finished, #iter = " + iter);
 
 		return model;
 		}

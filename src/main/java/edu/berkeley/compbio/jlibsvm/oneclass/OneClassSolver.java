@@ -41,7 +41,8 @@ public class OneClassSolver<L, P> extends Solver<Float, P>
 
 		// we can't do this yet because in the regression case there are twice as many alphas as vectors		// model.compact();
 
-		logger.info("optimization finished, #iter = " + iter);
+		// ** logging output disabled for now
+		//logger.info("optimization finished, #iter = " + iter);
 
 		return model;
 		}

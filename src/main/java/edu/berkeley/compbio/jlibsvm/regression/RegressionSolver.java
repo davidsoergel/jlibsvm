@@ -83,7 +83,8 @@ public class RegressionSolver<P> extends Solver<Float, P>
 			sumAlpha += Math.abs(alphaDiff);
 			}
 
-		logger.info("nu = " + sumAlpha / (Cp * allExamples.size()));  //Cp == Cn == C
+		// ** logging output disabled for now
+		//logger.info("nu = " + sumAlpha / (Cp * allExamples.size()));  //Cp == Cn == C
 
 		// note at this point the solution includes _all_ vectors, even if their alphas are zero
 
@@ -91,7 +92,8 @@ public class RegressionSolver<P> extends Solver<Float, P>
 
 		//	model.upperBoundPositive = Cp;		//	model.upperBoundNegative = Cn;
 
-		logger.info("optimization finished, #iter = " + iter);
+		// ** logging output disabled for now
+		//logger.info("optimization finished, #iter = " + iter);
 
 		return model;
 		}

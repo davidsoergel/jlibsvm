@@ -72,11 +72,12 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 			}
 */
 
-		if (Cp == Cn)
-			{
-			logger.info("nu = " + model.getSumAlpha() / (Cp * problem.getExamples().size()));
-			}
-
+		// ** logging output disabled for now
+		/*	if (Cp == Cn)
+			  {
+			  logger.info("nu = " + model.getSumAlpha() / (Cp * problem.getExamples().size()));
+			  }
+  */
 		for (Map.Entry<P, Double> entry : model.supportVectors.entrySet())
 			{
 			final P key = entry.getKey();

@@ -37,7 +37,7 @@ public class GaussianRBFKernelTest
 				final double compositeResult = composite.evaluate(sv1, sv3);
 				final double explicitResult = explicit.evaluate(sv1, sv3);
 				final double diff = explicitResult - compositeResult;
-				assert Math.abs(diff) == 0;
+				assert Math.abs(diff) < 1e-10;
 				}
 			}
 		}

@@ -122,11 +122,13 @@ public abstract class Solver<L extends Comparable, P>
 
 		int activeSize = activeSet.size();
 
-		if (2 * nr_free < activeSize)
+
+		// ** logging output disabled for now
+		/*if (2 * nr_free < activeSize)
 			{
 			logger.info("using -h 0 may be faster");
 			}
-
+*/
 		if (nr_free * numExamples > 2 * activeSize * (numExamples - activeSize))
 			{
 			for (SolutionVector svA : inactiveSet)
@@ -290,7 +292,9 @@ public abstract class Solver<L extends Comparable, P>
 					{
 					do_shrinking();
 					}
-				logger.debug(".");
+
+				// ** logging output disabled for now
+				//logger.debug(".");
 				}//oldPair = pair;
 			SolutionVectorPair pair = selectWorkingPair();
 
@@ -298,7 +302,10 @@ public abstract class Solver<L extends Comparable, P>
 				{				// reconstruct the whole gradient
 				reconstruct_gradient();				// reset active set size and check
 				resetActiveSet();				//activeSize = numExamples;
-				logger.debug("*");				//svA = pair.svA;				//svB = pair.svB;
+
+
+				// ** logging output disabled for now
+				//logger.debug("*");				//svA = pair.svA;				//svB = pair.svB;
 
 				pair = selectWorkingPair();
 				if (pair.isOptimal) // pair already optimal

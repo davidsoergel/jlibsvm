@@ -89,7 +89,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			// create and train one vs all classifiers
 
 			logger.info("Training one-vs-all classifiers for " + numLabels + " labels");
-
+			int c = 0;
 			LabelInverter<L> labelInverter = problem.getLabelInverter();
 			for (L label : problem.getLabels())
 				{
@@ -129,8 +129,15 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				//float costOfPositiveMisclassification = weights.get(notLabel);
 
 				model.putOneVsAllModel(label, binarySvm.train(subProblem, weights.get(label), weights.get(notLabel)));
+
+				c++;
+				if (c % 100 == 0)
+					{
+					logger.info("Trained " + c + " one-vs-all models");
+					}
 				}
 			}
+
 
 		if (param.allVsAllMode != MultiClassModel.AllVsAllMode.None)
 			{
@@ -138,7 +145,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 			logger.info(
 					"Training " + numLabels * (numLabels - 1) + " one-vs-one classifiers for " + numLabels + " labels");
-
+			int c = 0;
 			Map<L, Set<P>> examplesByLabel = problem.getExamplesByLabel();
 			for (L label1 : problem.getLabels())
 				{
@@ -174,6 +181,11 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 								binarySvm.train(subProblem, weights.get(label1), weights.get(label2));
 
 						model.putOneVsOneModel(label1, label2, binaryModel);
+						c++;
+						if (c % 100 == 0)
+							{
+							logger.info("Trained " + c + " one-vs-one models");
+							}
 						}
 					}
 				}

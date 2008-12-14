@@ -184,6 +184,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			return null;
 			}
 
+		// if using the OneVsAll Best mode, then we should have had probabilities turned on, and allvsall voting will be ignored
 		if (oneVsAllMode == OneVsAllMode.Best)
 			{
 			L bestLabel = null;
@@ -205,12 +206,17 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		// stage 3: voting
 
+		int numLabels = oneVsAllModels.size();
+
 		Multiset<L> votes = new HashMultiset<L>();
 
 		//(oneClassThreshold <= 0 && oneVsAllThreshold <= 0) ||
 		if (allVsAllMode == AllVsAllMode.AllVsAll)
 			{
 			// vote using all models
+
+			logger.info("Sample voting using all pairs of " + numLabels + " labels ("
+					+ ((numLabels * (numLabels - 1)) / 2. - numLabels) + " models)");
 
 			// if requiredActive == 0 but there is a oneVsAll threshold, we may compute votes between two
 			// inactive classes; it may be that the winner of the voting fails the oneVsAll filter, in which
@@ -235,8 +241,18 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 			int requiredActive = allVsAllMode == AllVsAllMode.FilteredVsAll ? 1 : 2;
 
+			int numActive = oneVsAllProbabilities.size();
+			if (requiredActive == 1)
+				{
+				logger.info("Sample voting with all " + numLabels + " vs. " + numActive + " active labels ("
+						+ ((numLabels * (numActive - 1)) / 2. - numActive) + " models)");
+				}
+			else
+				{
+				logger.info("Sample voting using pairs of only " + numActive + " active labels ("
+						+ ((numActive * (numActive - 1)) / 2. - numActive) + " models)");
+				}
 			// assert requiredActive == 2 ? voteMode = VoteMode.FilteredVsFiltered
-
 			for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
 				{
 				int activeCount = (activeClasses.contains(binaryModel.getTrueLabel()) ? 1 : 0) + (
