@@ -178,6 +178,9 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		Map<L, Float> oneVsAllProbabilities = oneVsAllMode == OneVsAllMode.None ? null : computeOneVsAllProbabilities(x)
 				;
 
+		// now oneVsAllProbabilities is populated with all of the classes that pass the threshold (maybe all of them).
+
+
 		if ((oneVsAllMode == OneVsAllMode.Veto || oneVsAllMode == OneVsAllMode.VetoAndBreakTies)
 				&& oneVsAllProbabilities.isEmpty())
 			{
@@ -199,9 +202,6 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				}
 			return bestLabel;
 			}
-
-
-		// now oneVsAllProbabilities is populated with all of the classes that pass the threshold (maybe all of them).
 
 
 		// stage 3: voting
@@ -282,19 +282,20 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			// secondary sort by one-vs-all probability, if available
 			// tertiary sort be one-class probability, if available
 
-			Float oneVsAll = 0f;
+			Float oneVsAll = 1f; // pass by default
 			if (oneVsAllMode == OneVsAllMode.VetoAndBreakTies)
 				{
-				// if this is null it means this label didn't pass the threshold earlier
+				// if this is null it means this label didn't pass the threshold earlier, so it should fail here too
 				oneVsAll = oneVsAllProbabilities.get(label);
 				oneVsAll = oneVsAll == null ? 0f : oneVsAll;
 				}
+
 
 			// if this is null it means this label didn't pass the threshold earlier
 			//	Float oneClass = oneClassProbabilities.get(label);
 			//	oneClass = oneClass == null ? 0f : oneClass;
 
-			if (count > bestCount || (count == bestCount && (oneVsAll > bestOneVsAllProbability)))
+			if (count > bestCount || (count == bestCount && oneVsAll > bestOneVsAllProbability))
 				//	|| oneClass > bestOneClassProbability)))
 				{
 				bestLabel = label;
@@ -306,10 +307,14 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 
 		// stage 5: check for inadequate evidence filters.
-		// The oneVsAllThreshold thing is partly implicit in having filtered on it earlier, but there are loopholes so it's safer to just check
 
-		if ((((double) bestCount / (double) countSum) < minVoteProportion)
-				|| bestOneVsAllProbability < oneVsAllThreshold)
+		if (((double) bestCount / (double) countSum) < minVoteProportion)
+			{
+			return null;
+			}
+
+		if ((oneVsAllMode == OneVsAllMode.VetoAndBreakTies || oneVsAllMode == OneVsAllMode.Veto)
+				&& bestOneVsAllProbability < oneVsAllThreshold)
 			{
 			return null;
 			}
