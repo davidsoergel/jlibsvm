@@ -112,7 +112,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 						{
 						subExamples.put(entry.getKey(), label);
 						}
-					else if (param.falseClassSVlimit == 0 || falseExamples <= param.falseClassSVlimit)
+					else if (param.falseClassSVlimit == 0 || falseExamples < param.falseClassSVlimit)
 						{
 						subExamples.put(entry.getKey(), notLabel);
 						falseExamples++;
@@ -144,7 +144,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			// create and train all vs all classifiers
 
 			logger.info(
-					"Training " + numLabels * (numLabels - 1) + " one-vs-one classifiers for " + numLabels + " labels");
+					"Training " + (numLabels * (numLabels - 1))/2 + " one-vs-one classifiers for " + numLabels + " labels");
 			int c = 0;
 			Map<L, Set<P>> examplesByLabel = problem.getExamplesByLabel();
 			for (L label1 : problem.getLabels())
