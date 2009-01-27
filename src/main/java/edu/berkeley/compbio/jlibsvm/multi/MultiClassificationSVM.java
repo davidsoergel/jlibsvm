@@ -133,7 +133,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				c++;
 				if (c % 100 == 0)
 					{
-					logger.info("Trained " + c + " one-vs-all models");
+					logger.debug("Trained " + c + " one-vs-all models");
 					}
 				}
 			}
@@ -184,7 +184,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 						c++;
 						if (c % 100 == 0)
 							{
-							logger.info("Trained " + c + " one-vs-one models");
+							logger.debug("Trained " + c + " one-vs-one models");
 							}
 						}
 					}

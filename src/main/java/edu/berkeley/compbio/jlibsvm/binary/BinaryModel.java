@@ -107,10 +107,10 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		// output SVs
 
 		int nBSV = 0;
-		for (Map.Entry<P, Double> entry : supportVectors.entrySet())
+		for (int i = 0; i < numSVs; i++)
 			{
-			Double alpha = entry.getValue();
-			P point = entry.getKey();
+			Double alpha = alphas[i];
+			P point = SVs[i];
 			if (Math.abs(alpha) > 0)
 				{
 				if (problem.getTargetValue(point).equals(trueLabel))
@@ -142,10 +142,10 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		{
 		float sum = 0;
 
-		for (Map.Entry<P, Double> entry : supportVectors.entrySet())
+		for (int i = 0; i < numSVs; i++)
 			{
-			float kvalue = (float) kernel.evaluate(x, entry.getKey());
-			sum += entry.getValue() * kvalue;
+			float kvalue = (float) kernel.evaluate(x, SVs[i]);
+			sum += alphas[i] * kvalue;
 			}
 
 		sum -= rho;

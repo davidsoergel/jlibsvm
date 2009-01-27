@@ -8,7 +8,10 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -18,7 +21,15 @@ import java.util.Properties;
  */
 public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<P>
 	{
+	// used only during training, then ditched
 	public Map<P, Double> supportVectors;
+
+	// more compact representation used after training
+	public int numSVs;
+	public P[] SVs;
+	public double[] alphas;
+
+	//public List<Map.Entry<P, Double>> supportVectorList;
 	//public float[] alpha;
 	public float rho;
 
@@ -55,6 +66,7 @@ public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<
 
 		//List<Integer> nonZeroAlphaIndexes = new ArrayList<Integer>();
 
+		/*
 		for (Iterator<Map.Entry<P, Double>> i = supportVectors.entrySet().iterator(); i.hasNext();)
 			//for(Map.Entry<P,Float> entry : supportVectors.entrySet())
 			{
@@ -65,6 +77,29 @@ public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<
 				//supportVectors.remove(entry); // ** lookout for concurrent modification
 				}
 			}
+			*/
+
+		// put the keys and values in parallel arrays, to free memory and maybe make things a bit faster (?)
+
+		numSVs = supportVectors.size();
+		SVs = (P[]) new Object[numSVs];
+		alphas = new double[numSVs];
+
+		int c = 0;
+		for (Map.Entry<P, Double> entry : supportVectors.entrySet())
+			{
+			if (entry.getValue() != 0)
+				{
+				SVs[c] = entry.getKey();
+				alphas[c] = entry.getValue();
+				c++;
+				}
+			}
+
+		//	supportVectorList =
+		//			new ArrayList<Map.Entry<P, Double>>(supportVectors.entrySet());  // reallocate to free memory
+		supportVectors = null;
+
 		/*
 		for (int i = 0; i < supportVectors.size(); i++)
 			{
@@ -95,7 +130,7 @@ public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<
 		super.writeToStream(fp);
 
 		fp.writeBytes("rho " + rho + "\n");
-		fp.writeBytes("total_sv " + supportVectors.size() + "\n");
+		fp.writeBytes("total_sv " + numSVs + "\n");
 		}
 
 
@@ -103,14 +138,13 @@ public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<
 		{
 		fp.writeBytes("SV\n");
 
-		for (Map.Entry<P, Double> entry : supportVectors.entrySet())
+		for (int i = 0; i < numSVs; i++)
 			{
-
-			fp.writeBytes(entry.getValue() + " ");
+			fp.writeBytes(alphas[i] + " ");
 
 			//	P p = supportVectors.get(i);
 
-			fp.writeBytes(entry.getKey().toString());
+			fp.writeBytes(SVs[i].toString());
 
 /*			if (kernel instanceof PrecomputedKernel)
 				{

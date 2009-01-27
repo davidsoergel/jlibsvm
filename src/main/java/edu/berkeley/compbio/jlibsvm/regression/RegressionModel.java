@@ -41,9 +41,9 @@ public class RegressionModel<P> extends AlphaModel<Float, P> implements Continuo
 	public Float predictValue(P x)
 		{
 		float sum = 0;
-		for (Map.Entry<P, Double> entry : supportVectors.entrySet())
+		for (int i = 0; i < numSVs; i++)
 			{
-			sum += entry.getValue() * kernel.evaluate(x, entry.getKey());
+			sum += alphas[i] * kernel.evaluate(x, SVs[i]);
 			}
 		sum -= rho;
 		return sum;

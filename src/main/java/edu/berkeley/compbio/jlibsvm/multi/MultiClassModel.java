@@ -215,7 +215,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			{
 			// vote using all models
 
-			logger.info("Sample voting using all pairs of " + numLabels + " labels ("
+			logger.debug("Sample voting using all pairs of " + numLabels + " labels ("
 					+ ((numLabels * (numLabels - 1)) / 2. - numLabels) + " models)");
 
 			// if requiredActive == 0 but there is a oneVsAll threshold, we may compute votes between two
@@ -241,17 +241,19 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 			int requiredActive = allVsAllMode == AllVsAllMode.FilteredVsAll ? 1 : 2;
 
-			int numActive = oneVsAllProbabilities.size();
+
+			int numActive = oneVsAllProbabilities != null ? oneVsAllProbabilities.size() : numLabels;
 			if (requiredActive == 1)
 				{
-				logger.info("Sample voting with all " + numLabels + " vs. " + numActive + " active labels ("
+				logger.debug("Sample voting with all " + numLabels + " vs. " + numActive + " active labels ("
 						+ ((numLabels * (numActive - 1)) / 2. - numActive) + " models)");
 				}
 			else
 				{
-				logger.info("Sample voting using pairs of only " + numActive + " active labels ("
+				logger.debug("Sample voting using pairs of only " + numActive + " active labels ("
 						+ ((numActive * (numActive - 1)) / 2. - numActive) + " models)");
 				}
+
 			// assert requiredActive == 2 ? voteMode = VoteMode.FilteredVsFiltered
 			for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
 				{

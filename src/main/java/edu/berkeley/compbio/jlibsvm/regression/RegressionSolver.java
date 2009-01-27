@@ -66,7 +66,9 @@ public class RegressionSolver<P> extends Solver<Float, P>
 
 		model.supportVectors = new HashMap<P, Double>();
 		for (SolutionVector<P> svC : allExamples)
-			{			// the examples contain both a true and a false SolutionVector for each P.			// we want the difference of their alphas
+			{
+			// the examples contain both a true and a false SolutionVector for each P.
+			// we want the difference of their alphas
 
 			Double alphaDiff = model.supportVectors.get(svC.point);
 			if (alphaDiff == null)
