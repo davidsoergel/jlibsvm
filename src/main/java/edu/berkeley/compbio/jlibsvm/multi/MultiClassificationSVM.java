@@ -143,8 +143,8 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			{
 			// create and train all vs all classifiers
 
-			logger.info(
-					"Training " + (numLabels * (numLabels - 1))/2 + " one-vs-one classifiers for " + numLabels + " labels");
+			logger.info("Training " + (numLabels * (numLabels - 1)) / 2 + " one-vs-one classifiers for " + numLabels
+					+ " labels");
 			int c = 0;
 			Map<L, Set<P>> examplesByLabel = problem.getExamplesByLabel();
 			for (L label1 : problem.getLabels())
@@ -210,7 +210,8 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 		int numClasses = examplesByLabel.size();
 
-		// first figure out the average total C for each class if the samples were uniformly distributed
+		// first figu
+		// re out the average total C for each class if the samples were uniformly distributed
 		float totalCPerClass = param.C * numExamples / numClasses;
 		//float totalCPerRemainder = totalCPerClass * (numClasses - 1);
 
@@ -243,28 +244,28 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			{
 			logger.warn("Ignoring provided class weights; we compute them from C and the number of examples");
 			}
-/*
-		// use param.C as the default weight...
-		for (L label : problem.getLabels())
-			{
-			weights.put(label, param.C);
-			}
+		/*
+	   // use param.C as the default weight...
+	   for (L label : problem.getLabels())
+		   {
+		   weights.put(label, param.C);
+		   }
 
 
-		// ... but if any weights are provided, apply them
-		for (Map.Entry<L, Float> weightEntry : param.getWeights().entrySet())
-			{
-			L key = weightEntry.getKey();
-			if (problem.getLabels().contains(key))
-				{
-				Float w = weightEntry.getValue();
-				weights.put(key, w * param.C);
-				}
-			else
-				{
-				logger.warn("class label " + key + " specified in weight is not found");
-				}
-			}*/
+	   // ... but if any weights are provided, apply them
+	   for (Map.Entry<L, Float> weightEntry : param.getWeights().entrySet())
+		   {
+		   L key = weightEntry.getKey();
+		   if (problem.getLabels().contains(key))
+			   {
+			   Float w = weightEntry.getValue();
+			   weights.put(key, w * param.C);
+			   }
+		   else
+			   {
+			   logger.warn("class label " + key + " specified in weight is not found");
+			   }
+		   }*/
 		return weights;
 		}
 

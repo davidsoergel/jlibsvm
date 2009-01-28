@@ -282,7 +282,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 			// primary sort by number of votes
 			// secondary sort by one-vs-all probability, if available
-			// tertiary sort be one-class probability, if available
+			// tertiary sort be
+			// one-class probability, if available
 
 			Float oneVsAll = 1f; // pass by default
 			if (oneVsAllMode == OneVsAllMode.VetoAndBreakTies)

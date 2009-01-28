@@ -138,6 +138,8 @@ public abstract class Solver<L extends Comparable, P>
 					if (svB.isFree()) //is_free(j))
 						{
 						svA.G += svB.alpha * Q.evaluate(svA, svB);//[j];
+						svA.wasEvaluated = true;
+						svB.wasEvaluated = true;
 						}
 					}
 				}
@@ -152,6 +154,8 @@ public abstract class Solver<L extends Comparable, P>
 					for (SolutionVector svB : inactiveSet)
 						{
 						svB.G += svA.alpha * Q.evaluate(svA, svB);
+						svA.wasEvaluated = true;
+						svB.wasEvaluated = true;
 						}
 					}
 				}
@@ -260,12 +264,16 @@ public abstract class Solver<L extends Comparable, P>
 				for (SolutionVector svB : allExamples)
 					{
 					svB.G += svA.alpha * Q.evaluate(svA, svB);
+					svA.wasEvaluated = true;
+					svB.wasEvaluated = true;
 					}
 				if (svA.isUpperBound()) //is_upper_bound(i))
 					{
 					for (SolutionVector svB : allExamples)
 						{
 						svB.G_bar += svA.getC(Cp, Cn) * Q.evaluate(svA, svB); //getC(i) * Q_i[j];
+						svA.wasEvaluated = true;
+						svB.wasEvaluated = true;
 						}
 					}
 				}
@@ -342,6 +350,9 @@ public abstract class Solver<L extends Comparable, P>
 			if (svA.targetValue != svB.targetValue)
 				{
 				float quad_coef = Q.evaluate(svA, svA) + Q.evaluate(svB, svB) + 2 * Q.evaluate(svA, svB);
+				svA.wasEvaluated = true;
+				svB.wasEvaluated = true;
+
 				if (quad_coef <= 0)
 					{
 					quad_coef = 1e-12f;
@@ -387,6 +398,9 @@ public abstract class Solver<L extends Comparable, P>
 			else
 				{
 				float quad_coef = Q.evaluate(svA, svA) + Q.evaluate(svB, svB) - 2 * Q.evaluate(svA, svB);
+				svA.wasEvaluated = true;
+				svB.wasEvaluated = true;
+
 				if (quad_coef <= 0)
 					{
 					quad_coef = 1e-12f;
@@ -447,6 +461,9 @@ public abstract class Solver<L extends Comparable, P>
 			for (SolutionVector<P> svC : activeSet)
 				{
 				svC.G += Q.evaluate(svA, svC) * delta_alpha_i + Q.evaluate(svB, svC) * delta_alpha_j;
+				svA.wasEvaluated = true;
+				svB.wasEvaluated = true;
+				svC.wasEvaluated = true;
 				}
 
 			// update alpha_status and G_bar
@@ -463,6 +480,8 @@ public abstract class Solver<L extends Comparable, P>
 					for (SolutionVector svC : allExamples)
 						{
 						svC.G_bar -= C_i * Q.evaluate(svA, svC);
+						svA.wasEvaluated = true;
+						svC.wasEvaluated = true;
 						}
 					}
 				else
@@ -470,6 +489,8 @@ public abstract class Solver<L extends Comparable, P>
 					for (SolutionVector svC : allExamples)
 						{
 						svC.G_bar += C_i * Q.evaluate(svA, svC);
+						svA.wasEvaluated = true;
+						svC.wasEvaluated = true;
 						}
 					}
 				}
@@ -481,6 +502,8 @@ public abstract class Solver<L extends Comparable, P>
 					for (SolutionVector svC : allExamples)
 						{
 						svC.G_bar -= C_j * Q.evaluate(svB, svC);
+						svB.wasEvaluated = true;
+						svC.wasEvaluated = true;
 						}
 					}
 				else
@@ -488,6 +511,8 @@ public abstract class Solver<L extends Comparable, P>
 					for (SolutionVector svC : allExamples)
 						{
 						svC.G_bar += C_j * Q.evaluate(svB, svC);
+						svB.wasEvaluated = true;
+						svC.wasEvaluated = true;
 						}
 					}
 				}
@@ -581,6 +606,9 @@ public abstract class Solver<L extends Comparable, P>
 						double obj_diff;
 						double quad_coef = Q.evaluate(GmaxSV, GmaxSV) + Q.evaluate(sv, sv)
 								- 2.0f * (GmaxSV.targetValue ? 1f : -1f) * Q.evaluate(GmaxSV, sv);
+						GmaxSV.wasEvaluated = true;
+						sv.wasEvaluated = true;
+
 						if (quad_coef > 0)
 							{
 							obj_diff = -(grad_diff * grad_diff) / quad_coef;
@@ -612,6 +640,9 @@ public abstract class Solver<L extends Comparable, P>
 						double obj_diff;
 						double quad_coef = Q.evaluate(GmaxSV, GmaxSV) + Q.evaluate(sv, sv)
 								+ 2.0f * (GmaxSV.targetValue ? 1f : -1f) * Q.evaluate(GmaxSV, sv);
+						GmaxSV.wasEvaluated = true;
+						sv.wasEvaluated = true;
+
 						if (quad_coef > 0)
 							{
 							obj_diff = -(grad_diff * grad_diff) / quad_coef;
@@ -630,7 +661,6 @@ public abstract class Solver<L extends Comparable, P>
 					}
 				}
 			}
-
 
 		return new SolutionVectorPair(GmaxSV, GminSV, Gmax + Gmax2 < eps);
 

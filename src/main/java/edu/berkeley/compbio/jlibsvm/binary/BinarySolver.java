@@ -49,15 +49,44 @@ public class BinarySolver<L extends Comparable, P> extends Solver<L, P>
 		// note the swapping process applied to the Q matrix as well, so we have to map that back too
 
 		//	model.alpha = new float[numExamples];		//	model.supportVectors = new SparseVector[numExamples];
+		int trueEval = 0, trueNotEval = 0, falseEval = 0, falseNotEval = 0;
+
 		model.supportVectors = new HashMap<P, Double>();
 		for (SolutionVector<P> svC : allExamples)
 			{
 			model.supportVectors.put(svC.point, svC.alpha);
+
+			if (svC.alpha != 0)
+				{
+				if (svC.wasEvaluated)
+					{
+					if (svC.targetValue)
+						{
+						trueEval++;
+						}
+					else
+						{
+						falseEval++;
+						}
+					}
+				else
+					{
+					if (svC.targetValue)
+						{
+						trueNotEval++;
+						}
+					else
+						{
+						falseNotEval++;
+						}
+					}
+				}
 			}
 
 		// note at this point the solution includes _all_ vectors, even if their alphas are zero
 
-		// we can't do this yet because in the regression case there are twice as many alphas as vectors		// model.compact();
+		// we can't do this yet because in the regression case there are twice as many alphas as vectors
+		// model.compact();
 
 		model.upperBoundPositive = Cp;
 		model.upperBoundNegative = Cn;

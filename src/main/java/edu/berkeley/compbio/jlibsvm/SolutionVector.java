@@ -27,7 +27,10 @@ public class SolutionVector<P>
 	public double G;
 	public float linearTerm;
 	float G_bar;
-//	private Solver solver;
+
+	// for debugging
+	public boolean wasEvaluated = false;
+	//	private Solver solver;
 
 	/*	public SolutionVector(P key, Boolean value)
 	   {

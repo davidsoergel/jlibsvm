@@ -8,10 +8,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -66,7 +63,7 @@ public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<
 
 		//List<Integer> nonZeroAlphaIndexes = new ArrayList<Integer>();
 
-		/*
+		// do this first so as to make the arrays the right size below
 		for (Iterator<Map.Entry<P, Double>> i = supportVectors.entrySet().iterator(); i.hasNext();)
 			//for(Map.Entry<P,Float> entry : supportVectors.entrySet())
 			{
@@ -77,7 +74,7 @@ public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<
 				//supportVectors.remove(entry); // ** lookout for concurrent modification
 				}
 			}
-			*/
+
 
 		// put the keys and values in parallel arrays, to free memory and maybe make things a bit faster (?)
 
@@ -88,12 +85,12 @@ public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<
 		int c = 0;
 		for (Map.Entry<P, Double> entry : supportVectors.entrySet())
 			{
-			if (entry.getValue() != 0)
-				{
-				SVs[c] = entry.getKey();
-				alphas[c] = entry.getValue();
-				c++;
-				}
+			//		if (entry.getValue() != 0)
+			//			{
+			SVs[c] = entry.getKey();
+			alphas[c] = entry.getValue();
+			c++;
+			//			}
 			}
 
 		//	supportVectorList =
@@ -146,17 +143,17 @@ public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<
 
 			fp.writeBytes(SVs[i].toString());
 
-/*			if (kernel instanceof PrecomputedKernel)
-				{
-				fp.writeBytes("0:" + (int) (p.values[0]));
-				}
-			else
-				{
-				for (int j = 0; j < p.indexes.length; j++)
-					{
-					fp.writeBytes(p.indexes[j] + ":" + p.values[j] + " ");
-					}
-				}*/
+			/*			if (kernel instanceof PrecomputedKernel)
+			   {
+			   fp.writeBytes("0:" + (int) (p.values[0]));
+			   }
+		   else
+			   {
+			   for (int j = 0; j < p.indexes.length; j++)
+				   {
+				   fp.writeBytes(p.indexes[j] + ":" + p.values[j] + " ");
+				   }
+			   }*/
 			fp.writeBytes("\n");
 			}
 		}
