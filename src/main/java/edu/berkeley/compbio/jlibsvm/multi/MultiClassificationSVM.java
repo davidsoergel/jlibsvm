@@ -131,6 +131,8 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 				model.putOneVsAllModel(label, binarySvm.train(subProblem, weights.get(label), weights.get(notLabel)));
 
+				logger.debug("one-vs-all " + c + ": " + qMatrix.perfString());
+
 				c++;
 				if (c % 100 == 0)
 					{
@@ -183,6 +185,9 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 								binarySvm.train(subProblem, weights.get(label1), weights.get(label2));
 
 						model.putOneVsOneModel(label1, label2, binaryModel);
+
+						logger.debug("one-vs-one " + c + ": " + qMatrix.perfString());
+
 						c++;
 						if (c % 100 == 0)
 							{
