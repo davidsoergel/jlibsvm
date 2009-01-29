@@ -28,10 +28,10 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 
 	protected KernelFunction<P> kernel;
 
-	KernelQMatrix(KernelFunction<P> kernel, int numExamples, int cacheRowsSquared)
+	KernelQMatrix(KernelFunction<P> kernel, int numExamples, int cacheRows)
 		{
 		this.kernel = kernel;
-		this.cache = new RecentActivitySquareCache(numExamples, cacheRowsSquared);
+		this.cache = new RecentActivitySquareCache(numExamples, cacheRows);
 		}
 
 	public abstract float computeQ(SolutionVector<P> a, SolutionVector<P> b);
@@ -181,12 +181,12 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 		long diagonalhits = 0;
 		long diagonalmisses = 0;
 
-		public RecentActivitySquareCache(int numExamples, int cacheRowsSquared)
+		public RecentActivitySquareCache(int numExamples, int cacheRows)
 			{
 			this.numExamples = numExamples;
 
 			// how big should the cache really be
-			maxCachedRank = Math.min(numExamples, cacheRowsSquared);
+			maxCachedRank = Math.min(numExamples, cacheRows);
 
 			// allocate rank maps
 			svIdToRank = new int[numExamples];
