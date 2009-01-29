@@ -9,9 +9,9 @@ import edu.berkeley.compbio.jlibsvm.SolutionModel;
 import edu.berkeley.compbio.jlibsvm.SparseVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblemImpl;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.C_SVC;
+import edu.berkeley.compbio.jlibsvm.binary.MutableBinaryClassificationProblemImpl;
 import edu.berkeley.compbio.jlibsvm.binary.Nu_SVC;
 import edu.berkeley.compbio.jlibsvm.kernel.GammaKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.GaussianRBFKernel;
@@ -21,12 +21,12 @@ import edu.berkeley.compbio.jlibsvm.kernel.PolynomialKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.PrecomputedKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.SigmoidKernel;
 import edu.berkeley.compbio.jlibsvm.labelinverter.ByteLabelInverter;
-import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblemImpl;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
+import edu.berkeley.compbio.jlibsvm.multi.MutableMultiClassProblemImpl;
 import edu.berkeley.compbio.jlibsvm.oneclass.OneClassSVC;
 import edu.berkeley.compbio.jlibsvm.regression.EpsilonSVR;
+import edu.berkeley.compbio.jlibsvm.regression.MutableRegressionProblemImpl;
 import edu.berkeley.compbio.jlibsvm.regression.Nu_SVR;
-import edu.berkeley.compbio.jlibsvm.regression.RegressionProblemImpl;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
 
 import java.applet.Applet;
@@ -374,22 +374,20 @@ public class svm_toy extends Applet
 		MutableSvmProblem prob;
 		if (svm instanceof RegressionSVM)
 			{
-			prob = (MutableSvmProblem) new RegressionProblemImpl<SparseVector>(point_list.size());
+			prob = new MutableRegressionProblemImpl<SparseVector>(point_list.size());
 			}
 		else if (numClasses == 1)
 			{
-			prob = (MutableSvmProblem) new RegressionProblemImpl<SparseVector>(point_list.size());
+			prob = new MutableRegressionProblemImpl<SparseVector>(point_list.size());
 			}
 		else if (numClasses == 2)
 				{
-				prob = (MutableSvmProblem) new BinaryClassificationProblemImpl<Byte, SparseVector>(Byte.class,
-				                                                                                   point_list.size());
+				prob = new MutableBinaryClassificationProblemImpl<Byte, SparseVector>(Byte.class, point_list.size());
 				}
 			else
 				{
-				prob = (MutableSvmProblem) new MultiClassProblemImpl<Byte, SparseVector>(Byte.class,
-				                                                                         new ByteLabelInverter(),
-				                                                                         point_list.size());
+				prob = new MutableMultiClassProblemImpl<Byte, SparseVector>(Byte.class, new ByteLabelInverter(),
+				                                                            point_list.size());
 				}
 
 		//prob.l = point_list.size();

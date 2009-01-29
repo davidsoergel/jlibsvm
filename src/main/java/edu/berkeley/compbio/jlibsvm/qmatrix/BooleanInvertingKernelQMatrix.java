@@ -3,8 +3,6 @@ package edu.berkeley.compbio.jlibsvm.qmatrix;
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 
-import java.util.Map;
-
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
@@ -41,7 +39,7 @@ public class BooleanInvertingKernelQMatrix<P> extends BasicKernelQMatrix<P>
 		}
 
 
-	Map<P, Boolean> examples;
+	//	Map<P, Boolean> examples;
 
 	public float computeQ(SolutionVector<P> a, SolutionVector<P> b)
 		{

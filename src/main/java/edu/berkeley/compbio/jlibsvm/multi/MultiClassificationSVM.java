@@ -108,7 +108,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				int falseExamples = 0;
 				for (Map.Entry<P, L> entry : entries)
 					{
-					if (entry.getValue() == label)
+					if (entry.getValue().equals(label))
 						{
 						subExamples.put(entry.getKey(), label);
 						}
@@ -120,7 +120,8 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 					}
 
 				BinaryClassificationProblem<L, P> subProblem =
-						new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples);
+						new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples,
+						                                          problem.getExampleIds());
 
 				//** Unbalanced data: see prepareWeights
 				// since these will be extremely unbalanced, this should nearly guarantee that no positive examples are misclassified.
@@ -174,7 +175,8 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 						//BinaryClassificationProblem<P> subProblem = new BinaryClassificationProblem<P>(label1Examples, label2Examples);
 
 						BinaryClassificationProblem<L, P> subProblem =
-								new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples);
+								new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples,
+								                                          problem.getExampleIds());
 
 						//** Unbalanced data: see prepareWeights
 						final BinaryModel<L, P> binaryModel =

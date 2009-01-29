@@ -1,11 +1,12 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
 import edu.berkeley.compbio.jlibsvm.AbstractFold;
+import edu.berkeley.compbio.jlibsvm.ExplicitSvmProblemImpl;
 import edu.berkeley.compbio.jlibsvm.Fold;
-import edu.berkeley.compbio.jlibsvm.MutableSvmProblemImpl;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +15,7 @@ import java.util.Set;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class RegressionProblemImpl<P> extends MutableSvmProblemImpl<Float, P, RegressionProblem<P>>
+public class RegressionProblemImpl<P> extends ExplicitSvmProblemImpl<Float, P, RegressionProblem<P>>
 		implements RegressionProblem<P>
 	{
 	public List<Float> getLabels()
@@ -22,24 +23,11 @@ public class RegressionProblemImpl<P> extends MutableSvmProblemImpl<Float, P, Re
 		throw new SvmException("Shouldn't try to get unique target values for a regression problem");
 		}
 
-	public RegressionProblemImpl(int numExamples)
+	public RegressionProblemImpl(Map<P, Float> examples, HashMap<P, Integer> exampleIds)
 		{
-		super(numExamples);
+		super(examples, exampleIds);
 		//	targetValues = new Float[numExamples];
 		}
-
-	public RegressionProblemImpl(Map<P, Float> examples)
-		{
-		super(examples);
-		//	targetValues = new Float[numExamples];
-		}
-
-	public void addExampleFloat(P point, Float x)
-		{
-		addExample(point, x);
-		//putTargetValue(i, x);
-		}
-
 
 	protected Fold<Float, P, RegressionProblem<P>> makeFold(Set<P> heldOutPoints)
 		{
@@ -78,6 +66,11 @@ public class RegressionProblemImpl<P> extends MutableSvmProblemImpl<Float, P, Re
 		public int getId(P key)
 			{
 			return RegressionProblemImpl.this.getId(key);
+			}
+
+		public Map<P, Integer> getExampleIds()
+			{
+			return RegressionProblemImpl.this.getExampleIds();
 			}
 		}
 	}

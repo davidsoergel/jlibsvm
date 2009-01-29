@@ -1,9 +1,8 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
 import edu.berkeley.compbio.jlibsvm.AbstractFold;
+import edu.berkeley.compbio.jlibsvm.ExplicitSvmProblemImpl;
 import edu.berkeley.compbio.jlibsvm.Fold;
-import edu.berkeley.compbio.jlibsvm.MutableSvmProblemImpl;
-import edu.berkeley.compbio.jlibsvm.SvmException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
@@ -16,7 +15,7 @@ import java.util.Set;
  * @version $Id$
  */
 public class BinaryClassificationProblemImpl<L extends Comparable, P>
-		extends MutableSvmProblemImpl<L, P, BinaryClassificationProblem<L, P>>
+		extends ExplicitSvmProblemImpl<L, P, BinaryClassificationProblem<L, P>>
 		implements BinaryClassificationProblem<L, P>
 	{
 	Class labelClass;
@@ -55,12 +54,6 @@ public class BinaryClassificationProblemImpl<L extends Comparable, P>
 		return falseLabel;
 		}
 
-	public BinaryClassificationProblemImpl(Class labelClass, int numExamples)
-		{
-		super(numExamples);
-
-		this.labelClass = labelClass;
-		}
 
 	public void setupLabels()
 		{
@@ -70,9 +63,9 @@ public class BinaryClassificationProblemImpl<L extends Comparable, P>
 		trueLabel = result.get(1);
 		}
 
-	public BinaryClassificationProblemImpl(Class labelClass, Map<P, L> examples)
+	public BinaryClassificationProblemImpl(Class labelClass, Map<P, L> examples, Map<P, Integer> exampleIds)
 		{
-		super(examples);
+		super(examples, exampleIds);
 		setupLabels();
 		this.labelClass = labelClass;
 		}
@@ -84,38 +77,27 @@ public class BinaryClassificationProblemImpl<L extends Comparable, P>
  */
 
 	// not bothering with generic "L"
-/*	Object trueLabel;
-	Object falseLabel;
+	/*	Object trueLabel;
+   Object falseLabel;
 
-	public BinaryClassificationProblemImpl(Object trueLabel, Object falseLabel, Map<P, Boolean> examples)
-		{
-		this(examples);
-		this.trueLabel = trueLabel;
-		this.falseLabel = falseLabel;
-		}*/
+   public BinaryClassificationProblemImpl(Object trueLabel, Object falseLabel, Map<P, Boolean> examples)
+	   {
+	   this(examples);
+	   this.trueLabel = trueLabel;
+	   this.falseLabel = falseLabel;
+	   }*/
 
 	//Float trueClass = null;
 
-/*	public void addExampleFloat(P point, Float x)
-		{
-		if (getLabels().size() == 0) // == null)
-			{
+	/*	public void addExampleFloat(P point, Float x)
+	   {
+	   if (getLabels().size() == 0) // == null)
+		   {
 trueLabel =
-			}
-		addExample(point, x.equals(trueLabel));
-		}*/
+		   }
+	   addExample(point, x.equals(trueLabel));
+	   }*/
 
-	public void addExampleFloat(P point, Float x)
-		{
-		try
-			{
-			addExample(point, (L) labelClass.getConstructor(String.class).newInstance(x.toString()));
-			}
-		catch (Exception e)
-			{
-			throw new SvmException(e);
-			}
-		}
 
 	protected Fold<L, P, BinaryClassificationProblem<L, P>> makeFold(Set<P> heldOutPoints)
 		{
@@ -187,6 +169,11 @@ trueLabel =
 		public int getId(P key)
 			{
 			return BinaryClassificationProblemImpl.this.getId(key);
+			}
+
+		public Map<P, Integer> getExampleIds()
+			{
+			return BinaryClassificationProblemImpl.this.getExampleIds();
 			}
 		}
 	}

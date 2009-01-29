@@ -640,9 +640,6 @@ public abstract class Solver<L extends Comparable, P>
 						double obj_diff;
 						double quad_coef = Q.evaluate(GmaxSV, GmaxSV) + Q.evaluate(sv, sv)
 								+ 2.0f * (GmaxSV.targetValue ? 1f : -1f) * Q.evaluate(GmaxSV, sv);
-						GmaxSV.wasEvaluated = true;
-						sv.wasEvaluated = true;
-
 						if (quad_coef > 0)
 							{
 							obj_diff = -(grad_diff * grad_diff) / quad_coef;

@@ -11,6 +11,8 @@ public interface SvmProblem<L extends Comparable, P> //, R extends SvmProblem<L,
 	{
 	Map<P, L> getExamples();
 
+	Map<P, Integer> getExampleIds();
+
 	int getId(P key);
 	//int getNumLabels();
 

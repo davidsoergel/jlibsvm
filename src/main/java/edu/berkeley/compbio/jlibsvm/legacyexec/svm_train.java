@@ -6,9 +6,9 @@ import edu.berkeley.compbio.jlibsvm.SolutionModel;
 import edu.berkeley.compbio.jlibsvm.SparseVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblemImpl;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.C_SVC;
+import edu.berkeley.compbio.jlibsvm.binary.MutableBinaryClassificationProblemImpl;
 import edu.berkeley.compbio.jlibsvm.binary.Nu_SVC;
 import edu.berkeley.compbio.jlibsvm.kernel.GammaKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.GaussianRBFKernel;
@@ -18,12 +18,12 @@ import edu.berkeley.compbio.jlibsvm.kernel.PolynomialKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.PrecomputedKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.SigmoidKernel;
 import edu.berkeley.compbio.jlibsvm.labelinverter.StringLabelInverter;
-import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblemImpl;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
+import edu.berkeley.compbio.jlibsvm.multi.MutableMultiClassProblemImpl;
 import edu.berkeley.compbio.jlibsvm.oneclass.OneClassSVC;
 import edu.berkeley.compbio.jlibsvm.regression.EpsilonSVR;
+import edu.berkeley.compbio.jlibsvm.regression.MutableRegressionProblemImpl;
 import edu.berkeley.compbio.jlibsvm.regression.Nu_SVR;
-import edu.berkeley.compbio.jlibsvm.regression.RegressionProblemImpl;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -390,7 +390,7 @@ public class svm_train
 		// build problem
 		if (svm instanceof RegressionSVM)
 			{
-			problem = (MutableSvmProblem) new RegressionProblemImpl(vy.size());
+			problem = new MutableRegressionProblemImpl(vy.size());
 			}
 		else
 			{
@@ -398,17 +398,17 @@ public class svm_train
 			int numClasses = uniqueClasses.size();
 			if (numClasses == 1)
 				{
-				problem = (MutableSvmProblem) new RegressionProblemImpl(vy.size());
+				problem = new MutableRegressionProblemImpl(vy.size());
 				}
 			else if (numClasses == 2)
 				{
-				problem = (MutableSvmProblem) new BinaryClassificationProblemImpl(String.class, vy.size());
+				problem = new MutableBinaryClassificationProblemImpl(String.class, vy.size());
 				}
 			else
 				{
-				problem = (MutableSvmProblem) new MultiClassProblemImpl<String, SparseVector>(String.class,
-				                                                                              new StringLabelInverter(),
-				                                                                              vy.size());
+				problem =
+						new MutableMultiClassProblemImpl<String, SparseVector>(String.class, new StringLabelInverter(),
+						                                                       vy.size());
 				}
 
 			/*for (int i = 0; i < vy.size(); i++)

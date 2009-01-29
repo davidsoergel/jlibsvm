@@ -1,9 +1,8 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
 import edu.berkeley.compbio.jlibsvm.AbstractFold;
+import edu.berkeley.compbio.jlibsvm.ExplicitSvmProblemImpl;
 import edu.berkeley.compbio.jlibsvm.Fold;
-import edu.berkeley.compbio.jlibsvm.MutableSvmProblemImpl;
-import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.labelinverter.LabelInverter;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -19,7 +18,7 @@ import java.util.Set;
  * @version $Id$
  */
 public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiClassProblem<? extends L, ? extends P, ? extends R>>
-		extends MutableSvmProblemImpl<L, P, MultiClassProblem<L, P>>
+		extends ExplicitSvmProblemImpl<L, P, MultiClassProblem<L, P>>
 		implements MultiClassProblem<L, P> //, MutableSvmProblem<L,P,R>
 	{
 	Class labelClass;
@@ -31,21 +30,6 @@ public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiC
 
 	private LabelInverter<L> labelInverter;
 
-	/**
-	 * For now, pending further cleanup, we need to create arrays of the label type.  That's impossible to do with generics
-	 * alone, so we need to provide the class object (e.g., String.class or whatever) for the label type used.  Of course
-	 * this should match the generics used on SvmProblem, etc.
-	 *
-	 * @param labelClass
-	 * @param length
-	 */
-	public MultiClassProblemImpl(Class labelClass, LabelInverter<L> labelInverter, int length)
-		{
-		super(length);
-		this.labelClass = labelClass;
-		this.labelInverter = labelInverter;
-		//targetValues = (T[]) java.lang.reflect.Array.newInstance(type, length);
-		}
 
 	/**
 	 * For now, pending further cleanup, we need to create arrays of the label type.  That's impossible to do with generics
@@ -55,9 +39,10 @@ public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiC
 	 * @param labelClass
 	 * @param examples
 	 */
-	public MultiClassProblemImpl(Class labelClass, LabelInverter<L> labelInverter, Map<P, L> examples)
+	public MultiClassProblemImpl(Class labelClass, LabelInverter<L> labelInverter, Map<P, L> examples,
+	                             Map<P, Integer> exampleIds)
 		{
-		super(examples);
+		super(examples, exampleIds);
 		this.labelClass = labelClass;
 		this.labelInverter = labelInverter;
 		//targetValues = (T[]) java.lang.reflect.Array.newInstance(type, length);
@@ -67,24 +52,13 @@ public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiC
 		{
 		return labelInverter;
 		}
-/*
-	public MultiClassProblem<L, P> newSubProblem(int length)
-		{
-		return new MultiClassProblemImpl<L, P>(type, length);
-		}
-*/
+	/*
+	 public MultiClassProblem<L, P> newSubProblem(int length)
+		 {
+		 return new MultiClassProblemImpl<L, P>(type, length);
+		 }
+ */
 
-	public void addExampleFloat(P point, Float x)
-		{
-		try
-			{
-			addExample(point, (L) labelClass.getConstructor(String.class).newInstance(x.toString()));
-			}
-		catch (Exception e)
-			{
-			throw new SvmException(e);
-			}
-		}
 
 	private Map<L, Set<P>> theInverseMap = null;
 
@@ -179,6 +153,11 @@ public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiC
 		public int getId(P key)
 			{
 			return MultiClassProblemImpl.this.getId(key);
+			}
+
+		public Map<P, Integer> getExampleIds()
+			{
+			return MultiClassProblemImpl.this.getExampleIds();
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package edu.berkeley.compbio.jlibsvm.oneclass;
 
 import edu.berkeley.compbio.jlibsvm.regression.RegressionProblemImpl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -10,20 +11,13 @@ import java.util.Map;
  */
 public class OneClassProblemImpl<L, P> extends RegressionProblemImpl<P> implements OneClassProblem<L, P>
 	{
-	public OneClassProblemImpl(Map<P, Float> examples, L label)  // set<P> examples
+	public OneClassProblemImpl(Map<P, Float> examples, HashMap<P, Integer> exampleIds, L label)  // set<P> examples
 		{
 
 		//Map<P, Float> exampleMap = new HashMap<P,Float>(examples.size());
 
-		super(examples);
+		super(examples, exampleIds);
 		this.label = label;
-		}
-
-	public OneClassProblemImpl(int numExamples, L label)
-		{
-		super(numExamples);
-		this.label = label;
-		//	targetValues = new Float[numExamples];
 		}
 
 	L label;
