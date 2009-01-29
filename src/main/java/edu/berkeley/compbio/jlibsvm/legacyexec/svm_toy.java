@@ -311,6 +311,9 @@ public class svm_toy extends Applet
 				case 'b':
 					param.probability = Boolean.parseBoolean(argv[i]);
 					break;
+				case 'u':
+					param.redistributeUnbalancedC = Boolean.parseBoolean(argv[i]);
+					break;
 				case 'w':
 					param.putWeight(Integer.parseInt(argv[i - 1].substring(2)), Float.parseFloat(argv[i]));
 					break;
@@ -495,7 +498,7 @@ public class svm_toy extends Applet
 
 			if (svm instanceof BinaryClassificationSVM && prob.getLabels().size() > 2)
 				{
-				svm = new MultiClassificationSVM((BinaryClassificationSVM) svm, Byte.class);
+				svm = new MultiClassificationSVM((BinaryClassificationSVM) svm, param.redistributeUnbalancedC);
 				}
 			// build model & classify
 			svm.setupQMatrix(prob);

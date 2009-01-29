@@ -141,7 +141,7 @@ public class svm_train
 
 		if (svm instanceof BinaryClassificationSVM && problem.getLabels().size() > 2)
 			{
-			svm = new MultiClassificationSVM((BinaryClassificationSVM) svm, String.class);
+			svm = new MultiClassificationSVM((BinaryClassificationSVM) svm, param.redistributeUnbalancedC);
 			}
 
 		if (error_msg != null)
@@ -209,6 +209,7 @@ public class svm_train
 		param.p = 0.1f;
 		param.shrinking = true;
 		param.probability = false;
+		param.redistributeUnbalancedC = false;
 		//param.nr_weight = 0;
 		//param.weightLabel = new int[0];
 		//param.weight = new float[0];
@@ -268,6 +269,9 @@ public class svm_train
 					break;
 				case 'b':
 					param.probability = Boolean.parseBoolean(argv[i]);
+					break;
+				case 'u':
+					param.redistributeUnbalancedC = Boolean.parseBoolean(argv[i]);
 					break;
 				case 'v':
 					cross_validation = 1;

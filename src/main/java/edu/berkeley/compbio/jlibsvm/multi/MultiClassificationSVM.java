@@ -27,10 +27,13 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 	BinaryClassificationSVM<L, P> binarySvm;	//private Class labelClass;
 
-	public MultiClassificationSVM(BinaryClassificationSVM<L, P> binarySvm, Class labelClass)
+	boolean redistributeUnbalancedC;
+
+	public MultiClassificationSVM(BinaryClassificationSVM<L, P> binarySvm, boolean redistributeUnbalancedC)
 		{
 		super(binarySvm.kernel, binarySvm.param);
-		this.binarySvm = binarySvm;		//	this.labelClass = labelClass;
+		this.binarySvm = binarySvm;
+		this.redistributeUnbalancedC = redistributeUnbalancedC;
 		}
 
 	public String getSvmType()
@@ -207,49 +210,67 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 		Map<L, Float> weights = new HashMap<L, Float>();
 
-		//** Unbalanced data: redistribute the misclassification cost C according to
-		// the numbers of examples in each class, so that each class has the same total
-		// misclassification weight assigned to it and the average is param.C
-
-		int numExamples = problem.getExamples().size();
 
 		final Map<L, Set<P>> examplesByLabel = problem.getExamplesByLabel();
 
-		int numClasses = examplesByLabel.size();
-
-		// first figu
-		// re out the average total C for each class if the samples were uniformly distributed
-		float totalCPerClass = param.C * numExamples / numClasses;
-		//float totalCPerRemainder = totalCPerClass * (numClasses - 1);
-
-
-		// then assign the proper C per _sample_ within each class by distributing the per-class C
-		for (Map.Entry<L, Set<P>> entry : examplesByLabel.entrySet())
+		if (!redistributeUnbalancedC)
 			{
-			L label = entry.getKey();
-			Set<P> examples = entry.getValue();
-			float weight = totalCPerClass / examples.size();
-
-			weights.put(label, weight);
-
-
-			//** For one-vs-all, we want the inverse class to have the same total weight as the positive class, i.e. totalCPerClass.
-			//** Note scaling problem: we can't scale up the positive class, so we have to scale down the negative class
-			//** i.e. we pretend that all of the negative examples are in one class, and so have totalCPerClass.
-
-			L inverse = labelInverter.invert(label);
-			int numFalseExamples = param.falseClassSVlimit;
-			if (numFalseExamples == 0)
+			for (Map.Entry<L, Set<P>> entry : examplesByLabel.entrySet())
 				{
-				numFalseExamples = numExamples - examples.size();
-				}
-			float inverseWeight = totalCPerClass / numFalseExamples;
-			weights.put(inverse, inverseWeight);
-			}
+				L label = entry.getKey();
 
-		if (!param.getWeights().isEmpty())
+				weights.put(label, param.C);
+
+				L inverse = labelInverter.invert(label);
+
+				weights.put(inverse, param.C);
+				}
+			}
+		else
 			{
-			logger.warn("Ignoring provided class weights; we compute them from C and the number of examples");
+			//** Unbalanced data: redistribute the misclassification cost C according to
+			// the numbers of examples in each class, so that each class has the same total
+			// misclassification weight assigned to it and the average is param.C
+
+			int numExamples = problem.getExamples().size();
+
+
+			int numClasses = examplesByLabel.size();
+
+			// first figu
+			// re out the average total C for each class if the samples were uniformly distributed
+			float totalCPerClass = param.C * numExamples / numClasses;
+			//float totalCPerRemainder = totalCPerClass * (numClasses - 1);
+
+
+			// then assign the proper C per _sample_ within each class by distributing the per-class C
+			for (Map.Entry<L, Set<P>> entry : examplesByLabel.entrySet())
+				{
+				L label = entry.getKey();
+				Set<P> examples = entry.getValue();
+				float weight = totalCPerClass / examples.size();
+
+				weights.put(label, weight);
+
+
+				//** For one-vs-all, we want the inverse class to have the same total weight as the positive class, i.e. totalCPerClass.
+				//** Note scaling problem: we can't scale up the positive class, so we have to scale down the negative class
+				//** i.e. we pretend that all of the negative examples are in one class, and so have totalCPerClass.
+
+				L inverse = labelInverter.invert(label);
+				int numFalseExamples = param.falseClassSVlimit;
+				if (numFalseExamples == 0)
+					{
+					numFalseExamples = numExamples - examples.size();
+					}
+				float inverseWeight = totalCPerClass / numFalseExamples;
+				weights.put(inverse, inverseWeight);
+				}
+
+			if (!param.getWeights().isEmpty())
+				{
+				logger.warn("Ignoring provided class weights; we compute them from C and the number of examples");
+				}
 			}
 		/*
 	   // use param.C as the default weight...
