@@ -1,36 +1,40 @@
 #!/usr/bin/perl
 
+$|++;
+
 use strict;
 
 use List::Util qw(sum);
 
 sub main()
     {
-    my @datasets = ("~/src/jlibsvm/src/test/resources/sector", "~/src/jlibsvm/src/test/resources/mushrooms");
+    my @datasets = ("~/src/jlibsvm/src/test/resources/mushrooms", "~/src/jlibsvm/src/test/resources/sector");
 
 
-    my @argsets = ("-s 0 -t 0 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 0 -t 1 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 0 -t 2 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 0 -t 3 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 0 -t 4 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 0 -t 0 -c 100 -e .01 -v 10 -m 1000",
+    my @argsets = ( "-s 0 -t 0 -c 100 -e .01 -v 10 -m 1000",
                    "-s 0 -t 1 -c 100 -e .01 -v 10 -m 1000",
                    "-s 0 -t 2 -c 100 -e .01 -v 10 -m 1000",
                    "-s 0 -t 3 -c 100 -e .01 -v 10 -m 1000",
                    "-s 0 -t 4 -c 100 -e .01 -v 10 -m 1000",
 
-                   "-s 1 -t 0 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 1 -t 1 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 1 -t 2 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 1 -t 3 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 1 -t 4 -c 100 -e .001 -v 10 -m 1000",
                    "-s 1 -t 0 -c 100 -e .01 -v 10 -m 1000",
                    "-s 1 -t 1 -c 100 -e .01 -v 10 -m 1000",
                    "-s 1 -t 2 -c 100 -e .01 -v 10 -m 1000",
                    "-s 1 -t 3 -c 100 -e .01 -v 10 -m 1000",
                    "-s 1 -t 4 -c 100 -e .01 -v 10 -m 1000",
 
+                   "-s 0 -t 0 -c 100 -e .001 -v 10 -m 1000",
+                   "-s 0 -t 1 -c 100 -e .001 -v 10 -m 1000",
+                   "-s 0 -t 2 -c 100 -e .001 -v 10 -m 1000",
+                   "-s 0 -t 3 -c 100 -e .001 -v 10 -m 1000",
+                   "-s 0 -t 4 -c 100 -e .001 -v 10 -m 1000",
+
+                   "-s 1 -t 0 -c 100 -e .001 -v 10 -m 1000",
+                   "-s 1 -t 1 -c 100 -e .001 -v 10 -m 1000",
+                   "-s 1 -t 2 -c 100 -e .001 -v 10 -m 1000",
+                   "-s 1 -t 3 -c 100 -e .001 -v 10 -m 1000",
+                   "-s 1 -t 4 -c 100 -e .001 -v 10 -m 1000",
+                  
                    "-s 0 -t 4 -c 10 -g .5 -e .01 -v 10 -m 1000",
                    "-s 1 -t 4 -c 10 -g .5 -e .01 -v 10 -m 1000"
                    );
@@ -47,6 +51,8 @@ sub main()
     	        {
 
                	my $command = $commandlines{$commandname};
+
+               	print "-------- $command \n";
 
              	my @output = `/usr/bin/time -l $command 2>&1`;
 
