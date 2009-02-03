@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -130,7 +129,7 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 				}
 			}
 
-		logger.info("nSV = " + supportVectors.size() + ", nBSV = " + nBSV);
+		logger.info("nSV = " + SVs.length + ", nBSV = " + nBSV);
 		}
 
 	public L predictLabel(P x)

@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module relativePaths="true" MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="BuildJarSettings">
+    <containerInfo>
+      <containerElement type="module" name="jlibsvm">
+        <attribute name="method" value="1" />
+        <attribute name="URI" value="/" />
+      </containerElement>
+      <containerElement type="library" name="Maven: com.google:collections:20080321" level="project">
+        <attribute name="method" value="2" />
+        <attribute name="URI" value="/" />
+      </containerElement>
+      <containerElement type="library" name="Maven: log4j:log4j:1.2.13" level="project">
+        <attribute name="method" value="2" />
+        <attribute name="URI" value="/" />
+      </containerElement>
+    </containerInfo>
+    <setting name="jarUrl" value="file://$MODULE_DIR$/jlibsvm.jar" />
+    <setting name="buildJar" value="true" />
+    <setting name="mainClass" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train" />
+  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />

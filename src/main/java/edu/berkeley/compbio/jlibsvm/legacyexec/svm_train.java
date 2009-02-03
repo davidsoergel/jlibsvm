@@ -6,6 +6,7 @@ import edu.berkeley.compbio.jlibsvm.SolutionModel;
 import edu.berkeley.compbio.jlibsvm.SparseVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
+import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.C_SVC;
 import edu.berkeley.compbio.jlibsvm.binary.MutableBinaryClassificationProblemImpl;
@@ -431,6 +432,10 @@ public class svm_train
 			   {
 			   problem.uniqueValues.add(new Float(vy.elementAt(i)));
 			   }*/
+			}
+		if (problem instanceof BinaryClassificationProblem)
+			{
+			((BinaryClassificationProblem) problem).setupLabels();
 			}
 
 		if (kernel instanceof GammaKernel && ((GammaKernel) kernel).getGamma() == 0f)

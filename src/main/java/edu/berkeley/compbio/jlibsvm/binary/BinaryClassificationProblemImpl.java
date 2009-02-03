@@ -59,8 +59,11 @@ public class BinaryClassificationProblemImpl<L extends Comparable, P>
 		{
 		// note the labels are sorted
 		List<L> result = super.getLabels();
-		falseLabel = result.get(0);
-		trueLabel = result.get(1);
+		if (result != null)
+			{
+			falseLabel = result.get(0);
+			trueLabel = result.get(1);
+			}
 		}
 
 	public BinaryClassificationProblemImpl(Class labelClass, Map<P, L> examples, Map<P, Integer> exampleIds)
@@ -127,6 +130,11 @@ trueLabel =
 			{
 			super(BinaryClassificationProblemImpl.this.getExamples(), heldOutPoints);
 			//this.fullProblem = fullProblem;
+			}
+
+		public void setupLabels()
+			{
+			BinaryClassificationProblemImpl.this.setupLabels();
 			}
 
 		public List<L> getLabels()

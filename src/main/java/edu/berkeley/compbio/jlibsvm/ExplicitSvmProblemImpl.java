@@ -67,6 +67,10 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 		{
 		if (labels == null)
 			{
+			if (examples.isEmpty())
+				{
+				return null;
+				}
 			Set<L> uniq = new HashSet<L>(examples.values()); //Arrays.asList(targetValues));
 			labels = new ArrayList<L>(uniq);
 			Collections.sort(labels);

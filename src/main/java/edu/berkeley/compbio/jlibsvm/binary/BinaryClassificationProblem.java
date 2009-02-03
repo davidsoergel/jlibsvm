@@ -15,4 +15,6 @@ public interface BinaryClassificationProblem<L extends Comparable, P> extends Sv
 	L getTrueLabel();
 
 	L getFalseLabel();
+
+	void setupLabels();
 	}
