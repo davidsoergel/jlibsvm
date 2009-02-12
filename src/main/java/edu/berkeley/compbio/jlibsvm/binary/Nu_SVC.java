@@ -112,7 +112,6 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 		model.trueLabel = problem.getTrueLabel();
 		model.falseLabel = problem.getFalseLabel();
 		model.setSvmType(getSvmType());
-		model.compact();
 
 		float r = model.r;
 
@@ -130,10 +129,13 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 			entry.setValue((examples.get(entry.getKey()) ? 1. : -1.) / r);
 			}
 
+
 		model.rho /= r;
 		model.obj /= r * r;
 		model.upperBoundPositive = 1 / r;
 		model.upperBoundNegative = 1 / r;
+
+		model.compact();
 
 		return model;
 		}
@@ -142,8 +144,8 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 		{
 		Map<Boolean, Integer> counts = problem.getExampleCounts();
 
-		int n1 = counts.get(true);
-		int n2 = counts.get(false);
+		int n1 = counts.get(problem.getTrueLabel());
+		int n2 = counts.get(problem.getFalseLabel());
 
 		if (param.nu * (n1 + n2) / 2 > Math.min(n1, n2))
 			{
