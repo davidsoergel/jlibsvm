@@ -96,7 +96,7 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 				}
 			SolutionVector<P> sv = new SolutionVector(entry.getKey(), entry.getValue(), linearTerm, initAlpha);
 			sv.id = problem.getId(entry.getKey());
-			;
+
 			c++;
 			solutionVectors.add(sv);
 			}

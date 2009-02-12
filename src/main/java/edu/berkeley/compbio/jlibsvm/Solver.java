@@ -31,7 +31,7 @@ public abstract class Solver<L extends Comparable, P>
 	{
 	private static final Logger logger = Logger.getLogger(Solver.class);
 
-	private static final int MAXITER = 10000;
+	private static final int MAXITER = 50000;
 
 	protected Collection<SolutionVector<P>> allExamples;
 	protected Collection<SolutionVector<P>> activeSet;
@@ -519,6 +519,7 @@ public abstract class Solver<L extends Comparable, P>
 			}
 
 		//System.err.println(Q.perfString());
+		logger.info("optimization finished, #iter = " + iter);
 		return iter;		// activeSet;
 		}
 

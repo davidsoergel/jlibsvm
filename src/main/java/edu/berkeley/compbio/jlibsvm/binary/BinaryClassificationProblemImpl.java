@@ -61,8 +61,9 @@ public class BinaryClassificationProblemImpl<L extends Comparable, P>
 		List<L> result = super.getLabels();
 		if (result != null)
 			{
-			falseLabel = result.get(0);
-			trueLabel = result.get(1);
+			// ** Just switched these, does it matter??
+			falseLabel = result.get(1);
+			trueLabel = result.get(0);
 			}
 		}
 

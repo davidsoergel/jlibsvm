@@ -6,42 +6,48 @@ use strict;
 
 use List::Util qw(sum);
 
+
 sub main()
 	{
 	my @datasets = ("~/src/jlibsvm/src/test/resources/mushrooms", "~/src/jlibsvm/src/test/resources/segment");  #"~/src/jlibsvm/src/test/resources/sector" too complex...
 
 
-    my @argsets = ( "-s 0 -t 0 -c 100 -e .01 -v 10 -m 1000",
-                   "-s 0 -t 1 -c 100 -e .01 -v 10 -m 1000",
-                   "-s 0 -t 2 -c 100 -e .01 -v 10 -m 1000",
-                   "-s 0 -t 3 -c 100 -e .01 -v 10 -m 1000",
+    my @argsets = ( "-s 0 -t 0 -c 100 -e .01 -v 5 -m 1000",
+                   "-s 0 -t 1 -c 100 -e .01 -v 5 -m 1000",
+                   "-s 0 -t 2 -c 100 -e .01 -v 5 -m 1000",
+                   "-s 0 -t 3 -c 100 -e .01 -v 5 -m 1000",
 
-                   "-s 1 -t 0 -c 100 -e .01 -v 10 -m 1000",
-                   "-s 1 -t 1 -c 100 -e .01 -v 10 -m 1000",
-                   "-s 1 -t 2 -c 100 -e .01 -v 10 -m 1000",
-                   "-s 1 -t 3 -c 100 -e .01 -v 10 -m 1000",
+            #       "-s 1 -t 0 -c 100 -e .01 -v 5 -m 1000",
+            #       "-s 1 -t 1 -c 100 -e .01 -v 5 -m 1000",
+            #       "-s 1 -t 2 -c 100 -e .01 -v 5 -m 1000",
+            #       "-s 1 -t 3 -c 100 -e .01 -v 5 -m 1000",
 
-                   "-s 0 -t 0 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 0 -t 1 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 0 -t 2 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 0 -t 3 -c 100 -e .001 -v 10 -m 1000",
+                   "-s 0 -t 0 -c 100 -e .001 -v 5 -m 1000",
+                   "-s 0 -t 1 -c 100 -e .001 -v 5 -m 1000",
+                   "-s 0 -t 2 -c 100 -e .001 -v 5 -m 1000",
+                   "-s 0 -t 3 -c 100 -e .001 -v 5 -m 1000",
 
-                   "-s 1 -t 0 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 1 -t 1 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 1 -t 2 -c 100 -e .001 -v 10 -m 1000",
-                   "-s 1 -t 3 -c 100 -e .001 -v 10 -m 1000",
+            #       "-s 1 -t 0 -c 100 -e .001 -v 5 -m 1000",
+            #       "-s 1 -t 1 -c 100 -e .001 -v 5 -m 1000",
+            #       "-s 1 -t 2 -c 100 -e .001 -v 5 -m 1000",
+            #       "-s 1 -t 3 -c 100 -e .001 -v 5 -m 1000",
 
-                   "-s 0 -t 2 -c 10 -g .5 -e .01 -v 10 -m 1000",
-                   "-s 1 -t 2 -c 10 -g .5 -e .01 -v 10 -m 1000"
+                   "-s 0 -t 2 -c 10 -g .5 -e .01 -v 5 -m 1000",
+            #       "-s 1 -t 2 -c 10 -g .5 -e .01 -v 5 -m 1000"
                    );
 
+
+    print("<HTML><HEAD><meta http-equiv='refresh' content='10'></HEAD><BODY><TABLE border='1'>\n");
+    print("<TR><TD>program</TD><TD>iter</TD><TD>nu</TD><TD>obj</TD><TD>rho</TD><TD>nSV</TD><TD>nBSV</TD><TD>cpu</TD><TD>mem</TD><TD>cvAcc</TD></TR>\n");
 
 	for my $dataset (@datasets)
 		{
 		for my $args (@argsets)
 			{
+			print "<TR><TD span=15><B>$args $dataset<B></TD></TR>\n";
+
 			my %commandlines = ("LIBSVM-c" => "~/src-3rdparty/libsvm-2.88/svm-train $args $dataset",
-			"LIBSVM-j" => "java -cp ~/src-3rdparty/libsvm-2.88/java/libsvm.jar svm_train $args $dataset",
+			"LIBSVM-j" => "java -Xmx1500m -cp ~/src-3rdparty/libsvm-2.88/java/libsvm.jar svm_train $args $dataset",
 			"jLibSvm" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args $dataset");
 
 			for my $commandname (keys %commandlines)
@@ -76,45 +82,31 @@ sub main()
 				my $maxCpu = 0;
 				while($childAlive)
 					{
-					my @top = `top -b -n 1 -S -p $pid`;
-					#print("@top\n");
-					my $top = @top[7];
-					#print("7= $top\n");
-					$top =~ s/^\s+//;
+					my @ps = `ps -S -o time,rss,state $pid`;
 
-					@top = split /\s+/, $top;
-					#print("split = " . join(",",@top) . "\n");
+					my $ps = @ps[1];
+					$ps =~ s/^\s+//;
 
-					if(@top == 0 || $top =~ /defunct/)
+					@ps = split /\s+/, $ps;
+
+					if(@ps == 0 || @ps[2] =~ /Z/)
 						{
-						$maxCpu = @top[10];
+		                if(@ps[0] =~ /[123456789]/)
+	    					{ $maxCpu = @ps[0]; }
 						$childAlive = 0;
 						}
 					else
 						{
-						my $mem = @top[5];
-
-						if($mem =~ s/k//)
-							{
-							$mem = $mem * 1024;
-							}
-						if($mem =~ s/m//)
-							{
-							$mem = $mem * 1024 * 1024;
-							}
-						if($mem =~ s/g//)
-							{
-							$mem = $mem * 1024 * 1024 * 1024;
-							}
+						my $mem = @ps[1];
+                        $mem = $mem * 1024;
 
 						if($mem > $maxMem)
 							{
 							$maxMem = $mem;
 							}
 
-						$maxCpu = @top[10];
-						#print("$maxCpu $maxMem\n");
-						sleep(5);
+						$maxCpu = @ps[0];
+						sleep(1);
 						}
 					}
 
@@ -143,14 +135,33 @@ sub main()
 				#$mem = $mem / (1024*1024);
 				$maxMem = $maxMem / (1024*1024);
 
-				$maxCpu =~ /(.*?):(.*)/;
-				$maxCpu = $1 * 60 + $2;
 
-				printf("%s, %s, %s, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.1f, %.2f, %.2f\n",
-				$commandname, $dataset, $args, $iterM, $iterSD, $nuM, $nuSD, $objM, $objSD, $rhoM, $rhoSD, $nsvM, $nsvSD, $nbsvM, $nbsvSD, $cvAcc, $maxCpu, $maxMem);
+				if($maxCpu =~ /(.*?):(.*?):(.*)/)
+				    {
+			    	$maxCpu = $1 * 60 * 24 + $2 * 60 + $3;
+                    }
+                elsif($maxCpu =~ /(.*?):(.*?)\.(.*)/)
+				    {
+			    	$maxCpu = $1 * 60 + $2 + $3 * .01;
+                    }
+
+				#printf("%s, %s, %s, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.1f, %.2f, %.2f\n",
+				#$commandname, $dataset, $args, $iterM, $iterSD, $nuM, $nuSD, $objM, $objSD, $rhoM, $rhoSD, $nsvM, $nsvSD, $nbsvM, $nbsvSD, $cvAcc, $maxCpu, $maxMem);
+
+	            printf("<TR><TD>%s</TD>", $commandname);
+	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $iterM, $iterSD);
+	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $nuM, $nuSD);
+	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $objM, $objSD);
+	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $rhoM, $rhoSD);
+	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $nsvM, $nsvSD);
+	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $nbsvM, $nbsvSD);
+	            printf("<TD>%.2f</TD><TD>%.2f</TD><TD>%.1f</TD></TR>\n", $maxCpu, $maxMem, $cvAcc);
+
 				}
 			}
 		}
+
+	print("</TABLE></BODY></HTML>");
 	}
 
 
