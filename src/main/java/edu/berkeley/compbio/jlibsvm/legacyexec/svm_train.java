@@ -222,7 +222,7 @@ public class svm_train
 		param.p = 0.1f;
 		param.shrinking = true;
 		param.probability = false;
-		param.redistributeUnbalancedC = false;
+		param.redistributeUnbalancedC = true;
 		//param.nr_weight = 0;
 		//param.weightLabel = new int[0];
 		//param.weight = new float[0];
@@ -278,13 +278,13 @@ public class svm_train
 					param.p = Float.parseFloat(argv[i]);
 					break;
 				case 'h':
-					param.shrinking = Boolean.parseBoolean(argv[i]);
+					param.shrinking = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
 					break;
 				case 'b':
-					param.probability = Boolean.parseBoolean(argv[i]);
+					param.probability = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
 					break;
 				case 'u':
-					param.redistributeUnbalancedC = Boolean.parseBoolean(argv[i]);
+					param.redistributeUnbalancedC = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
 					break;
 				case 'v':
 					cross_validation = 1;

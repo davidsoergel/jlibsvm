@@ -376,3 +376,4 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		return new SigmoidProbabilityModel(decisionValueArray, labelArray);
 		}
 	}
+

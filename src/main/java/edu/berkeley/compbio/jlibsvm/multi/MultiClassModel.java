@@ -177,6 +177,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		// stage 2: one vs all
 
+
 		Map<L, Float> oneVsAllProbabilities = oneVsAllMode == OneVsAllMode.None ? null : computeOneVsAllProbabilities(x)
 				;
 

@@ -36,7 +36,7 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 	public MultiClassModel.AllVsAllMode allVsAllMode = MultiClassModel.AllVsAllMode.AllVsAll;
 	public double minVoteProportion;
 	public int falseClassSVlimit;
-	public boolean redistributeUnbalancedC;
+	public boolean redistributeUnbalancedC = true;
 
 
 	public SvmParameter()
@@ -53,7 +53,7 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 		p = copyFrom.p;
 		shrinking = copyFrom.shrinking;
 		probability = copyFrom.probability;
-//		oneVsAllOnly = copyFrom.oneVsAllOnly;
+		//		oneVsAllOnly = copyFrom.oneVsAllOnly;
 		oneVsAllThreshold = copyFrom.oneVsAllThreshold;
 		oneVsAllMode = copyFrom.oneVsAllMode;
 		allVsAllMode = copyFrom.allVsAllMode;
