@@ -64,10 +64,10 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		BinaryModel<L, P> result = train(problem, weightedCp, weightedCn);
 
 		// ** logging output disabled for now
-		if (logger.isDebugEnabled())
-			{
-			result.printSolutionInfo(problem);
-			}
+		//if (logger.isDebugEnabled())
+		//	{
+		result.printSolutionInfo(problem);
+		//	}
 		//logger.info(qMatrix.perfString());
 		return result;
 		}
@@ -88,6 +88,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 			{
 			result.sigmoid = svcProbability(problem, Cp, Cn, result);
 			}
+		result.printSolutionInfo(problem);
 		return result;
 		}
 

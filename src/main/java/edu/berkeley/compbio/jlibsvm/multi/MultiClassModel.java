@@ -144,6 +144,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	 */
 	public L predictLabel(P x)
 		{
+		// REVIEW ignore one-class models for now; maybe revisit later
+
 		/*
 		// stage 1: one-class
 		// always compute these; we may need them to tie-break when voting anyway (though that only works when probabilities are turned on)
@@ -180,14 +182,14 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		// now oneVsAllProbabilities is populated with all of the classes that pass the threshold (maybe all of them).
 
-
+		// if all classes were vetoed, return
 		if ((oneVsAllMode == OneVsAllMode.Veto || oneVsAllMode == OneVsAllMode.VetoAndBreakTies)
 				&& oneVsAllProbabilities.isEmpty())
 			{
 			return null;
 			}
 
-		// if using the OneVsAll Best mode, then we should have had probabilities turned on, and allvsall voting will be ignored
+		// if using the OneVsAll Best mode, then we should have had probabilities turned on, and allVsAll voting will be ignored
 		if (oneVsAllMode == OneVsAllMode.Best)
 			{
 			L bestLabel = null;
@@ -210,7 +212,6 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		Multiset<L> votes = new HashMultiset<L>();
 
-		//(oneClassThreshold <= 0 && oneVsAllThreshold <= 0) ||
 		if (allVsAllMode == AllVsAllMode.AllVsAll)
 			{
 			// vote using all models
@@ -218,10 +219,11 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			logger.debug("Sample voting using all pairs of " + numLabels + " labels ("
 					+ ((numLabels * (numLabels - 1)) / 2. - numLabels) + " models)");
 
-			// if requiredActive == 0 but there is a oneVsAll threshold, we may compute votes between two
-			// inactive classes; it may be that the winner of the voting fails the oneVsAll filter, in which
-			// case we may want to report unknown instead of reporting the best class that does pass.  This
-			// is what PhyloPythia does.
+			// How AllVsAll with Veto differs from FilteredVsAll, etc.:
+			// In the AllVsAll with Veto case, we may compute votes between two "inactive" (vetoed) classes;
+			// it may be that the winner of the voting later fails the oneVsAll filter, in which
+			// case we may want to report unknown instead of reporting the best class that does pass.
+			// This is what PhyloPythia does.
 
 			for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
 				{
@@ -268,7 +270,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			}
 
 
-		// stage 4: count votes
+		// stage 4: find the label with the most votes (and break ties or veto as needed)
 
 		L bestLabel = null;
 		int bestCount = 0;
@@ -280,13 +282,9 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			int count = votes.count(label);
 			countSum += count;
 
-			// primary sort by number of votes
-			// secondary sort by one-vs-all probability, if available
-			// tertiary sort be
-			// one-class probability, if available
-
+			// get the oneVsAll value for this label, if needed
 			Float oneVsAll = 1f; // pass by default
-			if (oneVsAllMode == OneVsAllMode.VetoAndBreakTies)
+			if (oneVsAllMode == OneVsAllMode.Veto || oneVsAllMode == OneVsAllMode.VetoAndBreakTies)
 				{
 				// if this is null it means this label didn't pass the threshold earlier, so it should fail here too
 				oneVsAll = oneVsAllProbabilities.get(label);
@@ -294,9 +292,16 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				}
 
 
+			// get the oneClass value for this label, if needed
+
 			// if this is null it means this label didn't pass the threshold earlier
 			//	Float oneClass = oneClassProbabilities.get(label);
 			//	oneClass = oneClass == null ? 0f : oneClass;
+
+
+			// primary sort by number of votes
+			// secondary sort by one-vs-all probability, if available
+			// tertiary sort by one-class probability, if available
 
 			if (count > bestCount || (count == bestCount && oneVsAll > bestOneVsAllProbability))
 				//	|| oneClass > bestOneClassProbability)))

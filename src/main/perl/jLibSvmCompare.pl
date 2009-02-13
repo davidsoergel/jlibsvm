@@ -9,7 +9,8 @@ use List::Util qw(sum);
 
 sub main()
 	{
-	my @datasets = ("~/src/jlibsvm/src/test/resources/mushrooms", "~/src/jlibsvm/src/test/resources/segment");  #"~/src/jlibsvm/src/test/resources/sector" too complex...
+	#my @datasets = ("~/src/jlibsvm/src/test/resources/mushrooms", "~/src/jlibsvm/src/test/resources/segment");  #"~/src/jlibsvm/src/test/resources/sector" too complex...
+	my @datasets = ("~/src/jlibsvm/src/test/resources/letter.scale");
 
 
     my @argsets = ( "-s 0 -t 0 -c 100 -e .01 -v 5 -m 1000",
@@ -48,7 +49,15 @@ sub main()
 
 			my %commandlines = ("LIBSVM-c" => "~/src-3rdparty/libsvm-2.88/svm-train $args $dataset",
 			"LIBSVM-j" => "java -Xmx1500m -cp ~/src-3rdparty/libsvm-2.88/java/libsvm.jar svm_train $args $dataset",
-			"jLibSvm" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args $dataset");
+			"jLibSvm None AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o None -a AllVsAll $dataset",
+			"jLibSvm Best None" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -b 1 -o Best -a None $dataset",
+			"jLibSvm BreakTies AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o BreakTies -a AllVsAll $dataset",
+			"jLibSvm Veto AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -a AllVsAll $dataset",
+			"jLibSvm Veto FilteredVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -a FilteredVsAll $dataset",
+			"jLibSvm Veto FilteredVsFiltered" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -a FilteredVsFiltered $dataset",
+            "jLibSvm VetoAndBreakTies AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -a AllVsAll $dataset",
+            "jLibSvm VetoAndBreakTies FilteredVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -a FilteredVsAll $dataset",
+			"jLibSvm VetoAndBreakTies FilteredVsFiltered" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -a FilteredVsFiltered $dataset");
 
 			for my $commandname (keys %commandlines)
 				{
@@ -75,6 +84,8 @@ sub main()
 					# exits when done
 					}
 
+				my @output = ();
+
 				# parent process
 				#print("Watching PID: $pid\n");
 				my $childAlive = 1;
@@ -82,7 +93,7 @@ sub main()
 				my $maxCpu = 0;
 				while($childAlive)
 					{
-					my @ps = `ps -S -o time,rss,state $pid`;
+					my @ps = `ps S -o time,rss,state $pid`;
 
 					my $ps = @ps[1];
 					$ps =~ s/^\s+//;
@@ -108,10 +119,21 @@ sub main()
 						$maxCpu = @ps[0];
 						sleep(1);
 						}
+
+					while(<COMMANDOUTPUT>)
+						{
+						push @output,$_;
+						print STDERR;
+						}
 					}
 
 				#waitpid($pid,0);
-				my @output = <COMMANDOUTPUT>;  # hope all the output got buffered even though the process is now dead
+				#my @output = <COMMANDOUTPUT>;  # hope all the output got buffered even though the process is now dead
+
+				while(<COMMANDOUTPUT>)
+						{
+						push @output,$_;
+						}
 				close COMMANDOUTPUT;
 
 				#print STDERR @output . " lines of output:" . "\n\n@output\n\n";
@@ -130,7 +152,7 @@ sub main()
 
 
 #, $cpu, $mem
-				my ($iterM, $iterSD, $nuM, $nuSD, $objM, $objSD, $rhoM, $rhoSD, $nsvM, $nsvSD, $nbsvM, $nbsvSD, $cvAcc) = parse_output(@output);
+				my ($iterM, $iterSD, $nuM, $nuSD, $objM, $objSD, $rhoM, $rhoSD, $nsvM, $nsvSD, $nbsvM, $nbsvSD, $cvClassified, $cvAcc) = parse_output(@output);
 
 				#$mem = $mem / (1024*1024);
 				$maxMem = $maxMem / (1024*1024);
@@ -138,7 +160,7 @@ sub main()
 
 				if($maxCpu =~ /(.*?):(.*?):(.*)/)
 				    {
-			    	$maxCpu = $1 * 60 * 24 + $2 * 60 + $3;
+			    	$maxCpu = $1 * 60 * 60 + $2 * 60 + $3;
                     }
                 elsif($maxCpu =~ /(.*?):(.*?)\.(.*)/)
 				    {
@@ -155,7 +177,7 @@ sub main()
 	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $rhoM, $rhoSD);
 	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $nsvM, $nsvSD);
 	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $nbsvM, $nbsvSD);
-	            printf("<TD>%.2f</TD><TD>%.2f</TD><TD>%.1f</TD></TR>\n", $maxCpu, $maxMem, $cvAcc);
+	            printf("<TD>%.2f</TD><TD>%.2f</TD><TD>%.1f</TD><TD>%.1f</TD></TR>\n", $maxCpu, $maxMem, $cvClassified, $cvAcc);
 
 				}
 			}
@@ -180,6 +202,7 @@ sub parse_output()
 	my @nSV = ();
 	my @nBSV = ();
 	my $cvAcc;
+	my $cvClassified;
 
 	foreach (@output)
 		{
@@ -220,12 +243,18 @@ sub parse_output()
 			{
 			$cvAcc = $1;
 			}
+
+		# Cross Validation Classified = 100%
+		if(/Classified = (.*?)\%/)
+			{
+			$cvClassified = $1;
+			}
 		}
 
 #	my @cpu = grep (/./, map { /.* (.*?) user/; $1} @output);
 #	my @mem = grep (/./, map { /\s*(.*)  maximum resident/; $1} @output);
 
-	return (mean(@iter), stddev(@iter), mean(@nu), stddev(@nu), mean(@obj), stddev(@obj), mean(@rho), stddev(@rho), mean(@nSV), stddev(@nSV), mean(@nBSV), stddev(@nBSV), $cvAcc); #, $cpu[0], $mem[0]);
+	return (mean(@iter), stddev(@iter), mean(@nu), stddev(@nu), mean(@obj), stddev(@obj), mean(@rho), stddev(@rho), mean(@nSV), stddev(@nSV), mean(@nBSV), stddev(@nBSV), $cvClassified, $cvAcc); #, $cpu[0], $mem[0]);
 	}
 
 sub mean

@@ -19,6 +19,7 @@ import edu.berkeley.compbio.jlibsvm.kernel.PolynomialKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.PrecomputedKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.SigmoidKernel;
 import edu.berkeley.compbio.jlibsvm.labelinverter.StringLabelInverter;
+import edu.berkeley.compbio.jlibsvm.multi.MultiClassModel;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.multi.MutableMultiClassProblemImpl;
 import edu.berkeley.compbio.jlibsvm.oneclass.OneClassSVC;
@@ -84,6 +85,8 @@ public class svm_train
 				+ "-h shrinking: whether to use the shrinking heuristics, 0 or 1 (default 1)\n"
 				+ "-b probability_estimates: whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)\n"
 				+ "-wi weight: set the parameter C of class i to weight*C, for C-SVC (default 1)\n"
+				+ "-a allVsAllMode: None, AllVsAll, FilteredVsAll, FilteredVsFiltered\n"
+				+ "-o oneVsAllMode: None, Best, Veto, BreakTies, VetoAndBreakTies \n"
 				+ "-v n: n-fold cross validation mode\n");
 		System.exit(1);
 		}
@@ -92,6 +95,7 @@ public class svm_train
 		{
 		//int i;
 		int total_correct = 0;
+		int total_unknown = 0;
 		double total_error = 0;
 		double sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
 		//double[] target = new double[problem.l];
@@ -123,12 +127,20 @@ public class svm_train
 			for (Object p : problem.getExamples().keySet())
 				//	for (i = 0; i < numExamples; i++)
 				{
-				if (cvResult.get(p).equals(problem.getTargetValue(p)))
+				Object prediction = cvResult.get(p);
+				if (prediction == null)
+					{
+					++total_unknown;
+					}
+				else if (prediction.equals(problem.getTargetValue(p)))
 					{
 					++total_correct;
 					}
 				}
-			System.out.print("Cross Validation Accuracy = " + 100.0 * total_correct / numExamples + "%\n");
+
+			int classifiedExamples = numExamples - total_unknown;
+			System.out.print("Cross Validation Classified = " + 100.0 * classifiedExamples / numExamples + "%\n");
+			System.out.print("Cross Validation Accuracy = " + 100.0 * total_correct / classifiedExamples + "%\n");
 			}
 		}
 
@@ -285,6 +297,12 @@ public class svm_train
 					break;
 				case 'w':
 					param.putWeight(Integer.parseInt(argv[i - 1].substring(2)), Float.parseFloat(argv[i]));
+					break;
+				case 'a':
+					param.allVsAllMode = MultiClassModel.AllVsAllMode.valueOf(argv[i]);
+					break;
+				case 'o':
+					param.oneVsAllMode = MultiClassModel.OneVsAllMode.valueOf(argv[i]);
 					break;
 				default:
 					System.err.print("Unknown option: " + argv[i - 1] + "\n");
