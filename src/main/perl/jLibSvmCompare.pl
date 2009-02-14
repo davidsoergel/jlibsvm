@@ -9,8 +9,13 @@ use List::Util qw(sum);
 
 sub main()
 	{
-	#my @datasets = ("~/src/jlibsvm/src/test/resources/mushrooms", "~/src/jlibsvm/src/test/resources/segment");  #"~/src/jlibsvm/src/test/resources/sector" too complex...
-	my @datasets = ("~/src/jlibsvm/src/test/resources/letter.scale");
+	#my @datasets = ("~/src/jlibsvm/src/test/resources/mushrooms");
+	#my @datasets = ("~/src/jlibsvm/src/test/resources/segment.scale");
+
+
+	my @datasets = ("~/src/jlibsvm/src/test/resources/news20");
+	#"~/src/jlibsvm/src/test/resources/sector" too complex...
+	#my @datasets = ("~/src/jlibsvm/src/test/resources/letter.scale");
 
 
     my @argsets = ( "-s 0 -t 0 -c 100 -e .01 -v 5 -m 1000",

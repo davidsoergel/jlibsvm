@@ -552,7 +552,7 @@ public abstract class Solver<L extends Comparable, P>
 				}
 			}
 
-		System.err.println(Q.perfString());
+		logger.info(Q.perfString());
 
 		logger.info("optimization finished, #iter = " + iter);
 		return iter;		// activeSet;
