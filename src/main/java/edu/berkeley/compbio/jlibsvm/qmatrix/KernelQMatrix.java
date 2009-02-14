@@ -716,15 +716,26 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 			diagonal[rankA] = diagonal[rankB];
 			diagonal[rankB] = tmp;
 
-			float[] dtmp = data[rankA];
-			data[rankA] = data[rankB];
-			data[rankB] = dtmp;
-
-			for (float[] drow : data)
+			if (rankA < maxCachedRank && rankB < maxCachedRank)
 				{
-				float d = drow[rankA];
-				drow[rankA] = drow[rankB];
-				drow[rankB] = d;
+				float[] dtmp = data[rankA];
+				data[rankA] = data[rankB];
+				data[rankB] = dtmp;
+
+				for (float[] drow : data)
+					{
+					float d = drow[rankA];
+					drow[rankA] = drow[rankB];
+					drow[rankB] = d;
+					}
+				}
+			else if (rankA < maxCachedRank)  // && rankB > maxCachedRank
+				{
+				Arrays.fill(data[rankA], NOTCACHED);
+				}
+			else //if (rankB < maxCachedRank && rankA > maxCachedRank
+				{
+				Arrays.fill(data[rankB], NOTCACHED);
 				}
 			}
 
