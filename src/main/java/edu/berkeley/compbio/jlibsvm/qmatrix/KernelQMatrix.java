@@ -30,12 +30,12 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 		{
 		this.kernel = kernel;
 		this.cache = new RecentActivitySquareCache(numExamples, cacheRows);
-		idToRankMap = new int[numExamples];
+/*		idToRankMap = new int[numExamples];
 
 		for (int i = 0; i < numExamples; i++)
 			{
 			idToRankMap[i] = i;
-			}
+			}*/
 		}
 
 	public abstract float computeQ(SolutionVector<P> a, SolutionVector<P> b);
@@ -72,7 +72,7 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 
 	// This cache may be reused across optimizations with (some of?) the same samples, but with newly created SolutionVectors,
 	// e.g. with cross-validation.  So, we need to remember and restore the mapping from sample ids to ranks across runs.
-	private int[] idToRankMap;
+//	private int[] idToRankMap;
 
 /*	public void storeRanks(Collection<SolutionVector<P>> allExamples)
 		{
@@ -82,12 +82,12 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 			}
 		}*/
 
-	public void loadRanks(Collection<SolutionVector<P>> allExamples)
-		{
-		// it may be that only some of the previously cached examples are part of this run.
+//	public void loadRanks(Collection<SolutionVector<P>> allExamples)
+//		{
+	// it may be that only some of the previously cached examples are part of this run.
 
-		// PERF test whether this helps or not
-		// first partition the cache so that the examples that are part of this run come first
+	// PERF test whether this helps or not
+	// first partition the cache so that the examples that are part of this run come first
 /*
 		List<Integer> active = new ArrayList<Integer>();
 		List<Integer> inactive = new LinkedList<Integer>();
@@ -106,10 +106,20 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 		cache.reorderCacheNoSolutionVectors(active.toArray(new Integer[0]), inactive.toArray(new Integer[0]));
 */
 
-		// now tell the SVs what their ranks are
+	// now tell the SVs what their ranks are
+//		for (SolutionVector<P> a : allExamples)
+//			{
+//			a.rank = idToRankMap[a.id];
+//			}
+
+	//		}
+
+	public void initRanks(Collection<SolutionVector<P>> allExamples)
+		{
+		int c = 0;
 		for (SolutionVector<P> a : allExamples)
 			{
-			a.rank = idToRankMap[a.id];
+			a.rank = c++;
 			}
 		}
 
@@ -636,80 +646,84 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 		 * Rearrange the ranks so that all active SVs come before all inactive SVs. Sort the data[][] and diagonal[] arrays
 		 * according to the new ranking. The provided arrays are in the correct rank order already.
 		 */
-		public void reorderCacheNoSolutionVectors(Integer[] activeIDs,
-		                                          Integer[] inactiveIDs) //, SolutionVector<P>[] previouslyInactive)
-			{
-			//int rankTrav = 0;
+		/*	public void reorderCacheNoSolutionVectors(Integer[] activeIDs,
+													Integer[] inactiveIDs) //, SolutionVector<P>[] previouslyInactive)
+			  {
+			  //int rankTrav = 0;
 
-			// the desired partitioning is provided by the arguments; the current partitioning is buried inside each element as SV.rank.
+			  // the desired partitioning is provided by the arguments; the current partitioning is buried inside each element as SV.rank.
 
-			// note the ranks of the previously inactive SVs don't change, so we don't have to touch them or their cache entries at all
+			  // note the ranks of the previously inactive SVs don't change, so we don't have to touch them or their cache entries at all
 
-			// the partitioning mechanism is similar to that used in quicksort:
-			//    find all elements of newlyInactive with prior rank less than the partition rank
-			//    find all elements of active that with prior rank greater than the partition rank
-			//    exchange these pairwise until done
+			  // the partitioning mechanism is similar to that used in quicksort:
+			  //    find all elements of newlyInactive with prior rank less than the partition rank
+			  //    find all elements of active that with prior rank greater than the partition rank
+			  //    exchange these pairwise until done
 
-			// it doesn't matter which pairs we choose to achieve partitioning, but it may improve things some to maintain order as well as possible.
-			// thus, we exchange them in order.
-
-
-			int partitionRank = activeIDs.length;
-
-			int i = 0;
-			int j = 0;
-
-			while (true)
-				{
-				// find the first active element that was previously ranked too poorly
-				while (i < activeIDs.length && idToRankMap[activeIDs[i]] < partitionRank)
-					{
-					// this one is OK, leave it in place
-					i++;
-					}
-
-				// find the first newly inactive element that was previously ranked too well
-				while (j < inactiveIDs.length && idToRankMap[inactiveIDs[j]] >= partitionRank)
-					{
-					// this one is OK, leave it in place
-					j++;
-					}
-
-				if (i < activeIDs.length && j < inactiveIDs.length)
-					{
-					// now we're pointing at the first available pair that should be swapped
-
-					swapById(activeIDs[i], inactiveIDs[j]);
-
-					// now the pair is swapped, advance the counters past it
-
-					i++;
-					j++;
-					}
-				else
-					{
-					break;
-					}
-				}
-			}
+			  // it doesn't matter which pairs we choose to achieve partitioning, but it may improve things some to maintain order as well as possible.
+			  // thus, we exchange them in order.
 
 
+			  int partitionRank = activeIDs.length;
+
+			  int i = 0;
+			  int j = 0;
+
+			  while (true)
+				  {
+				  // find the first active element that was previously ranked too poorly
+				  while (i < activeIDs.length && idToRankMap[activeIDs[i]] < partitionRank)
+					  {
+					  // this one is OK, leave it in place
+					  i++;
+					  }
+
+				  // find the first newly inactive element that was previously ranked too well
+				  while (j < inactiveIDs.length && idToRankMap[inactiveIDs[j]] >= partitionRank)
+					  {
+					  // this one is OK, leave it in place
+					  j++;
+					  }
+
+				  if (i < activeIDs.length && j < inactiveIDs.length)
+					  {
+					  // now we're pointing at the first available pair that should be swapped
+
+					  swapById(activeIDs[i], inactiveIDs[j]);
+
+					  // now the pair is swapped, advance the counters past it
+
+					  i++;
+					  j++;
+					  }
+				  else
+					  {
+					  break;
+					  }
+				  }
+			  }
+  */
 		private void swapBySolutionVector(SolutionVector<P> svA, SolutionVector<P> svB)
 			{
-			swapById(svA.id, svB.id);
-			svA.rank = idToRankMap[svA.id];
-			svB.rank = idToRankMap[svB.id];
+			swapByRank(svA.rank, svB.rank);
+			int tmp = svA.rank;
+			svA.rank = svB.rank;
+			svB.rank = tmp;
+
+			/*	swapById(svA.id, svB.id);
+						svA.rank = idToRankMap[svA.id];
+						svB.rank = idToRankMap[svB.id];*/
 			}
 
 
-		private void swapById(int idA, int idB)
-			{
-			swapByRank(idToRankMap[idA], idToRankMap[idB]);
-			int tmp = idToRankMap[idA];
-			idToRankMap[idA] = idToRankMap[idB];
-			idToRankMap[idB] = tmp;
-			}
-
+		/*		private void swapById(int idA, int idB)
+			  {
+			  swapByRank(idToRankMap[idA], idToRankMap[idB]);
+			  int tmp = idToRankMap[idA];
+			  idToRankMap[idA] = idToRankMap[idB];
+			  idToRankMap[idB] = tmp;
+			  }
+  */
 		private void swapByRank(int rankA, int rankB)
 			{
 			float tmp = diagonal[rankA];

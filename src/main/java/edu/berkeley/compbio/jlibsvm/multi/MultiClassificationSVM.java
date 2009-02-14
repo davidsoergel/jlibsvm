@@ -1,7 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
 import edu.berkeley.compbio.jlibsvm.SVM;
-import edu.berkeley.compbio.jlibsvm.SvmProblem;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblemImpl;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
@@ -48,12 +47,12 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 	   }*/
 
 
-	public void setupQMatrix(SvmProblem<L, P> problem)
+/*	public void setupQMatrix(SvmProblem<L, P> problem)
 		{
 		binarySvm.setupQMatrix(problem);
 		qMatrix = binarySvm.qMatrix; // just for the sake of reporting later
 		}
-
+*/
 
 	public MultiClassModel<L, P> train(MultiClassProblem<L, P> problem)
 		{
@@ -134,7 +133,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 				model.putOneVsAllModel(label, binarySvm.train(subProblem, weights.get(label), weights.get(notLabel)));
 
-				logger.debug("one-vs-all " + c + ": " + qMatrix.perfString());
+				//logger.debug("one-vs-all " + c + ": " + qMatrix.perfString());
 
 				c++;
 				if (c % 100 == 0)
@@ -189,7 +188,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 						model.putOneVsOneModel(label1, label2, binaryModel);
 
-						logger.debug("one-vs-one " + c + ": " + qMatrix.perfString());
+						//logger.debug("one-vs-one " + c + ": " + qMatrix.perfString());
 
 						c++;
 						if (c % 100 == 0)

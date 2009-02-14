@@ -4,6 +4,8 @@ import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
+import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -51,6 +53,8 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 			solutionVectors.add(sv);
 			}
 
+		QMatrix<P> qMatrix =
+				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
 		BinarySolver<L, P> s = new BinarySolver<L, P>(solutionVectors, qMatrix, Cp, Cn, param.eps, param.shrinking);
 
 		BinaryModel<L, P> model = s.Solve();

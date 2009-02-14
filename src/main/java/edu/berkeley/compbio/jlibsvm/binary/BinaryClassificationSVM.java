@@ -60,7 +60,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 			{
 			weightedCn *= weightN;
 			}
-		setupQMatrix(problem);
+		//setupQMatrix(problem);
 		BinaryModel<L, P> result = train(problem, weightedCp, weightedCn);
 
 		// ** logging output disabled for now

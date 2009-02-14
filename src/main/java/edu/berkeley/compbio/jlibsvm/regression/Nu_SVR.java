@@ -4,6 +4,8 @@ import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
+import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -103,6 +105,8 @@ public class Nu_SVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 			c++;
 			}
 
+		QMatrix<P> qMatrix =
+				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
 		RegressionSolverNu<P> s =
 				new RegressionSolverNu<P>(solutionVectors, qMatrix, param.C, param.eps, param.shrinking);
 

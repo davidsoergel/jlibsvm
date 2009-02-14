@@ -4,6 +4,8 @@ import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
+import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +75,8 @@ public class EpsilonSVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 			solutionVectors.add(sv);
 			}
 
+		QMatrix<P> qMatrix =
+				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
 		RegressionSolver<P> s = new RegressionSolver<P>(solutionVectors, qMatrix, param.C, param.eps, param.shrinking);
 
 

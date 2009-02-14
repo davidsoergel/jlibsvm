@@ -4,6 +4,8 @@ import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
+import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
 import org.apache.log4j.Logger;
 
@@ -98,6 +100,8 @@ public class OneClassSVC<L, P> extends RegressionSVM<P, OneClassProblem<L, P>>
 			solutionVectors.add(sv);
 			}
 
+		QMatrix<P> qMatrix =
+				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
 		OneClassSolver<L, P> s = new OneClassSolver<L, P>(solutionVectors, qMatrix, 1.0f, param.eps, param.shrinking);
 
 

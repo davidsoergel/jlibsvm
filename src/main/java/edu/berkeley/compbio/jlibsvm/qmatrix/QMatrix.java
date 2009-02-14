@@ -38,5 +38,5 @@ public interface QMatrix<P>
 
 //	void storeRanks(Collection<SolutionVector<P>> allExamples);
 
-	void loadRanks(Collection<SolutionVector<P>> allExamples);
+	void initRanks(Collection<SolutionVector<P>> allExamples);
 	}

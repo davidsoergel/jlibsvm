@@ -427,9 +427,9 @@ public class svm_toy extends Applet
 				}
 
 			// build model & classify
-			svm.setupQMatrix(prob);
+			//svm.setupQMatrix(prob);
 			ContinuousModel model = (ContinuousModel) svm.train(prob);
-			System.err.println(svm.qMatrix.perfString());
+			//System.err.println(svm.qMatrix.perfString());
 			SparseVector x = new SparseVector(1);
 			//x[0] = new svm_node();
 			x.indexes[0] = 1;
@@ -501,9 +501,9 @@ public class svm_toy extends Applet
 				svm = new MultiClassificationSVM((BinaryClassificationSVM) svm, param.redistributeUnbalancedC);
 				}
 			// build model & classify
-			svm.setupQMatrix(prob);
+			//svm.setupQMatrix(prob);
 			SolutionModel model = svm.train(prob);
-			System.err.println(svm.qMatrix.perfString());
+			//System.err.println(svm.qMatrix.perfString());
 			SparseVector x = new SparseVector(2);
 			//x[0] = new svm_node();
 			//x[1] = new svm_node();

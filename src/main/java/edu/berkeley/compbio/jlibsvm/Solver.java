@@ -227,7 +227,7 @@ public abstract class Solver<L extends Comparable, P>
 	protected int optimize()
 		{
 
-		Q.loadRanks(allExamples);
+		Q.initRanks(allExamples);
 
 		//		if (shuffledAlpha == null)//			{
 

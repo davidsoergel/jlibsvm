@@ -1,8 +1,6 @@
 package edu.berkeley.compbio.jlibsvm;
 
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
-import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -35,17 +33,18 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P>> e
 
 	//public abstract void setupQMatrix(SvmProblem<L, P> problem);
 
-	public QMatrix<P> qMatrix;
+	/*	public QMatrix<P> qMatrix;
 
-	public void setupQMatrix(SvmProblem<L, P> problem)
-		{
-		if (qMatrix == null)
-			{
-			qMatrix = new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
-			}
-		}
+	 public void setupQMatrix(SvmProblem<L, P> problem)
+		 {
+		 if (qMatrix == null)
+			 {
+			 qMatrix = new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
+			 }
+		 }
+ */
 
-	public abstract SolutionModel<P> train(R problem);
+	public abstract SolutionModel<P> train(R problem); //, QMatrix<P> qMatrix);
 
 	/*	protected abstract Map<P,L> foldPredict(R subprob, Iterator<P> foldIterator, int length);
 
@@ -85,10 +84,11 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P>> e
 			}
 
 		Set<Fold<L, P, R>> folds = problem.makeFolds(numberOfFolds);
-		setupQMatrix(problem);
+		//	setupQMatrix(problem);
+
 		for (Fold<L, P, R> f : folds)
 			{			// this will throw ClassCastException if you try cross-validation on a discrete-only model (e.g. MultiClassModel)
-			ContinuousModel<P> model = (ContinuousModel<P>) train(f.asR());
+			ContinuousModel<P> model = (ContinuousModel<P>) train(f.asR()); //, qMatrix);
 			for (P p : f.getHeldOutPoints())
 				{
 				predictions.put(p, model.predictValue(p));
@@ -108,10 +108,10 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P>> e
 			}
 
 		Set<Fold<L, P, R>> folds = problem.makeFolds(numberOfFolds);
-		setupQMatrix(problem);
+		//	setupQMatrix(problem);
 		for (Fold<L, P, R> f : folds)
 			{			// this will throw ClassCastException if you try cross-validation on a continuous-only model (e.g. RegressionModel)
-			DiscreteModel<L, P> model = (DiscreteModel<L, P>) train(f.asR());
+			DiscreteModel<L, P> model = (DiscreteModel<L, P>) train(f.asR()); //, qMatrix);
 			for (P p : f.getHeldOutPoints())
 				{
 				predictions.put(p, model.predictLabel(p));

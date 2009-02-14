@@ -4,6 +4,8 @@ import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
+import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -100,7 +102,8 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 			solutionVectors.add(sv);
 			}
 
-
+		QMatrix<P> qMatrix =
+				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
 		BinarySolverNu<L, P> s =
 				new BinarySolverNu<L, P>(solutionVectors, qMatrix, 1.0f, 1.0f, param.eps, param.shrinking);
 

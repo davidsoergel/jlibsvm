@@ -169,9 +169,9 @@ public class svm_train
 			}
 		else
 			{
-			svm.setupQMatrix(problem);
+			//svm.setupQMatrix(problem);
 			model = svm.train(problem);
-			System.err.println(svm.qMatrix.perfString());
+			//System.err.println(svm.qMatrix.perfString());
 			model.save(model_file_name);
 			}
 
