@@ -30,7 +30,13 @@ public interface QMatrix<P>
 
 	float evaluate(SolutionVector<P> a, SolutionVector<P> b);
 
+	float evaluateDiagonal(SolutionVector<P> a);
+
 	public String perfString();
 
-	void maintainCache(Collection<SolutionVector<P>> activeSet);
+	void maintainCache(SolutionVector<P>[] active, SolutionVector<P>[] newlyInactive);
+
+//	void storeRanks(Collection<SolutionVector<P>> allExamples);
+
+	void loadRanks(Collection<SolutionVector<P>> allExamples);
 	}

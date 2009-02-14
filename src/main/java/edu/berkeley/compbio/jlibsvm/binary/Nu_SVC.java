@@ -74,8 +74,8 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 			   sumNeg -= initAlpha[i];
 			   }
 		   }*/
-		Map<P, Boolean> examples = problem.getBooleanExamples()
-				;		//Map<P, Float> initAlpha = new HashMap<P, Float>();
+		Map<P, Boolean> examples =
+				problem.getBooleanExamples();		//Map<P, Float> initAlpha = new HashMap<P, Float>();
 
 
 		float linearTerm = 0f;
@@ -96,7 +96,6 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 				}
 			SolutionVector<P> sv = new SolutionVector(entry.getKey(), entry.getValue(), linearTerm, initAlpha);
 			sv.id = problem.getId(entry.getKey());
-
 			c++;
 			solutionVectors.add(sv);
 			}

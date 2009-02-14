@@ -36,7 +36,7 @@ public class BinarySolverNu<L extends Comparable, P> extends Solver_NU<L, P>
 		// calculate objective value
 		{
 		float v = 0;
-		for (SolutionVector svC : activeSet)
+		for (SolutionVector svC : active)
 			{
 			v += svC.alpha * (svC.G + svC.linearTerm);
 			}

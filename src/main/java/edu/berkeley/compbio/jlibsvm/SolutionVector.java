@@ -6,6 +6,11 @@ package edu.berkeley.compbio.jlibsvm;
  */
 public class SolutionVector<P>
 	{
+	/**
+	 * Used by the caching mechanism to keep track of which SVs are the most active.  Redundant with idToRankMap, but
+	 * better cache performance this way (?)
+	 */
+	public int rank = -1;
 
 	public enum Status
 		{
@@ -19,7 +24,7 @@ public class SolutionVector<P>
 				+ ", alphaStatus=" + alphaStatus + ", G=" + G + ", linearTerm=" + linearTerm + ", G_bar=" + G_bar + '}';
 		}
 
-	public int id; // a sequential id, used only to speed up QMatrix caching (to allow using arrays instead of hashmaps)
+	public int id; // keep track of the sample id for mapping to ranks
 	public P point;
 	public boolean targetValue;
 	public double alpha;

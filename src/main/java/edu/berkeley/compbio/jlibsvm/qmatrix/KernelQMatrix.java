@@ -6,12 +6,10 @@ import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -32,18 +30,31 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 		{
 		this.kernel = kernel;
 		this.cache = new RecentActivitySquareCache(numExamples, cacheRows);
+		idToRankMap = new int[numExamples];
+
+		for (int i = 0; i < numExamples; i++)
+			{
+			idToRankMap[i] = i;
+			}
 		}
 
 	public abstract float computeQ(SolutionVector<P> a, SolutionVector<P> b);
 
-	public void maintainCache(Collection<SolutionVector<P>> activeSet)
+	public void maintainCache(SolutionVector<P>[] active, SolutionVector<P>[] newlyInactive)
 		{
-		List<Integer> activeSvIds = new ArrayList<Integer>(activeSet.size());
-		for (SolutionVector<P> solutionVector : activeSet)
+		//List<Integer> activeSvIds = new ArrayList<Integer>(active.length);
+		/*int[] activeSvIds = new int[active.length];
+		int c = 0;
+		for (SolutionVector<P> solutionVector : active)
 			{
-			activeSvIds.add(solutionVector.id);
-			}
-		cache.maintainCache(activeSvIds);
+			activeSvIds[c++] = solutionVector.id;
+			}*/
+		cache.maintainCache(active, newlyInactive);
+		}
+
+	public final float evaluateDiagonal(SolutionVector<P> a)
+		{
+		return cache.getDiagonal(a);
 		}
 
 	public final float evaluate(SolutionVector<P> a, SolutionVector<P> b)
@@ -56,6 +67,50 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 			cache.put(a, b, result);
 			}
 		return result;*/
+		}
+
+
+	// This cache may be reused across optimizations with (some of?) the same samples, but with newly created SolutionVectors,
+	// e.g. with cross-validation.  So, we need to remember and restore the mapping from sample ids to ranks across runs.
+	private int[] idToRankMap;
+
+/*	public void storeRanks(Collection<SolutionVector<P>> allExamples)
+		{
+		for (SolutionVector<P> a : allExamples)
+			{
+			idToRankMap[a.id] = a.rank;
+			}
+		}*/
+
+	public void loadRanks(Collection<SolutionVector<P>> allExamples)
+		{
+		// it may be that only some of the previously cached examples are part of this run.
+
+		// PERF test whether this helps or not
+		// first partition the cache so that the examples that are part of this run come first
+/*
+		List<Integer> active = new ArrayList<Integer>();
+		List<Integer> inactive = new LinkedList<Integer>();
+		int numExamples = idToRankMap.length;
+		for (int i = 0; i < numExamples; i++)
+			{
+			inactive.add(i);
+			}
+
+		for (SolutionVector<P> a : allExamples)
+			{
+			active.add(a.id);
+			inactive.remove(new Integer(a.id));
+			}
+
+		cache.reorderCacheNoSolutionVectors(active.toArray(new Integer[0]), inactive.toArray(new Integer[0]));
+*/
+
+		// now tell the SVs what their ranks are
+		for (SolutionVector<P> a : allExamples)
+			{
+			a.rank = idToRankMap[a.id];
+			}
 		}
 
 	public String perfString()
@@ -153,9 +208,16 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 			}
 		}
 
-	private class RecentActivitySquareCache
+	/**
+	 * This cache was supposed to be clever by leaving entries in place to avoid moving things around in memory; but that
+	 * turns out to be the opposite of what we want due to cache locality issues. The original LIBSVM strategy of
+	 * rearranging the actual entries, and of referring to them directly by rank instead of by id, is really good in this
+	 * regard-- the cost of the memory rearrangement is apparently much less than the cache locality gain since the cache
+	 * is read far more than it is written or rearranged.
+	 */
+	private class SlowRecentActivitySquareCache
 		{
-		private final Logger logger = Logger.getLogger(RecentActivitySquareCache.class);
+		private final Logger logger = Logger.getLogger(SlowRecentActivitySquareCache.class);
 
 		// map from the SV index to the order of most recent activity (most active SVs first).
 		int[] svIdToRank;
@@ -181,7 +243,7 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 		long diagonalhits = 0;
 		long diagonalmisses = 0;
 
-		public RecentActivitySquareCache(int numExamples, int cacheRows)
+		public SlowRecentActivitySquareCache(int numExamples, int cacheRows)
 			{
 			this.numExamples = numExamples;
 
@@ -222,23 +284,25 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 				}
 			}
 
-		public void maintainCache(Collection<Integer> activeSvIds)
+		public void maintainCache(int[] activeSvIds)
 			{
+			Arrays.sort(activeSvIds); // for binary searches later
+
 			//	System.err.println(this);
 
 			// sort the rank array so that all the active SVs come before the inactive SVs,
 			// but leave the order otherwise unaffected (so it maintains memory of the previous activity)
 
-			if (activeSvIds.size() > maxCachedRank)
+			if (activeSvIds.length > maxCachedRank)
 				{
-				logger.warn("Active set of " + activeSvIds.size() + " SVs doesn't fit in cache of size " + maxCachedRank
+				logger.warn("Active set of " + activeSvIds.length + " SVs doesn't fit in cache of size " + maxCachedRank
 						+ ", try increasing it");
 				}
 
 			// stable partitioning of the ranks.
 
 			int newActiveRank = 0;
-			int newInactiveRank = activeSvIds.size();
+			int newInactiveRank = activeSvIds.length;
 
 			// just go through in the old rank order.
 
@@ -250,7 +314,7 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 
 				// figure out the new rank
 				int newRank;
-				if (activeSvIds.contains(svid))
+				if (Arrays.binarySearch(activeSvIds, svid) >= 0) //activeSvIds.contains(svid))
 					{
 					newRank = newActiveRank;
 					newActiveRank++;
@@ -285,7 +349,7 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 
 				// figure out the new rank
 				int newRank;
-				if (activeSvIds.contains(svid))
+				if (Arrays.binarySearch(activeSvIds, svid) >= 0) //activeSvIds.contains(svid))
 					{
 					newRank = newActiveRank;
 					newActiveRank++;
@@ -399,6 +463,269 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 				hits++;
 				}
 			return result;
+			}
+
+		public String toString()
+			{
+			return "QMatrix hits = " + hits + ", misses = " + misses + ", widemisses = " + widemisses
+					+ ", diagonalhits = " + diagonalhits + ", diagonalmisses = " + diagonalmisses + ", rate = "
+					+ (float) (hits + diagonalhits) / (float) (hits + diagonalhits + misses + widemisses
+					+ diagonalmisses) + ", size = " + data.length;
+			}
+		}
+
+	/**
+	 * This one is more like the original LIBSVM cache, rearranging the entries in memory according to which SVs are
+	 * currently active
+	 */
+	private class RecentActivitySquareCache
+		{
+		float[][] data;
+
+		float[] diagonal;
+
+		int maxCachedRank;
+
+		public final static float NOTCACHED = Float.NEGATIVE_INFINITY;
+
+		long hits = 0;
+		long misses = 0;
+		long widemisses = 0;
+		long diagonalhits = 0;
+		long diagonalmisses = 0;
+
+
+		public RecentActivitySquareCache(int numExamples, int cacheRows)
+			{
+			//	this.numExamples = numExamples;
+
+			// how big should the cache really be
+			maxCachedRank = Math.min(numExamples, cacheRows);
+
+
+			// PERF maybe we don't need to preallocate the whole thing?
+
+			// allocate square cache.
+			data = new float[maxCachedRank][];
+			for (int i = 0; i < maxCachedRank; i++)
+				{
+				data[i] = new float[maxCachedRank];
+				Arrays.fill(data[i], NOTCACHED);
+				}
+
+			// allocate diagonal.  Redundant with the square cache, but this way it can sit in the processor cache sequentially.
+			diagonal = new float[numExamples];
+			Arrays.fill(diagonal, NOTCACHED);
+			}
+
+		public float getDiagonal(SolutionVector<P> a)
+			{
+			float result = diagonal[a.rank];
+			if (result == NOTCACHED)
+				{
+				result = computeQ(a, a);
+				diagonal[a.rank] = result;
+				diagonalmisses++;
+				}
+			else
+				{
+				diagonalhits++;
+				}
+			return result;
+			}
+
+		public float get(SolutionVector<P> a, SolutionVector<P> b)
+			{
+			//assert a != b;  // the diagonal entries should always stay empty; use getDiagonal instead
+			if (a == b)
+				{
+				return getDiagonal(a);
+				}
+
+
+			// note the use of the redundant sv.rank field here instead of idToRankMap[sv.id].  This is just for cache locality.
+
+			if (a.rank >= maxCachedRank || b.rank >= maxCachedRank)
+				{
+				//return NOTCACHED;
+				widemisses++;
+				return computeQ(a, b);
+				}
+
+			float result = data[a.rank][b.rank];
+			if (result == NOTCACHED)
+				{
+				result = computeQ(a, b);
+				data[a.rank][b.rank] = result;
+				data[b.rank][a.rank] = result;
+				misses++;
+				}
+			else
+				{
+				//assert result == computeQ(a, b);
+				hits++;
+				}
+			return result;
+			}
+
+
+		/**
+		 * Rearrange the ranks so that all active SVs come before all inactive SVs. Sort the data[][] and diagonal[] arrays
+		 * according to the new ranking. The provided arrays are in the correct rank order already.
+		 */
+		public void maintainCache(SolutionVector<P>[] active,
+		                          SolutionVector<P>[] newlyInactive) //, SolutionVector<P>[] previouslyInactive)
+			{
+			//int rankTrav = 0;
+
+			// the desired partitioning is provided by the arguments; the current partitioning is buried inside each element as SV.rank.
+
+			// note the ranks of the previously inactive SVs don't change, so we don't have to touch them or their cache entries at all
+
+			// the partitioning mechanism is similar to that used in quicksort:
+			//    find all elements of newlyInactive with prior rank less than the partition rank
+			//    find all elements of active that with prior rank greater than the partition rank
+			//    exchange these pairwise until done
+
+			// it doesn't matter which pairs we choose to achieve partitioning, but it may improve things some to maintain order as well as possible.
+			// thus, we exchange them in order.
+
+
+			int partitionRank = active.length;
+
+			int i = 0;
+			int j = 0;
+
+			while (true)
+				{
+				// find the first active element that was previously ranked too poorly
+				while (i < active.length && active[i].rank < partitionRank)
+					{
+					// this one is OK, leave it in place
+					i++;
+					}
+
+				// find the first newly inactive element that was previously ranked too well
+				while (j < newlyInactive.length && newlyInactive[j].rank >= partitionRank)
+					{
+					// this one is OK, leave it in place
+					j++;
+					}
+
+				if (i < active.length && j < newlyInactive.length)
+					{
+					// now we're pointing at the first available pair that should be swapped
+
+					swapBySolutionVector(active[i], newlyInactive[j]);
+
+
+					// now the pair is swapped, advance the counters past it
+
+					i++;
+					j++;
+					}
+				else
+					{
+					break;
+					}
+				}
+			}
+
+
+		/**
+		 * Rearrange the ranks so that all active SVs come before all inactive SVs. Sort the data[][] and diagonal[] arrays
+		 * according to the new ranking. The provided arrays are in the correct rank order already.
+		 */
+		public void reorderCacheNoSolutionVectors(Integer[] activeIDs,
+		                                          Integer[] inactiveIDs) //, SolutionVector<P>[] previouslyInactive)
+			{
+			//int rankTrav = 0;
+
+			// the desired partitioning is provided by the arguments; the current partitioning is buried inside each element as SV.rank.
+
+			// note the ranks of the previously inactive SVs don't change, so we don't have to touch them or their cache entries at all
+
+			// the partitioning mechanism is similar to that used in quicksort:
+			//    find all elements of newlyInactive with prior rank less than the partition rank
+			//    find all elements of active that with prior rank greater than the partition rank
+			//    exchange these pairwise until done
+
+			// it doesn't matter which pairs we choose to achieve partitioning, but it may improve things some to maintain order as well as possible.
+			// thus, we exchange them in order.
+
+
+			int partitionRank = activeIDs.length;
+
+			int i = 0;
+			int j = 0;
+
+			while (true)
+				{
+				// find the first active element that was previously ranked too poorly
+				while (i < activeIDs.length && idToRankMap[activeIDs[i]] < partitionRank)
+					{
+					// this one is OK, leave it in place
+					i++;
+					}
+
+				// find the first newly inactive element that was previously ranked too well
+				while (j < inactiveIDs.length && idToRankMap[inactiveIDs[j]] >= partitionRank)
+					{
+					// this one is OK, leave it in place
+					j++;
+					}
+
+				if (i < activeIDs.length && j < inactiveIDs.length)
+					{
+					// now we're pointing at the first available pair that should be swapped
+
+					swapById(activeIDs[i], inactiveIDs[j]);
+
+					// now the pair is swapped, advance the counters past it
+
+					i++;
+					j++;
+					}
+				else
+					{
+					break;
+					}
+				}
+			}
+
+
+		private void swapBySolutionVector(SolutionVector<P> svA, SolutionVector<P> svB)
+			{
+			swapById(svA.id, svB.id);
+			svA.rank = idToRankMap[svA.id];
+			svB.rank = idToRankMap[svB.id];
+			}
+
+
+		private void swapById(int idA, int idB)
+			{
+			swapByRank(idToRankMap[idA], idToRankMap[idB]);
+			int tmp = idToRankMap[idA];
+			idToRankMap[idA] = idToRankMap[idB];
+			idToRankMap[idB] = tmp;
+			}
+
+		private void swapByRank(int rankA, int rankB)
+			{
+			float tmp = diagonal[rankA];
+			diagonal[rankA] = diagonal[rankB];
+			diagonal[rankB] = tmp;
+
+			float[] dtmp = data[rankA];
+			data[rankA] = data[rankB];
+			data[rankB] = dtmp;
+
+			for (float[] drow : data)
+				{
+				float d = drow[rankA];
+				drow[rankA] = drow[rankB];
+				drow[rankB] = d;
+				}
 			}
 
 		public String toString()

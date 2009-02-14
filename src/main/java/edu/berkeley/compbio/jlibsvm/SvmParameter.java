@@ -78,7 +78,8 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 		double kb = mb * 1024;
 		double bytes = kb * 1024;
 		double floats = bytes / 4; // float = 4 bytes
-		double floatrows = Math.sqrt(floats * 2);  // the sqrt 2 term is because the cache will be symmetric
+		double floatrows = Math.sqrt(
+				floats); //Math.sqrt(floats * 2);  // the sqrt 2 term is because the cache will be symmetric // no it won't
 		return (int) (floatrows);
 		}
 

@@ -39,7 +39,7 @@ sub main()
 
 
     print("<HTML><HEAD><meta http-equiv='refresh' content='10'></HEAD><BODY><TABLE border='1'>\n");
-    print("<TR><TD>program</TD><TD>iter</TD><TD>nu</TD><TD>obj</TD><TD>rho</TD><TD>nSV</TD><TD>nBSV</TD><TD>cpu</TD><TD>mem</TD><TD>cvAcc</TD></TR>\n");
+    print("<TR><TD>program</TD><TD>iter</TD><TD>nu</TD><TD>obj</TD><TD>rho</TD><TD>nSV</TD><TD>nBSV</TD><TD>cpu</TD><TD>mem</TD><TD>^unk</TD><TD>cvAcc</TD></TR>\n");
 
 	for my $dataset (@datasets)
 		{
@@ -49,15 +49,16 @@ sub main()
 
 			my %commandlines = ("LIBSVM-c" => "~/src-3rdparty/libsvm-2.88/svm-train $args $dataset",
 			"LIBSVM-j" => "java -Xmx1500m -cp ~/src-3rdparty/libsvm-2.88/java/libsvm.jar svm_train $args $dataset",
-			"jLibSvm None AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o None -a AllVsAll $dataset",
-			"jLibSvm Best None" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -b 1 -o Best -a None $dataset",
-			"jLibSvm BreakTies AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o BreakTies -a AllVsAll $dataset",
-			"jLibSvm Veto AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -a AllVsAll $dataset",
-			"jLibSvm Veto FilteredVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -a FilteredVsAll $dataset",
-			"jLibSvm Veto FilteredVsFiltered" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -a FilteredVsFiltered $dataset",
-            "jLibSvm VetoAndBreakTies AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -a AllVsAll $dataset",
-            "jLibSvm VetoAndBreakTies FilteredVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -a FilteredVsAll $dataset",
-			"jLibSvm VetoAndBreakTies FilteredVsFiltered" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -a FilteredVsFiltered $dataset");
+			"jLibSvm None AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o None -a AllVsAll $dataset"
+		#	, "jLibSvm Best None" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -b 1 -o Best -a None $dataset",
+		#	"jLibSvm BreakTies AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o BreakTies -a AllVsAll $dataset",
+		#	"jLibSvm Veto AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -a AllVsAll $dataset",
+		#	"jLibSvm Veto FilteredVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -a FilteredVsAll $dataset",
+		#	"jLibSvm Veto FilteredVsFiltered" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -a FilteredVsFiltered $dataset",
+         #   "jLibSvm VetoAndBreakTies AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -a AllVsAll $dataset",
+          #  "jLibSvm VetoAndBreakTies FilteredVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -a FilteredVsAll $dataset",
+		#	"jLibSvm VetoAndBreakTies FilteredVsFiltered" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -a FilteredVsFiltered $dataset"
+            );
 
 			for my $commandname (keys %commandlines)
 				{
@@ -69,7 +70,7 @@ sub main()
 				#my($wtr, $COMMANDOUTPUT,$err);
 				my $COMMANDOUTPUT;
 				#if (not defined($pid=open3($wtr, $COMMANDOUTPUT, $err, "-|")))
-				if (not defined($pid=open(COMMANDOUTPUT, "-|")))
+				if (not defined($pid=open($COMMANDOUTPUT, "-|")))
 					{
 					die "Can't fork: $!\n";
 					}
@@ -89,42 +90,52 @@ sub main()
 				# parent process
 				#print("Watching PID: $pid\n");
 				my $childAlive = 1;
-				my $maxMem = 0;
+				my $maxMemKb = 0;
 				my $maxCpu = 0;
 				while($childAlive)
 					{
 					my @ps = `ps S -o time,rss,state $pid`;
 
-					my $ps = @ps[1];
+					my $ps = $ps[1];
 					$ps =~ s/^\s+//;
 
 					@ps = split /\s+/, $ps;
 
-					if(@ps == 0 || @ps[2] =~ /Z/)
+					# print STDERR join (",",@ps) . "\n";
+
+					if(@ps == 0 || $ps[2] =~ /Z/)
 						{
-		                if(@ps[0] =~ /[123456789]/)
-	    					{ $maxCpu = @ps[0]; }
 						$childAlive = 0;
 						}
-					else
-						{
-						my $mem = @ps[1];
-                        $mem = $mem * 1024;
 
-						if($mem > $maxMem)
-							{
-							$maxMem = $mem;
-							}
+					my $memKb = $ps[1];
+                    $memKb = $memKb;
 
-						$maxCpu = @ps[0];
-						sleep(1);
-						}
+                    if($memKb > $maxMemKb)
+                        {
+                        $maxMemKb = $memKb;
+                        }
 
-					while(<COMMANDOUTPUT>)
-						{
-						push @output,$_;
-						print STDERR;
-						}
+                    if($ps[0] =~ /[123456789]/)
+                        {
+                        $maxCpu = $ps[0];
+                        #print STDERR "MAXCPU = $maxCpu\n";
+                        }
+
+                    sleep(1);
+
+                    my ($eof,@lines) = nonblockGetLines($COMMANDOUTPUT, 1);
+                    foreach (@lines)
+                        {
+                        push @output,$_;
+						print STDERR "$_\n";
+                        }
+
+					#while(<COMMANDOUTPUT>)
+					#	{
+					#	push @output,$_;
+					#	print STDERR;
+					#	}
 					}
 
 				#waitpid($pid,0);
@@ -133,6 +144,7 @@ sub main()
 				while(<COMMANDOUTPUT>)
 						{
 						push @output,$_;
+						print STDERR;
 						}
 				close COMMANDOUTPUT;
 
@@ -155,7 +167,7 @@ sub main()
 				my ($iterM, $iterSD, $nuM, $nuSD, $objM, $objSD, $rhoM, $rhoSD, $nsvM, $nsvSD, $nbsvM, $nbsvSD, $cvClassified, $cvAcc) = parse_output(@output);
 
 				#$mem = $mem / (1024*1024);
-				$maxMem = $maxMem / (1024*1024);
+				my $maxMemMb = $maxMemKb / 1024;
 
 
 				if($maxCpu =~ /(.*?):(.*?):(.*)/)
@@ -168,7 +180,7 @@ sub main()
                     }
 
 				#printf("%s, %s, %s, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.2g, %.1f, %.2f, %.2f\n",
-				#$commandname, $dataset, $args, $iterM, $iterSD, $nuM, $nuSD, $objM, $objSD, $rhoM, $rhoSD, $nsvM, $nsvSD, $nbsvM, $nbsvSD, $cvAcc, $maxCpu, $maxMem);
+				#$commandname, $dataset, $args, $iterM, $iterSD, $nuM, $nuSD, $objM, $objSD, $rhoM, $rhoSD, $nsvM, $nsvSD, $nbsvM, $nbsvSD, $cvAcc, $maxCpu, $maxMemMb);
 
 	            printf("<TR><TD>%s</TD>", $commandname);
 	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $iterM, $iterSD);
@@ -177,7 +189,7 @@ sub main()
 	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $rhoM, $rhoSD);
 	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $nsvM, $nsvSD);
 	            printf("<TD>%.2f <FONT size='1'>+- %.2f</FONT></TD>", $nbsvM, $nbsvSD);
-	            printf("<TD>%.2f</TD><TD>%.2f</TD><TD>%.1f</TD><TD>%.1f</TD></TR>\n", $maxCpu, $maxMem, $cvClassified, $cvAcc);
+	            printf("<TD>%.2f</TD><TD>%.2f</TD><TD>%.1f</TD><TD>%.1f</TD></TR>\n", $maxCpu, $maxMemMb, $cvClassified, $cvAcc);
 
 				}
 			}
@@ -185,6 +197,35 @@ sub main()
 
 	print("</TABLE></BODY></HTML>");
 	}
+
+# http://davesource.com/Solutions/20080924.Perl-Non-blocking-Read-On-Pipes-Or-Files.html
+
+# An non-blocking filehandle read that returns an array of lines read
+# Returns:  ($eof,@lines)
+my %nonblockGetLines_last;
+sub nonblockGetLines {
+	my ($fh,$timeout) = @_;
+
+	$timeout = 0 unless defined $timeout;
+	my $rfd = '';
+	$nonblockGetLines_last{$fh} = ''
+		unless defined $nonblockGetLines_last{$fh};
+
+	vec($rfd,fileno($fh),1) = 1;
+	return unless select($rfd, undef, undef, $timeout)>=0;
+	# I'm not sure the following is necessary?
+	return unless vec($rfd,fileno($fh),1);
+	my $buf = '';
+	my $n = sysread($fh,$buf,1024*1024);
+	# If we're done, make sure to send the last unfinished line
+	return (1,$nonblockGetLines_last{$fh}) unless $n;
+	# Prepend the last unfinished line
+	$buf = $nonblockGetLines_last{$fh}.$buf;
+	# And save any newly unfinished lines
+	$nonblockGetLines_last{$fh} =
+		(substr($buf,-1) !~ /[\r\n]/ && $buf =~ s/([^\r\n]*)$//) ? $1 : '';
+	$buf ? (0,split(/\n/,$buf)) : (0);
+}
 
 
 sub parse_output()

@@ -41,7 +41,7 @@
   <component name="CodeStyleSettingsManager">
     <option name="PER_PROJECT_SETTINGS">
       <value>
-        <ADDITIONAL_INDENT_OPTIONS fileType="java">
+        <ADDITIONAL_INDENT_OPTIONS fileType="">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
           <option name="TAB_SIZE" value="4" />
@@ -50,7 +50,7 @@
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
-        <ADDITIONAL_INDENT_OPTIONS fileType="jsp">
+        <ADDITIONAL_INDENT_OPTIONS fileType="java">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
           <option name="TAB_SIZE" value="4" />
@@ -90,6 +90,9 @@
       <entry name="?*.dtd" />
       <entry name="?*.tld" />
     </wildcardResourcePatterns>
+  </component>
+  <component name="CopyrightManager" default="">
+    <module2copyright />
   </component>
   <component name="Cvs2Configuration">
     <option name="PRUNE_EMPTY_DIRECTORIES" value="true" />
@@ -1179,15 +1182,61 @@
     <option name="projectName" value="jlibsvm" />
   </component>
   <component name="ProjectFileVersion" converted="true" />
+  <component name="ProjectKey">
+    <option name="state" value="svn+ssh://soergel@svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm/trunk/jlibsvm.ipr" />
+  </component>
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/jlibsvm.iml" filepath="$PROJECT_DIR$/jlibsvm.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="Current" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.5" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
   <component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="New letter" type="Application" factoryName="Application" enabled="true" merge="false" sample_coverage="true" runner="emma">
+      <pattern>
+        <option name="PATTERN" value="com.davidsoergel.jlibsvm.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+      <pattern>
+        <option name="PATTERN" value="libsvm.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+      <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train" />
+      <option name="VM_PARAMETERS" value="-Xint -Xmx512m -ea -Xrunshark" />
+      <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 100 -e .01 -v 5 -m 500 -o None -a AllVsAll letter.scale" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="jlibsvm" />
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="53644" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Profile CPU">
+        <option name="startFromMode" value="MAIN_CLASS" />
+        <option name="otherClassesToStartFrom" value="" />
+        <option name="profileNewRunnables" value="true" />
+        <option name="filteringMode" value="EXCLUDE" />
+        <option name="filterIncludeClasses" value="" />
+        <option name="filterExcludeClasses" value="java.*, javax.*,&#10;sun.*, sunw.*, com.sun.*" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Profile Memory">
+        <option name="profileAllocMode" value="ALLOC_AND_GC" />
+        <option name="profileAllocInterval" value="10" />
+        <option name="recordAllocTraces" value="false" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method>
+        <option name="Make" value="true" />
+      </method>
+    </configuration>
     <configuration default="false" name="Legacy mushrooms" type="Application" factoryName="Application" enabled="false" merge="false" sample_coverage="true" runner="emma">
       <option name="MAIN_CLASS_NAME" value="libsvm.svm_train" />
       <option name="VM_PARAMETERS" value="" />
@@ -1272,8 +1321,8 @@
     </configuration>
     <configuration default="false" name="New mushrooms Shark" type="Application" factoryName="Application" enabled="false" merge="false" sample_coverage="true" runner="emma">
       <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train" />
-      <option name="VM_PARAMETERS" value="-Xmx512m -ea -Xrunshark" />
-      <option name="PROGRAM_PARAMETERS" value="-s 0 -t 0 -c 100  -v 10 -m 500 mushrooms" />
+      <option name="VM_PARAMETERS" value="-Xint -Xmx512m -ea -Xrunshark" />
+      <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 100  -v 10 -m 500 mushrooms" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" value="" />
@@ -1352,18 +1401,10 @@
         <option name="Make" value="true" />
       </method>
     </configuration>
-    <configuration default="false" name="New letter" type="Application" factoryName="Application" enabled="true" merge="false" sample_coverage="true" runner="emma">
-      <pattern>
-        <option name="PATTERN" value="com.davidsoergel.jlibsvm.*" />
-        <option name="ENABLED" value="true" />
-      </pattern>
-      <pattern>
-        <option name="PATTERN" value="libsvm.*" />
-        <option name="ENABLED" value="true" />
-      </pattern>
+    <configuration default="false" name="New letter Shark" type="Application" factoryName="Application" enabled="false" merge="false" sample_coverage="true" runner="emma">
       <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train" />
-      <option name="VM_PARAMETERS" value="-ea -Xmx1500m" />
-      <option name="PROGRAM_PARAMETERS" value="-s 0 -t 0 -c 100 -e .01 -v 5 -m 1000 -o Veto -a AllVsAll -b 1 letter.scale" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -ea -Xrunshark" />
+      <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 100  -v 10 -m 500 letter.scale" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" value="" />
@@ -1372,11 +1413,6 @@
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="jlibsvm" />
       <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="53644" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
       <RunnerSettings RunnerId="Profile CPU">
         <option name="startFromMode" value="MAIN_CLASS" />
         <option name="otherClassesToStartFrom" value="" />
@@ -1390,7 +1426,8 @@
         <option name="profileAllocInterval" value="10" />
         <option name="recordAllocTraces" value="false" />
       </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Debug" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
       <method>
         <option name="Make" value="true" />
       </method>
@@ -1475,17 +1512,19 @@
             <SvnBranchConfiguration>
               <option name="branchUrls">
                 <list>
-                  <option value="svn+ssh://soergel@svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm/branches" />
-                  <option value="svn+ssh://soergel@svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm/tags" />
+                  <option value="svn+ssh://svn.davidsoergel.com:22/home/svn/repos-compbio/jlibsvm/branches" />
+                  <option value="svn+ssh://svn.davidsoergel.com:22/home/svn/repos-compbio/jlibsvm/tags" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn+ssh://soergel@svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm/trunk" />
+              <option name="trunkUrl" value="svn+ssh://svn.davidsoergel.com:22/home/svn/repos-compbio/jlibsvm/trunk" />
+              <option name="userinfoInUrl" value="true" />
             </SvnBranchConfiguration>
           </value>
         </entry>
       </map>
     </option>
     <option name="myVersion" value="124" />
+    <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="SvnChangesBrowserSettings">
     <option name="USE_AUTHOR_FIELD" value="true" />

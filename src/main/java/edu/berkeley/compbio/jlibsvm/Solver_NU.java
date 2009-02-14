@@ -4,6 +4,8 @@ import edu.berkeley.compbio.jlibsvm.binary.AlphaModel;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -67,7 +69,7 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 		//int Gmin_idx = -1;
 		double obj_diff_min = Float.POSITIVE_INFINITY;
 
-		for (SolutionVector sv : activeSet)
+		for (SolutionVector sv : active)
 			{
 			if (sv.targetValue)
 				{
@@ -108,7 +110,7 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 			}
 			*/
 
-		for (SolutionVector sv : activeSet)
+		for (SolutionVector sv : active)
 			{
 			if (sv.targetValue)
 				{
@@ -124,7 +126,7 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 						double obj_diff;
 						//float quad_coef = Q_ip[ip] + QD[j] - 2 * Q_ip[j];
 						double quad_coef =
-								Q.evaluate(GmaxpSV, GmaxpSV) + Q.evaluate(sv, sv) - 2.0f * Q.evaluate(GmaxpSV, sv);
+								Q.evaluateDiagonal(GmaxpSV) + Q.evaluateDiagonal(sv) - 2.0f * Q.evaluate(GmaxpSV, sv);
 						if (quad_coef > 0)
 							{
 							obj_diff = -(grad_diff * grad_diff) / quad_coef;
@@ -158,7 +160,7 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 
 
 						double quad_coef =
-								Q.evaluate(GmaxnSV, GmaxnSV) + Q.evaluate(sv, sv) - 2.0f * Q.evaluate(GmaxnSV, sv);
+								Q.evaluateDiagonal(GmaxnSV) + Q.evaluateDiagonal(sv) - 2.0f * Q.evaluate(GmaxnSV, sv);
 
 						if (quad_coef > 0)
 							{
@@ -208,7 +210,7 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 		double Gmax4 = Double.NEGATIVE_INFINITY;// max { y_i * grad(f)_i | y_i = -1, i in I_low(\alpha) }
 
 		// find maximal violating pair first
-		for (SolutionVector<P> sv : activeSet)
+		for (SolutionVector<P> sv : active)
 			{
 			if (!sv.isUpperBound())
 				{
@@ -250,16 +252,30 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 
 		// There was an extremely messy iteration here before, but I think it served only to separate the shrinkable vectors from the unshrinkable ones.
 
-		for (Iterator<SolutionVector<P>> iter = activeSet.iterator(); iter.hasNext();)
+		Collection<SolutionVector<P>> activeList =
+				new ArrayList<SolutionVector<P>>(Arrays.asList(active)); //Arrays.asList(active);
+		Collection<SolutionVector<P>> inactiveList = new ArrayList<SolutionVector<P>>();
+
+		// note the ordering: newly inactive SVs go at the beginning of the inactive list, maintaining order
+
+		for (Iterator<SolutionVector<P>> iter = activeList.iterator(); iter.hasNext();)
 			{
 			SolutionVector sv = iter.next();
 
 			if (sv.isShrinkable(Gmax1, Gmax2, Gmax3, Gmax4))
 				{
 				iter.remove();
-				inactiveSet.add(sv);
+				inactiveList.add(sv);
 				}
 			}
+
+		active = activeList.toArray(EMPTY_SV_ARRAY);
+		SolutionVector<P>[] newlyInactive = inactiveList.toArray(EMPTY_SV_ARRAY);
+		Q.maintainCache(active, newlyInactive);
+
+		// previously inactive SVs come after that
+		inactiveList.addAll(Arrays.asList(inactive));
+		inactive = inactiveList.toArray(EMPTY_SV_ARRAY);
 		}
 
 	@Override

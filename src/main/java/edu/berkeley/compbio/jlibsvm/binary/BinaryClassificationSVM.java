@@ -66,7 +66,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		// ** logging output disabled for now
 		//if (logger.isDebugEnabled())
 		//	{
-		result.printSolutionInfo(problem);
+		//result.printSolutionInfo(problem);
 		//	}
 		//logger.info(qMatrix.perfString());
 		return result;

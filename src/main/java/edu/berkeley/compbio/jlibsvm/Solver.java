@@ -5,6 +5,7 @@ import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -34,8 +35,10 @@ public abstract class Solver<L extends Comparable, P>
 	private static final int MAXITER = 50000;
 
 	protected Collection<SolutionVector<P>> allExamples;
-	protected Collection<SolutionVector<P>> activeSet;
-	protected Collection<SolutionVector<P>> inactiveSet;
+	//protected Collection<SolutionVector<P>> activeSet;
+	protected SolutionVector<P>[] active;
+	//protected Collection<SolutionVector<P>> inactiveSet;
+	protected SolutionVector<P>[] inactive;
 
 	//	int activeSize;//	boolean[] y;//	float[] G;// gradient of objective function
 
@@ -98,7 +101,7 @@ public abstract class Solver<L extends Comparable, P>
 	void reconstruct_gradient()
 		{		// reconstruct inactive elements of G from G_bar and free variables
 
-		if (activeSet.size() == numExamples)
+		if (active.length == numExamples)
 			{
 			return;
 			}
@@ -107,12 +110,12 @@ public abstract class Solver<L extends Comparable, P>
 		int nr_free = 0;
 
 
-		for (SolutionVector sv : inactiveSet)
+		for (SolutionVector sv : inactive)
 			{
 			sv.G = sv.G_bar + sv.linearTerm;
 			}
 
-		for (SolutionVector sv : activeSet)
+		for (SolutionVector sv : active)
 			{
 			if (sv.isFree())
 				{
@@ -120,7 +123,7 @@ public abstract class Solver<L extends Comparable, P>
 				}
 			}
 
-		int activeSize = activeSet.size();
+		int activeSize = active.length;
 
 
 		// ** logging output disabled for now
@@ -131,9 +134,9 @@ public abstract class Solver<L extends Comparable, P>
 */
 		if (nr_free * numExamples > 2 * activeSize * (numExamples - activeSize))
 			{
-			for (SolutionVector svA : inactiveSet)
+			for (SolutionVector svA : inactive)
 				{				//float[] Q_i = Q.getQ(i, activeSize);
-				for (SolutionVector svB : activeSet)
+				for (SolutionVector svB : active)
 					{
 					if (svB.isFree()) //is_free(j))
 						{
@@ -146,12 +149,12 @@ public abstract class Solver<L extends Comparable, P>
 			}
 		else
 			{
-			for (SolutionVector svA : activeSet)
+			for (SolutionVector svA : active)
 				{
 				if (svA.isFree()) //is_free(i))
 					{					//	float[] Q_i = Q.getQ(i, numExamples);					//	float alpha_i = shuffledAlpha[i];
 
-					for (SolutionVector svB : inactiveSet)
+					for (SolutionVector svB : inactive)
 						{
 						svB.G += svA.alpha * Q.evaluate(svA, svB);
 						svA.wasEvaluated = true;
@@ -223,6 +226,8 @@ public abstract class Solver<L extends Comparable, P>
 
 	protected int optimize()
 		{
+
+		Q.loadRanks(allExamples);
 
 		//		if (shuffledAlpha == null)//			{
 
@@ -303,7 +308,8 @@ public abstract class Solver<L extends Comparable, P>
 
 				// ** logging output disabled for now
 				//logger.debug(".");
-				}//oldPair = pair;
+				}
+			//oldPair = pair;
 			SolutionVectorPair pair = selectWorkingPair();
 
 			if (pair.isOptimal) // pair already optimal
@@ -313,21 +319,29 @@ public abstract class Solver<L extends Comparable, P>
 
 
 				// ** logging output disabled for now
-				//logger.debug("*");				//svA = pair.svA;				//svB = pair.svB;
+				//logger.debug("*");
+				// 			//svA = pair.svA;
+				// 		//svB = pair.svB;
 
 				pair = selectWorkingPair();
 				if (pair.isOptimal) // pair already optimal
-					{					//svA = oldPair.svA;					//svB = oldPair.svB;
+					{
+					//svA = oldPair.svA;
+					// 			//svB = oldPair.svB;
 					break;
 					}
 				else
 					{
-					counter =
-							1;// do shrinking next iteration					// leave the working pair the same as before					//pair = oldPair;
+					counter = 1;
+					// do shrinking next iteration
+					// 				// leave the working pair the same as before
+					// 				//pair = oldPair;
 					}
 				}
 			svA = pair.svA;
-			svB = pair.svB;//			int i = working_set[0];//			int j = working_set[1];
+			svB = pair.svB;
+			//			int i = working_set[0];
+			// //			int j = working_set[1];
 
 			++iter;
 
@@ -339,7 +353,9 @@ public abstract class Solver<L extends Comparable, P>
 
 			// update alpha[i] and alpha[j], handle bounds carefully
 
-			//	float[] Q_i = Q.getQ(i, activeSize);			//	float[] Q_j = Q.getQ(j, activeSize);
+
+			//	float[] Q_i = Q.getQ(i, activeSize);
+			// 		//	float[] Q_j = Q.getQ(j, activeSize);
 
 			float C_i = svA.getC(Cp, Cn); //getC(i);
 			float C_j = svB.getC(Cp, Cn); //getC(j);
@@ -349,7 +365,7 @@ public abstract class Solver<L extends Comparable, P>
 
 			if (svA.targetValue != svB.targetValue)
 				{
-				float quad_coef = Q.evaluate(svA, svA) + Q.evaluate(svB, svB) + 2 * Q.evaluate(svA, svB);
+				float quad_coef = Q.evaluateDiagonal(svA) + Q.evaluateDiagonal(svB) + 2 * Q.evaluate(svA, svB);
 				svA.wasEvaluated = true;
 				svB.wasEvaluated = true;
 
@@ -397,7 +413,7 @@ public abstract class Solver<L extends Comparable, P>
 				}
 			else
 				{
-				float quad_coef = Q.evaluate(svA, svA) + Q.evaluate(svB, svB) - 2 * Q.evaluate(svA, svB);
+				float quad_coef = Q.evaluateDiagonal(svA) + Q.evaluateDiagonal(svB) - 2 * Q.evaluate(svA, svB);
 				svA.wasEvaluated = true;
 				svB.wasEvaluated = true;
 
@@ -457,14 +473,31 @@ public abstract class Solver<L extends Comparable, P>
 				break;
 				}
 
-
-			for (SolutionVector<P> svC : activeSet)
+			// NO: loop over A first, then B (cache locality)
+			for (SolutionVector<P> svC : active)
 				{
+				//svC.G += Q.evaluate(svC, svA) * delta_alpha_i + Q.evaluate(svC, svB) * delta_alpha_j;
 				svC.G += Q.evaluate(svA, svC) * delta_alpha_i + Q.evaluate(svB, svC) * delta_alpha_j;
 				svA.wasEvaluated = true;
 				svB.wasEvaluated = true;
 				svC.wasEvaluated = true;
 				}
+// PERF test tradeoff
+
+			/*
+			for (SolutionVector<P> svC : active)
+				{
+				svC.G += Q.evaluate(svA, svC) * delta_alpha_i;
+				svA.wasEvaluated = true;
+				svC.wasEvaluated = true;
+				}
+			for (SolutionVector<P> svC : active)
+				{
+				svC.G += Q.evaluate(svB, svC) * delta_alpha_j;
+				svB.wasEvaluated = true;
+				//svC.wasEvaluated = true;
+				}
+				*/
 
 			// update alpha_status and G_bar
 
@@ -474,7 +507,8 @@ public abstract class Solver<L extends Comparable, P>
 			svA.updateAlphaStatus(Cp, Cn); //update_alpha_status(i);
 			svB.updateAlphaStatus(Cp, Cn); //update_alpha_status(j);			//int k;
 			if (ui != svA.isUpperBound()) //is_upper_bound(i))
-				{				//Q_i = Q.getQ(i, numExamples);
+				{
+				//Q_i = Q.getQ(i, numExamples);
 				if (ui)
 					{
 					for (SolutionVector svC : allExamples)
@@ -518,7 +552,8 @@ public abstract class Solver<L extends Comparable, P>
 				}
 			}
 
-		//System.err.println(Q.perfString());
+		System.err.println(Q.perfString());
+
 		logger.info("optimization finished, #iter = " + iter);
 		return iter;		// activeSet;
 		}
@@ -526,8 +561,14 @@ public abstract class Solver<L extends Comparable, P>
 
 	protected void resetActiveSet()
 		{
-		activeSet = new ArrayList<SolutionVector<P>>(allExamples);
-		inactiveSet = new ArrayList<SolutionVector<P>>(allExamples.size()); // it should get that big eventually
+		/*
+		Collection<SolutionVector<P>> activeSet = new ArrayList<SolutionVector<P>>(allExamples);
+		Collection<SolutionVector<P>> inactiveSet = new ArrayList<SolutionVector<P>>(allExamples.size()); // it should get that big eventually
+		active = activeSet.toArray(EMPTY_SV_ARRAY);
+		inactive = inactiveSet.toArray(EMPTY_SV_ARRAY);
+		*/
+		active = allExamples.toArray(EMPTY_SV_ARRAY);
+		inactive = EMPTY_SV_ARRAY;
 		}
 
 	// return 1 if already optimal, return 0 otherwise	//boolean select_working_set(int[] working_set)	//	{
@@ -548,6 +589,8 @@ public abstract class Solver<L extends Comparable, P>
 			}
 		}
 
+	protected static SolutionVector[] EMPTY_SV_ARRAY = new SolutionVector[0];
+
 	protected SolutionVectorPair selectWorkingPair()
 		{		/*
 		return i,j such that
@@ -563,7 +606,9 @@ public abstract class Solver<L extends Comparable, P>
 		SolutionVector GminSV = null; //-1;
 		double obj_diff_min = Double.POSITIVE_INFINITY;
 
-		for (SolutionVector sv : activeSet)
+		//SolutionVector[] active = activeSet.toArray(EMPTY_SV_ARRAY);
+
+		for (SolutionVector sv : active)
 			{			//	for (int t = 0; t < activeSize; t++)			//		{
 			if (sv.targetValue) //y[t])
 				{
@@ -589,9 +634,20 @@ public abstract class Solver<L extends Comparable, P>
 				}
 			}
 
-		//int i = Gmax_idx;		//float[] Q_i = null;		//if (GmaxSV != null) //i != -1)// null Q_i not accessed: Gmax=Float.NEGATIVE_INFINITY if i=-1		//	{		//	Q_i = Q.getQ(GmaxSV, activeSize);		//	}
+		//int i = Gmax_idx;
+		// //float[] Q_i = null;
+		// //if (GmaxSV != null)
+		// //i != -1)
+		// // null Q_i not accessed: Gmax=Float.NEGATIVE_INFINITY if i=-1
+		// 	//	{
+		// 	//	Q_i = Q.getQ(GmaxSV, activeSize);
+		// 	//	}
 
-		for (SolutionVector sv : activeSet)
+		// PERF this is where cache locality issues kick in big time.
+
+		// Q.prefetch(GmaxSV);  // this can be built in to the cache itself
+
+		for (SolutionVector sv : active)
 			{			//for (int j = 0; j < activeSize; j++)			//	{
 			if (sv.targetValue)
 				{
@@ -605,7 +661,7 @@ public abstract class Solver<L extends Comparable, P>
 					if (grad_diff > 0)
 						{
 						double obj_diff;
-						double quad_coef = Q.evaluate(GmaxSV, GmaxSV) + Q.evaluate(sv, sv)
+						double quad_coef = Q.evaluateDiagonal(GmaxSV) + Q.evaluateDiagonal(sv)
 								- 2.0f * (GmaxSV.targetValue ? 1f : -1f) * Q.evaluate(GmaxSV, sv);
 						GmaxSV.wasEvaluated = true;
 						sv.wasEvaluated = true;
@@ -639,7 +695,7 @@ public abstract class Solver<L extends Comparable, P>
 					if (grad_diff > 0)
 						{
 						double obj_diff;
-						double quad_coef = Q.evaluate(GmaxSV, GmaxSV) + Q.evaluate(sv, sv)
+						double quad_coef = Q.evaluateDiagonal(GmaxSV) + Q.evaluateDiagonal(sv)
 								+ 2.0f * (GmaxSV.targetValue ? 1f : -1f) * Q.evaluate(GmaxSV, sv);
 						if (quad_coef > 0)
 							{
@@ -685,7 +741,7 @@ public abstract class Solver<L extends Comparable, P>
 
 		// find maximal violating pair first
 
-		for (SolutionVector<P> sv : activeSet)
+		for (SolutionVector<P> sv : active)
 			{
 			if (sv.targetValue)
 				{
@@ -733,18 +789,31 @@ public abstract class Solver<L extends Comparable, P>
 
 		// There was an extremely messy iteration here before, but I think it served only to separate the shrinkable vectors from the unshrinkable ones.
 
-		for (Iterator<SolutionVector<P>> iter = activeSet.iterator(); iter.hasNext();)
+		Collection<SolutionVector<P>> activeList =
+				new ArrayList<SolutionVector<P>>(Arrays.asList(active)); //Arrays.asList(active);
+
+		Collection<SolutionVector<P>> inactiveList = new ArrayList<SolutionVector<P>>();
+
+		// note the ordering: newly inactive SVs go at the beginning of the inactive list, maintaining order
+
+		for (Iterator<SolutionVector<P>> iter = activeList.iterator(); iter.hasNext();)
 			{
 			SolutionVector sv = iter.next();
 
 			if (sv.isShrinkable(Gmax1, Gmax2))
 				{
 				iter.remove();
-				inactiveSet.add(sv);
+				inactiveList.add(sv);
 				}
 			}
 
-		Q.maintainCache(activeSet);
+		active = activeList.toArray(EMPTY_SV_ARRAY);
+		SolutionVector<P>[] newlyInactive = inactiveList.toArray(EMPTY_SV_ARRAY);
+		Q.maintainCache(active, newlyInactive);
+
+		// previously inactive SVs come after that
+		inactiveList.addAll(Arrays.asList(inactive));
+		inactive = inactiveList.toArray(EMPTY_SV_ARRAY);
 		}
 
 	protected void calculate_rho(AlphaModel<L, P> si)
@@ -753,7 +822,7 @@ public abstract class Solver<L extends Comparable, P>
 		int nr_free = 0;
 		double ub = Double.POSITIVE_INFINITY, lb = Double.NEGATIVE_INFINITY, sum_free = 0;
 
-		for (SolutionVector<P> sv : activeSet)
+		for (SolutionVector<P> sv : active)
 			{
 			double yG = (sv.targetValue ? 1f : -1f) * sv.G;
 
