@@ -99,6 +99,11 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		return sigmoid.predict(predictValue(x));  // NPE if no sigmoid
 		}
 
+	public float getTrueProbability(float[] kvalues, int[] svIndexMap)
+		{
+		return sigmoid.predict(predictValue(kvalues, svIndexMap));  // NPE if no sigmoid
+		}
+
 	public void printSolutionInfo(BinaryClassificationProblem<L, P> problem)
 		{
 		logger.info("obj = " + obj + ", rho = " + rho);
@@ -145,6 +150,26 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 			{
 			float kvalue = (float) kernel.evaluate(x, SVs[i]);
 			sum += alphas[i] * kvalue;
+			}
+
+		sum -= rho;
+		return sum;
+		}
+
+
+	public L predictLabel(float[] kvalues, int[] svIndexMap)
+		{
+		return predictValue(kvalues, svIndexMap) > 0 ? trueLabel : falseLabel;
+		}
+
+	public Float predictValue(float[] kvalues, int[] svIndexMap)
+		{
+		float sum = 0;
+
+		for (int i = 0; i < numSVs; i++)
+			{
+			//float kvalue = (float) kernel.evaluate(x, SVs[i]);
+			sum += alphas[i] * kvalues[svIndexMap[i]];
 			}
 
 		sum -= rho;

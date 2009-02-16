@@ -13,9 +13,13 @@ public class SparseVector //implements java.io.Serializable
 	public int[] indexes;
 	public float[] values;
 
+	//private static int hashcodeIncrementor = 0;
+	//private final int hashcode;
 
 	public SparseVector(int dimensions)
 		{
+		//	hashcode = new Integer(hashcodeIncrementor).hashCode();  // just maek the vectors uniquely identifiable
+		//	hashcodeIncrementor++;
 		indexes = new int[dimensions];
 		values = new float[dimensions];
 		}
@@ -50,6 +54,8 @@ public class SparseVector //implements java.io.Serializable
 	 */
 	public SparseVector(int maxDimensions, float nonzeroProbability, float maxValue)
 		{
+		//	hashcode = new Integer(hashcodeIncrementor).hashCode();  // just maek the vectors uniquely identifiable
+		//	hashcodeIncrementor++;
 		List<Integer> indexList = new ArrayList<Integer>();
 
 		for (int i = 0; i < maxDimensions; i++)
@@ -73,6 +79,8 @@ public class SparseVector //implements java.io.Serializable
 
 	public SparseVector(int maxDimensions, SparseVector sv1, float p1, SparseVector sv2, float p2)
 		{
+		//	hashcode = new Integer(hashcodeIncrementor).hashCode();  // just maek the vectors uniquely identifiable
+		//	hashcodeIncrementor++;
 		List<Integer> indexList = new ArrayList<Integer>();
 		List<Float> valueList = new ArrayList<Float>();
 
@@ -118,4 +126,25 @@ public class SparseVector //implements java.io.Serializable
 			}
 		return sb.toString();
 		}
+/*
+	@Override
+	public boolean equals(Object o)
+		{
+		if (this == o)
+			{
+			return true;
+			}
+		if (o == null || getClass() != o.getClass())
+			{
+			return false;
+			}
+
+		return true;
+		}
+
+	@Override
+	public int hashCode()
+		{
+		return hashcode;
+		}*/
 	}

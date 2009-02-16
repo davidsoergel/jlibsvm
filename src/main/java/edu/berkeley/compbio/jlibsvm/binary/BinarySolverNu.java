@@ -5,8 +5,8 @@ import edu.berkeley.compbio.jlibsvm.Solver_NU;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 import org.apache.log4j.Logger;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -16,7 +16,7 @@ public class BinarySolverNu<L extends Comparable, P> extends Solver_NU<L, P>
 	{
 	private static final Logger logger = Logger.getLogger(BinarySolverNu.class);
 
-	public BinarySolverNu(Collection<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
+	public BinarySolverNu(List<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
 	                      boolean shrinking)
 		{
 		super(solutionVectors, Q, Cp, Cn, eps, shrinking);

@@ -59,15 +59,6 @@
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
-        <ADDITIONAL_INDENT_OPTIONS fileType="jsp">
-          <option name="INDENT_SIZE" value="4" />
-          <option name="CONTINUATION_INDENT_SIZE" value="8" />
-          <option name="TAB_SIZE" value="4" />
-          <option name="USE_TAB_CHARACTER" value="false" />
-          <option name="SMART_TABS" value="false" />
-          <option name="LABEL_INDENT_SIZE" value="0" />
-          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
-        </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="xml">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="8" />
@@ -1203,10 +1194,18 @@
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
   <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="New letter Shark" type="Application" factoryName="Application" enabled="false" merge="false" sample_coverage="true" runner="emma">
+    <configuration default="false" name="New letter" type="Application" factoryName="Application" enabled="true" merge="false" sample_coverage="true" runner="emma">
+      <pattern>
+        <option name="PATTERN" value="com.davidsoergel.jlibsvm.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+      <pattern>
+        <option name="PATTERN" value="libsvm.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
       <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train" />
-      <option name="VM_PARAMETERS" value="-Xmx512m -ea -Xrunshark" />
-      <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 100  -v 10 -m 500 letter.scale" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -ea" />
+      <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 100 -e .01 -v 5 -m 500 -o None -a AllVsAll letter.scale" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" value="" />
@@ -1215,6 +1214,11 @@
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="jlibsvm" />
       <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="53644" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
       <RunnerSettings RunnerId="Profile CPU">
         <option name="startFromMode" value="MAIN_CLASS" />
         <option name="otherClassesToStartFrom" value="" />
@@ -1229,6 +1233,7 @@
         <option name="recordAllocTraces" value="false" />
       </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="Run" />
       <method>
         <option name="Make" value="true" />
@@ -1398,18 +1403,10 @@
         <option name="Make" value="true" />
       </method>
     </configuration>
-    <configuration default="false" name="New letter" type="Application" factoryName="Application" enabled="true" merge="false" sample_coverage="true" runner="emma">
-      <pattern>
-        <option name="PATTERN" value="com.davidsoergel.jlibsvm.*" />
-        <option name="ENABLED" value="true" />
-      </pattern>
-      <pattern>
-        <option name="PATTERN" value="libsvm.*" />
-        <option name="ENABLED" value="true" />
-      </pattern>
+    <configuration default="false" name="New letter Shark" type="Application" factoryName="Application" enabled="false" merge="false" sample_coverage="true" runner="emma">
       <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train" />
-      <option name="VM_PARAMETERS" value="-Xmx1500m -ea" />
-      <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 100 -e .01 -v 5 -m 1000 -o None -a AllVsAll letter.scale" />
+      <option name="VM_PARAMETERS" value="-Xint -Xmx512m -ea -Xrunshark" />
+      <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 10 -g 0.5  -e .01 -v 5 -m 500 letter.scale" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" value="" />
@@ -1419,7 +1416,7 @@
       <module name="jlibsvm" />
       <envs />
       <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="53644" />
+        <option name="DEBUG_PORT" value="52117" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="true" />
       </RunnerSettings>
@@ -1438,6 +1435,76 @@
       </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method>
+        <option name="Make" value="true" />
+      </method>
+    </configuration>
+    <configuration default="false" name="New news20 shark" type="Application" factoryName="Application" enabled="false" merge="false" sample_coverage="true" runner="emma">
+      <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train" />
+      <option name="VM_PARAMETERS" value="-Xint -Xmx512m -ea -Xrunshark" />
+      <option name="PROGRAM_PARAMETERS" value="-s 0 -t 0 -c 100  -e .01 -v 5 -m 500 news20" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="jlibsvm" />
+      <envs />
+      <RunnerSettings RunnerId="Profile CPU">
+        <option name="startFromMode" value="MAIN_CLASS" />
+        <option name="otherClassesToStartFrom" value="" />
+        <option name="profileNewRunnables" value="true" />
+        <option name="filteringMode" value="EXCLUDE" />
+        <option name="filterIncludeClasses" value="" />
+        <option name="filterExcludeClasses" value="java.*, javax.*,&#10;sun.*, sunw.*, com.sun.*" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Profile Memory">
+        <option name="profileAllocMode" value="ALLOC_AND_GC" />
+        <option name="profileAllocInterval" value="10" />
+        <option name="recordAllocTraces" value="false" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method>
+        <option name="Make" value="true" />
+      </method>
+    </configuration>
+    <configuration default="false" name="New segment" type="Application" factoryName="Application" enabled="true" merge="false" sample_coverage="true" runner="emma">
+      <pattern>
+        <option name="PATTERN" value="com.davidsoergel.jlibsvm.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+      <pattern>
+        <option name="PATTERN" value="libsvm.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+      <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train" />
+      <option name="VM_PARAMETERS" value="-ea -Xmx1024m" />
+      <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 100  -v 5 -m 1000 segment.scale" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="jlibsvm" />
+      <envs />
+      <RunnerSettings RunnerId="Profile CPU">
+        <option name="startFromMode" value="MAIN_CLASS" />
+        <option name="otherClassesToStartFrom" value="" />
+        <option name="profileNewRunnables" value="true" />
+        <option name="filteringMode" value="EXCLUDE" />
+        <option name="filterIncludeClasses" value="" />
+        <option name="filterExcludeClasses" value="java.*, javax.*,&#10;sun.*, sunw.*, com.sun.*" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Profile Memory">
+        <option name="profileAllocMode" value="ALLOC_AND_GC" />
+        <option name="profileAllocInterval" value="10" />
+        <option name="recordAllocTraces" value="false" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method>
         <option name="Make" value="true" />

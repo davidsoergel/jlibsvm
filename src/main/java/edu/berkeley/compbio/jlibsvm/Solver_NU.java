@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Solver for nu-svm classification and regression
@@ -26,7 +27,7 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 		}
 
 
-	public Solver_NU(Collection<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
+	public Solver_NU(List<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
 	                 boolean shrinking)
 		{
 		super(solutionVectors, Q, Cp, Cn, eps, shrinking);
@@ -109,6 +110,10 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 			Q_in = Q.getQ(in, activeSize);
 			}
 			*/
+		//float[] Q_GmaxpSV = Q.getQ(GmaxpSV, active);
+		//float[] Q_GmaxnSV = Q.getQ(GmaxnSV, active);
+		Q.getQ(GmaxpSV, active, Q_svA);
+		Q.getQ(GmaxnSV, active, Q_svB);
 
 		for (SolutionVector sv : active)
 			{
@@ -125,8 +130,8 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 						{
 						double obj_diff;
 						//float quad_coef = Q_ip[ip] + QD[j] - 2 * Q_ip[j];
-						double quad_coef =
-								Q.evaluateDiagonal(GmaxpSV) + Q.evaluateDiagonal(sv) - 2.0f * Q.evaluate(GmaxpSV, sv);
+						double quad_coef = Q.evaluateDiagonal(GmaxpSV) + Q.evaluateDiagonal(sv)
+								- 2.0f * Q_svA[sv.rank]; //Q_GmaxpSV[sv.rank];
 						if (quad_coef > 0)
 							{
 							obj_diff = -(grad_diff * grad_diff) / quad_coef;
@@ -159,8 +164,8 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 						//double quad_coef = Q_in[in] + QD[j] - 2 * Q_in[j];
 
 
-						double quad_coef =
-								Q.evaluateDiagonal(GmaxnSV) + Q.evaluateDiagonal(sv) - 2.0f * Q.evaluate(GmaxnSV, sv);
+						double quad_coef = Q.evaluateDiagonal(GmaxnSV) + Q.evaluateDiagonal(sv)
+								- 2.0f * Q_svB[sv.rank]; //Q_GmaxnSV[sv.rank];
 
 						if (quad_coef > 0)
 							{

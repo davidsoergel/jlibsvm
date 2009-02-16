@@ -49,14 +49,14 @@ public class BinarySolver<L extends Comparable, P> extends Solver<L, P>
 		// note the swapping process applied to the Q matrix as well, so we have to map that back too
 
 		//	model.alpha = new float[numExamples];		//	model.supportVectors = new SparseVector[numExamples];
-		int posEval = 0, posNotEval = 0, negEval = 0, negNotEval = 0;
+		//	int posEval = 0, posNotEval = 0, negEval = 0, negNotEval = 0;
 
 		model.supportVectors = new HashMap<P, Double>();
 		for (SolutionVector<P> svC : allExamples)
 			{
 			model.supportVectors.put(svC.point, svC.alpha);
 
-			if (svC.alpha != 0)
+			/*if (svC.alpha != 0)
 				{
 				if (svC.wasEvaluated)
 					{
@@ -80,14 +80,14 @@ public class BinarySolver<L extends Comparable, P> extends Solver<L, P>
 						negNotEval++;
 						}
 					}
-				}
+				}*/
 			}
 
-		logger.trace("Learned binary model: " + posEval + " pos, " + negEval + " neg, " + posNotEval + " posNE!, "
-				+ negNotEval + " negNE!");
+		//	logger.trace("Learned binary model: " + posEval + " pos, " + negEval + " neg, " + posNotEval + " posNE!, "
+		//			+ negNotEval + " negNE!");
 
 		// make sure the optimizer actually considered every example
-		assert posNotEval + negNotEval == 0;
+		//	assert posNotEval + negNotEval == 0;
 
 		// note at this point the solution includes _all_ vectors, even if their alphas are zero
 

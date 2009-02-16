@@ -199,7 +199,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 					}
 				}
 			}
-
+		model.prepareModelSvMaps();
 		return model;
 		}
 

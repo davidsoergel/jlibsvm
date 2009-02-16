@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -34,7 +35,7 @@ public abstract class Solver<L extends Comparable, P>
 
 	private static final int MAXITER = 50000;
 
-	protected Collection<SolutionVector<P>> allExamples;
+	protected List<SolutionVector<P>> allExamples;
 	//protected Collection<SolutionVector<P>> activeSet;
 	protected SolutionVector<P>[] active;
 	//protected Collection<SolutionVector<P>> inactiveSet;
@@ -55,6 +56,10 @@ public abstract class Solver<L extends Comparable, P>
 
 	QMatrix<P> Q;
 	//	float[] QD;
+	float[] Q_svA;
+	float[] Q_svB;
+	float[] Q_all;
+
 	float eps;
 	protected float Cp, Cn;//	float[] p;
 
@@ -136,13 +141,15 @@ public abstract class Solver<L extends Comparable, P>
 			{
 			for (SolutionVector svA : inactive)
 				{				//float[] Q_i = Q.getQ(i, activeSize);
+				Q.getQ(svA, active, Q_svA);
 				for (SolutionVector svB : active)
 					{
 					if (svB.isFree()) //is_free(j))
 						{
-						svA.G += svB.alpha * Q.evaluate(svA, svB);//[j];
-						svA.wasEvaluated = true;
-						svB.wasEvaluated = true;
+						//assert Q_svA[svB.rank] == Q.evaluate(svA, svB);
+						svA.G += svB.alpha * Q_svA[svB.rank];//[j]; //Q.evaluate(svA, svB); // ** TEST
+						//			svA.wasEvaluated = true;
+						//			svB.wasEvaluated = true;
 						}
 					}
 				}
@@ -153,12 +160,13 @@ public abstract class Solver<L extends Comparable, P>
 				{
 				if (svA.isFree()) //is_free(i))
 					{					//	float[] Q_i = Q.getQ(i, numExamples);					//	float alpha_i = shuffledAlpha[i];
-
+					Q.getQ(svA, active, inactive, Q_all);
 					for (SolutionVector svB : inactive)
 						{
-						svB.G += svA.alpha * Q.evaluate(svA, svB);
-						svA.wasEvaluated = true;
-						svB.wasEvaluated = true;
+						//assert Q_all[svB.rank] == Q.evaluate(svA, svB);
+						svB.G += svA.alpha * Q_all[svB.rank]; //Q.evaluate(svA, svB); //** TEST  //
+						//		svA.wasEvaluated = true;
+						//		svB.wasEvaluated = true;
 						}
 					}
 				}
@@ -180,14 +188,15 @@ public abstract class Solver<L extends Comparable, P>
 		}
 
 
-	public Solver(Collection<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
+	public Solver(List<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
 	              boolean shrinking)
 		{
 		this(Q, Cp, Cn, eps, shrinking);
 
-		this.allExamples = solutionVectors;
+		this.allExamples = solutionVectors; //.toArray[EMPTY_SV_ARRAY];
 
 		this.numExamples = allExamples.size();
+		Q_all = new float[numExamples];
 		}
 
 	/*
@@ -244,7 +253,7 @@ public abstract class Solver<L extends Comparable, P>
 
 		// initialize active set (for shrinking)
 
-		resetActiveSet();
+		initActiveSet();
 
 		/*	shuffledExampleIndexToOriginalIndex = new int[numExamples];
 		  for (int i = 0; i < numExamples; i++)
@@ -264,21 +273,28 @@ public abstract class Solver<L extends Comparable, P>
 			}
 		for (SolutionVector svA : allExamples)
 			{
+
 			if (!svA.isLowerBound()) //is_lower_bound(i))
 				{				//	float[] Q_i = Q.getQ(i, numExamples);				//	float alpha_i = shuffledAlpha[i];
+
+				//float[] Q_svA =
+				Q.getQ(svA, active, Q_svA);
 				for (SolutionVector svB : allExamples)
 					{
-					svB.G += svA.alpha * Q.evaluate(svA, svB);
-					svA.wasEvaluated = true;
-					svB.wasEvaluated = true;
+					//	assert Q_svA[svB.rank] == Q.evaluate(svA, svB);
+					svB.G += svA.alpha * Q_svA[svB.rank]; //Q.evaluate(svA, svB); // ** TEST //Q_svA[svB.rank];
+					//	svA.wasEvaluated = true;
+					//	svB.wasEvaluated = true;
 					}
 				if (svA.isUpperBound()) //is_upper_bound(i))
 					{
 					for (SolutionVector svB : allExamples)
 						{
-						svB.G_bar += svA.getC(Cp, Cn) * Q.evaluate(svA, svB); //getC(i) * Q_i[j];
-						svA.wasEvaluated = true;
-						svB.wasEvaluated = true;
+						//		assert Q_svA[svB.rank] == Q.evaluate(svA, svB);
+						svB.G_bar += svA.getC(Cp, Cn)
+								* Q_svA[svB.rank]; //Q.evaluate(svA, svB); // ** TEST Q_svA[svB.rank]; //getC(i) * Q_i[j];
+						//	svA.wasEvaluated = true;
+						//	svB.wasEvaluated = true;
 						}
 					}
 				}
@@ -354,8 +370,20 @@ public abstract class Solver<L extends Comparable, P>
 			// update alpha[i] and alpha[j], handle bounds carefully
 
 
-			//	float[] Q_i = Q.getQ(i, activeSize);
-			// 		//	float[] Q_j = Q.getQ(j, activeSize);
+			//float[] Q_svA =
+			Q.getQ(svA, active, Q_svA);
+			//float[] Q_svB =
+			Q.getQ(svB, active, Q_svB);
+
+			//** TEST
+			/*		for (SolutionVector<P> svC : active)
+							   {
+							   //svC.G += Q.evaluate(svC, svA) * delta_alpha_i + Q.evaluate(svC, svB) * delta_alpha_j;
+							   assert Q_svA[svC.rank] == Q.evaluate(svA, svC);
+							   assert Q_svB[svC.rank] == Q.evaluate(svB, svC);
+
+							   }*/
+
 
 			float C_i = svA.getC(Cp, Cn); //getC(i);
 			float C_j = svB.getC(Cp, Cn); //getC(j);
@@ -365,9 +393,11 @@ public abstract class Solver<L extends Comparable, P>
 
 			if (svA.targetValue != svB.targetValue)
 				{
-				float quad_coef = Q.evaluateDiagonal(svA) + Q.evaluateDiagonal(svB) + 2 * Q.evaluate(svA, svB);
-				svA.wasEvaluated = true;
-				svB.wasEvaluated = true;
+				//	assert Q_svA[svB.rank] == Q.evaluate(svA, svB);
+				float quad_coef = Q.evaluateDiagonal(svA) + Q.evaluateDiagonal(svB)
+						+ 2 * Q_svA[svB.rank]; // Q.evaluate(svA, svB);
+				//	svA.wasEvaluated = true;
+				//	svB.wasEvaluated = true;
 
 				if (quad_coef <= 0)
 					{
@@ -413,9 +443,11 @@ public abstract class Solver<L extends Comparable, P>
 				}
 			else
 				{
-				float quad_coef = Q.evaluateDiagonal(svA) + Q.evaluateDiagonal(svB) - 2 * Q.evaluate(svA, svB);
-				svA.wasEvaluated = true;
-				svB.wasEvaluated = true;
+				//	assert Q_svA[svB.rank] == Q.evaluate(svA, svB);
+				float quad_coef = Q.evaluateDiagonal(svA) + Q.evaluateDiagonal(svB)
+						- 2 * Q_svA[svB.rank]; // Q.evaluate(svA, svB);
+				//	svA.wasEvaluated = true;
+				//	svB.wasEvaluated = true;
 
 				if (quad_coef <= 0)
 					{
@@ -474,13 +506,11 @@ public abstract class Solver<L extends Comparable, P>
 				}
 
 			// NO: loop over A first, then B (cache locality)
-			for (SolutionVector<P> svC : active)
+			//for (SolutionVector<P> svC : active)
+			for (int i = 0; i < active.length; i++)
 				{
-				//svC.G += Q.evaluate(svC, svA) * delta_alpha_i + Q.evaluate(svC, svB) * delta_alpha_j;
-				svC.G += Q.evaluate(svA, svC) * delta_alpha_i + Q.evaluate(svB, svC) * delta_alpha_j;
-				svA.wasEvaluated = true;
-				svB.wasEvaluated = true;
-				svC.wasEvaluated = true;
+				// i == svC.rank
+				active[i].G += Q_svA[i] * delta_alpha_i + Q_svB[i] * delta_alpha_j;
 				}
 // PERF test tradeoff
 
@@ -506,47 +536,56 @@ public abstract class Solver<L extends Comparable, P>
 			boolean uj = svB.isUpperBound(); //is_upper_bound(j);
 			svA.updateAlphaStatus(Cp, Cn); //update_alpha_status(i);
 			svB.updateAlphaStatus(Cp, Cn); //update_alpha_status(j);			//int k;
+
+
 			if (ui != svA.isUpperBound()) //is_upper_bound(i))
 				{
 				//Q_i = Q.getQ(i, numExamples);
+				Q.getQ(svA, active, inactive, Q_all);
 				if (ui)
 					{
-					for (SolutionVector svC : allExamples)
+					for (SolutionVector<P> svC : allExamples)
 						{
-						svC.G_bar -= C_i * Q.evaluate(svA, svC);
-						svA.wasEvaluated = true;
-						svC.wasEvaluated = true;
+						//		assert Q_all[svC.rank] == Q.evaluate(svA, svC);
+						svC.G_bar -= C_i * Q_all[svC.rank]; //Q.evaluate(svA, svC); //** TEST  //Q_all[svC.rank];
+						//		svA.wasEvaluated = true;
+						//		svC.wasEvaluated = true;
 						}
 					}
 				else
 					{
-					for (SolutionVector svC : allExamples)
+					for (SolutionVector<P> svC : allExamples)
 						{
-						svC.G_bar += C_i * Q.evaluate(svA, svC);
-						svA.wasEvaluated = true;
-						svC.wasEvaluated = true;
+						//		assert Q_all[svC.rank] == Q.evaluate(svA, svC);
+						svC.G_bar += C_i * Q_all[svC.rank]; //Q.evaluate(svA, svC); //** TEST  //Q_all[svC.rank];
+						//		svA.wasEvaluated = true;
+						//		svC.wasEvaluated = true;
 						}
 					}
 				}
 
 			if (uj != svB.isUpperBound()) //is_upper_bound(j))
 				{				//Q_j = Q.getQ(j, numExamples);
+
+				Q.getQ(svB, active, inactive, Q_all);
 				if (uj)
 					{
-					for (SolutionVector svC : allExamples)
+					for (SolutionVector<P> svC : allExamples)
 						{
-						svC.G_bar -= C_j * Q.evaluate(svB, svC);
-						svB.wasEvaluated = true;
-						svC.wasEvaluated = true;
+						//		assert Q_all[svC.rank] == Q.evaluate(svB, svC);
+						svC.G_bar -= C_j * Q_all[svC.rank]; //Q.evaluate(svB, svC); //** TEST  //Q_all[svC.rank];
+						//		svB.wasEvaluated = true;
+						//		svC.wasEvaluated = true;
 						}
 					}
 				else
 					{
-					for (SolutionVector svC : allExamples)
+					for (SolutionVector<P> svC : allExamples)
 						{
-						svC.G_bar += C_j * Q.evaluate(svB, svC);
-						svB.wasEvaluated = true;
-						svC.wasEvaluated = true;
+						//		assert Q_all[svC.rank] == Q.evaluate(svB, svC);
+						svC.G_bar += C_j * Q_all[svC.rank]; //Q.evaluate(svB, svC); //** TEST  //Q_all[svC.rank];
+						//		svB.wasEvaluated = true;
+						//		svC.wasEvaluated = true;
 						}
 					}
 				}
@@ -559,21 +598,62 @@ public abstract class Solver<L extends Comparable, P>
 		}
 
 
-	protected void resetActiveSet()
+	protected void initActiveSet()
 		{
-		/*
-		Collection<SolutionVector<P>> activeSet = new ArrayList<SolutionVector<P>>(allExamples);
-		Collection<SolutionVector<P>> inactiveSet = new ArrayList<SolutionVector<P>>(allExamples.size()); // it should get that big eventually
-		active = activeSet.toArray(EMPTY_SV_ARRAY);
-		inactive = inactiveSet.toArray(EMPTY_SV_ARRAY);
-		*/
+		// initial sort order was provided by allExamples.  This is why allExamples must be a List or array, not just a Collection
 		active = allExamples.toArray(EMPTY_SV_ARRAY);
 		inactive = EMPTY_SV_ARRAY;
+		Q_svA = new float[active.length];
+		Q_svB = new float[active.length];
 		}
 
+	protected void resetActiveSet()
+		{
+		active = allExamples.toArray(EMPTY_SV_ARRAY);
+		Arrays.sort(active);
+		inactive = EMPTY_SV_ARRAY;
+		Q_svA = new float[active.length];
+		Q_svB = new float[active.length];
+		}
+
+	/*
+	protected void resetActiveSet()
+
+		{
+
+	//	Collection<SolutionVector<P>> activeSet = new ArrayList<SolutionVector<P>>(allExamples);
+	//	Collection<SolutionVector<P>> inactiveSet = new ArrayList<SolutionVector<P>>(allExamples.size()); // it should get that big eventually
+	//	active = activeSet.toArray(EMPTY_SV_ARRAY);
+	//	inactive = inactiveSet.toArray(EMPTY_SV_ARRAY);
+
+		//active = new SolutionVector[numExamples];
+		//System.arraycopy(allExamples,0,active,0,numExamples);
+
+		// Can't do this since we need to maintain the sort order
+		//active = allExamples.toArray(EMPTY_SV_ARRAY);
+
+
+		// MAINTAINING RANK ORDER
+		// When we run Q.getQ, the buffer is filled in rank order; so we need to make sure that the active and inactive arrays are always in rank order too
+
+		List<SolutionVector<P>> activeList = new ArrayList<SolutionVector<P>>(numExamples);
+
+		//active = new SolutionVector[numExamples];
+
+		// the active ones must be in rank order, right?
+		activeList.addAll(Arrays.asList(active));
+		activeList.addAll(Arrays.asList(inactive));
+
+		active = activeList.toArray(EMPTY_SV_ARRAY);
+
+		//Q_svA = new float[active.length];
+		//Q_svB = new float[active.length];
+		inactive = EMPTY_SV_ARRAY;
+		}
 	// return 1 if already optimal, return 0 otherwise	//boolean select_working_set(int[] working_set)	//	{
 
 	//	}
+*/
 
 	protected class SolutionVectorPair
 		{
@@ -608,8 +688,11 @@ public abstract class Solver<L extends Comparable, P>
 
 		//SolutionVector[] active = activeSet.toArray(EMPTY_SV_ARRAY);
 
-		for (SolutionVector sv : active)
+		//for (SolutionVector sv : active)
+		int l = active.length;
+		for (int i = 0; i < l; i++)
 			{			//	for (int t = 0; t < activeSize; t++)			//		{
+			SolutionVector<P> sv = active[i];
 			if (sv.targetValue) //y[t])
 				{
 				if (!sv.isUpperBound()) //is_upper_bound(t))
@@ -646,9 +729,14 @@ public abstract class Solver<L extends Comparable, P>
 		// PERF this is where cache locality issues kick in big time.
 
 		// Q.prefetch(GmaxSV);  // this can be built in to the cache itself
+		//float[] Q_GmaxSV =
+		Q.getQ(GmaxSV, active, Q_svA);
 
-		for (SolutionVector sv : active)
+		//for (SolutionVector sv : active)
+		//int l = active.length;
+		for (int i = 0; i < l; i++)
 			{			//for (int j = 0; j < activeSize; j++)			//	{
+			SolutionVector<P> sv = active[i];
 			if (sv.targetValue)
 				{
 				if (!sv.isLowerBound())
@@ -662,9 +750,9 @@ public abstract class Solver<L extends Comparable, P>
 						{
 						double obj_diff;
 						double quad_coef = Q.evaluateDiagonal(GmaxSV) + Q.evaluateDiagonal(sv)
-								- 2.0f * (GmaxSV.targetValue ? 1f : -1f) * Q.evaluate(GmaxSV, sv);
-						GmaxSV.wasEvaluated = true;
-						sv.wasEvaluated = true;
+								- 2.0f * (GmaxSV.targetValue ? 1f : -1f) * Q_svA[sv.rank]; //Q_GmaxSV[sv.rank];
+						//	GmaxSV.wasEvaluated = true;
+						//	sv.wasEvaluated = true;
 
 						if (quad_coef > 0)
 							{
@@ -696,7 +784,9 @@ public abstract class Solver<L extends Comparable, P>
 						{
 						double obj_diff;
 						double quad_coef = Q.evaluateDiagonal(GmaxSV) + Q.evaluateDiagonal(sv)
-								+ 2.0f * (GmaxSV.targetValue ? 1f : -1f) * Q.evaluate(GmaxSV, sv);
+								+ 2.0f * (GmaxSV.targetValue ? 1f : -1f) * Q_svA[sv.rank]; //Q_GmaxSV[sv.rank];
+						//	GmaxSV.wasEvaluated = true;
+						//	sv.wasEvaluated = true;
 						if (quad_coef > 0)
 							{
 							obj_diff = -(grad_diff * grad_diff) / quad_coef;
@@ -789,12 +879,20 @@ public abstract class Solver<L extends Comparable, P>
 
 		// There was an extremely messy iteration here before, but I think it served only to separate the shrinkable vectors from the unshrinkable ones.
 
-		Collection<SolutionVector<P>> activeList =
-				new ArrayList<SolutionVector<P>>(Arrays.asList(active)); //Arrays.asList(active);
 
-		Collection<SolutionVector<P>> inactiveList = new ArrayList<SolutionVector<P>>();
+		// This class is unfortunately entangled with the cache, because we want Q_get to return the kernel values in buf[] in the cache-ranked order.
+		// Since we're going to be calling Q_get with the active and inactive arrays as arguments, we need to make sure to keep those in the cache-ranked order as well.
+		// An intuitive reordering upon partitioning is to "compress" into the order active - newlyInactive - previouslyInactive.
+		// However, that's not what Q.maintainCache does: it performs a minimal set of swaps to guarantee that all the active nodes are in the active range (the first n ranks)
+		// and all the inactive nodes are in the inactive range, but makes no guarantees about the ordering within each of those regions.
 
-		// note the ordering: newly inactive SVs go at the beginning of the inactive list, maintaining order
+		// Thus, we need to sort the arrays according to the ranks after Q.maintainCache is done with them.
+
+
+		Collection<SolutionVector<P>> activeList = new ArrayList<SolutionVector<P>>(Arrays.asList(active));
+
+		// start this off empty, knowing that it will eventually need to contain all the currently inactive elements
+		Collection<SolutionVector<P>> inactiveList = new ArrayList<SolutionVector<P>>(inactive.length);
 
 		for (Iterator<SolutionVector<P>> iter = activeList.iterator(); iter.hasNext();)
 			{
@@ -808,12 +906,20 @@ public abstract class Solver<L extends Comparable, P>
 			}
 
 		active = activeList.toArray(EMPTY_SV_ARRAY);
-		SolutionVector<P>[] newlyInactive = inactiveList.toArray(EMPTY_SV_ARRAY);
-		Q.maintainCache(active, newlyInactive);
 
-		// previously inactive SVs come after that
-		inactiveList.addAll(Arrays.asList(inactive));
+		Q_svA = new float[active.length];
+		Q_svB = new float[active.length];
+
+		SolutionVector<P>[] newlyInactive = inactiveList.toArray(EMPTY_SV_ARRAY);
+		Q.maintainCache(active,
+		                newlyInactive);  // note maintainCache doesn't need to know about the currently inactive elements
+
+		inactiveList.addAll(Arrays.asList(inactive));  // but we do need them on the inactive list going forward
 		inactive = inactiveList.toArray(EMPTY_SV_ARRAY);
+
+		// these must happen after Q.maintainCache, since it modifies the ranks
+		Arrays.sort(active); // SolutionVector.compareTo is based on the ranks!
+		Arrays.sort(inactive); // SolutionVector.compareTo is based on the ranks!
 		}
 
 	protected void calculate_rho(AlphaModel<L, P> si)

@@ -28,7 +28,7 @@ public interface QMatrix<P>
 
 //	List<P> getVectors();
 
-	float evaluate(SolutionVector<P> a, SolutionVector<P> b);
+	//float evaluate(SolutionVector<P> a, SolutionVector<P> b);
 
 	float evaluateDiagonal(SolutionVector<P> a);
 
@@ -39,4 +39,8 @@ public interface QMatrix<P>
 //	void storeRanks(Collection<SolutionVector<P>> allExamples);
 
 	void initRanks(Collection<SolutionVector<P>> allExamples);
+
+	void getQ(SolutionVector<P> svA, SolutionVector<P>[] active, float[] buf);
+
+	void getQ(SolutionVector<P> svA, SolutionVector<P>[] active, SolutionVector<P>[] inactive, float[] buf);
 	}

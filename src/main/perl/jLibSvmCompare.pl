@@ -9,25 +9,25 @@ use List::Util qw(sum);
 
 sub main()
 	{
-	#my @datasets = ("~/src/jlibsvm/src/test/resources/mushrooms");
+	cd "~/src/jlibsvm/src/test/resources";
+
+	my @datasets = ("mushrooms", "segment.scale", "news20", "letter.scale", "sector.scale");
 	#my @datasets = ("~/src/jlibsvm/src/test/resources/segment.scale");
-
-
+	#my @datasets = ("~/src/jlibsvm/src/test/resources/letter.scale");
 	#my @datasets = ("~/src/jlibsvm/src/test/resources/news20");
 	#"~/src/jlibsvm/src/test/resources/sector" too complex...
-	my @datasets = ("~/src/jlibsvm/src/test/resources/letter.scale");
 
 
     my @argsets = (
-                   "-s 0 -t 2 -c 10 -g .5 -e .01 -v 5 -m 1000",
-            #       "-s 1 -t 2 -c 10 -g .5 -e .01 -v 5 -m 1000"
+                    "-s 0 -t 2 -c 10 -g .5 -e .01 -m 1000",       # training only, no testing
+                    "-s 0 -t 2 -c 10 -g .5 -e .01 -v 5 -m 1000",
 
-                   "-s 0 -t 0 -c 100 -e .01 -v 5 -m 1000",
+                    "-s 0 -t 0 -c 100 -e .01 -v 5 -m 1000",
                    "-s 0 -t 1 -c 100 -e .01 -v 5 -m 1000",
                    "-s 0 -t 2 -c 100 -e .01 -v 5 -m 1000",
                    "-s 0 -t 3 -c 100 -e .01 -v 5 -m 1000",
 
-            #       "-s 1 -t 0 -c 100 -e .01 -v 5 -m 1000",;,
+            #       "-s 1 -t 0 -c 100 -e .01 -v 5 -m 1000",
             #       "-s 1 -t 1 -c 100 -e .01 -v 5 -m 1000",
             #       "-s 1 -t 2 -c 100 -e .01 -v 5 -m 1000",
             #       "-s 1 -t 3 -c 100 -e .01 -v 5 -m 1000",
@@ -42,6 +42,8 @@ sub main()
             #       "-s 1 -t 2 -c 100 -e .001 -v 5 -m 1000",
             #       "-s 1 -t 3 -c 100 -e .001 -v 5 -m 1000",
 
+            #        "-s 0 -t 2 -c 10 -g .5 -e .01 -v 5 -m 1000",
+            #       "-s 1 -t 2 -c 10 -g .5 -e .01 -v 5 -m 1000"
                    );
 
 

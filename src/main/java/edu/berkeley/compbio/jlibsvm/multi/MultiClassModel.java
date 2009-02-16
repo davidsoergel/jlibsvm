@@ -52,6 +52,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	//** proscribed 1-D order for 2-D decision_values is error-prone
 	List<L> labels;
 
+	private P[] allSVs;
 
 	public MultiClassModel(KernelFunction<P> kernel, SvmParameter<L> param, int numberOfClasses)
 		{
@@ -119,7 +120,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	   return oneClassProbabilities;
 	   }*/
 
-	public Map<L, Float> computeOneVsAllProbabilities(P x)
+	public Map<L, Float> computeOneVsAllProbabilities(float[] kvalues)
 		{
 		Map<L, Float> oneVsAllProbabilities = new HashMap<L, Float>();
 
@@ -128,8 +129,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		for (BinaryModel<L, P> binaryModel : oneVsAllModels.values())
 			{
 			// if probability info isn't available, just substitute 1 and 0.
-			final float probability =
-					prob ? binaryModel.getTrueProbability(x) : (binaryModel.predictValue(x) > 0. ? 1f : 0f);
+			final float probability = prob ? binaryModel.getTrueProbability(kvalues, svIndexMaps.get(binaryModel)) :
+					(binaryModel.predictValue(kvalues, svIndexMaps.get(binaryModel)) > 0. ? 1f : 0f);
 			if (probability >= oneVsAllThreshold)
 				{
 				oneVsAllProbabilities.put(binaryModel.getTrueLabel(), probability);
@@ -144,6 +145,17 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	 */
 	public L predictLabel(P x)
 		{
+		// stage 0: we're going to need the kernel value for x against each of the SVs
+
+		float[] kvalues = new float[allSVs.length];
+		int i = 0;
+		for (P sv : allSVs)
+			{
+			kvalues[i] = (float) kernel.evaluate(x, sv);
+			i++;
+			}
+
+
 		// REVIEW ignore one-class models for now; maybe revisit later
 
 		/*
@@ -178,8 +190,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		// stage 2: one vs all
 
 
-		Map<L, Float> oneVsAllProbabilities = oneVsAllMode == OneVsAllMode.None ? null : computeOneVsAllProbabilities(x)
-				;
+		Map<L, Float> oneVsAllProbabilities =
+				oneVsAllMode == OneVsAllMode.None ? null : computeOneVsAllProbabilities(kvalues);
 
 		// now oneVsAllProbabilities is populated with all of the classes that pass the threshold (maybe all of them).
 
@@ -228,7 +240,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 			for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
 				{
-				votes.add(binaryModel.predictLabel(x));
+				votes.add(binaryModel.predictLabel(kvalues, svIndexMaps.get(binaryModel)));
 				}
 			}
 		else
@@ -423,8 +435,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 				BinaryModel<L, P> binaryModel = oneVsOneModels.get(label1, label2);
 
-				float prob = binaryModel.sigmoid.predict(binaryModel.predictValue(x))
-						;				//MathSupport.sigmoidPredict(decisionValues[k], probA[k], probB[k])
+				float prob = binaryModel.sigmoid.predict(binaryModel.predictValue(
+						x));				//MathSupport.sigmoidPredict(decisionValues[k], probA[k], probB[k])
 
 				pairwiseProbabilities[i][j] = Math.min(Math.max(prob, minimumProbability), 1 - minimumProbability);
 				pairwiseProbabilities[j][i] = 1 - pairwiseProbabilities[i][j];				//k++;
@@ -633,6 +645,58 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	public void putOneVsAllModel(L label1, BinaryModel<L, P> binaryModel)
 		{
 		oneVsAllModels.put(label1, binaryModel);
+		}
+
+	Map<BinaryModel<L, P>, int[]> svIndexMaps = new HashMap<BinaryModel<L, P>, int[]>();
+
+	public void prepareModelSvMaps()
+		{
+
+		int totalSVs = 0;
+		Map<P, Integer> allSVsMap = new HashMap<P, Integer>();
+		for (BinaryModel<L, P> binaryModel : oneVsAllModels.values())
+			{
+			int[] svIndexMap = new int[binaryModel.SVs.length];
+			int i = 0;
+			for (P p : binaryModel.SVs)
+				{
+				Integer allSVsIndex = allSVsMap.get(p);
+				if (allSVsIndex == null)
+					{
+					allSVsIndex = totalSVs;
+					allSVsMap.put(p, allSVsIndex);
+					totalSVs++;
+					}
+				svIndexMap[i] = allSVsIndex;
+				i++;
+				}
+			svIndexMaps.put(binaryModel, svIndexMap);
+			}
+		for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
+			{
+			int[] svIndexMap = new int[binaryModel.SVs.length];
+			int i = 0;
+			for (P p : binaryModel.SVs)
+				{
+				Integer allSVsIndex = allSVsMap.get(p);
+				if (allSVsIndex == null)
+					{
+					allSVsIndex = totalSVs;
+					allSVsMap.put(p, allSVsIndex);
+					totalSVs++;
+					}
+				svIndexMap[i] = allSVsIndex;
+				i++;
+				}
+			svIndexMaps.put(binaryModel, svIndexMap);
+			}
+
+		allSVs = (P[]) new Object[totalSVs];
+
+		for (Map.Entry<P, Integer> entry : allSVsMap.entrySet())
+			{
+			allSVs[entry.getValue()] = entry.getKey();
+			}
 		}
 
 	/*	public void putOneClassModel(L label1, OneClassModel<L, P> oneclassModel)

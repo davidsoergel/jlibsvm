@@ -4,13 +4,17 @@ package edu.berkeley.compbio.jlibsvm;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class SolutionVector<P>
+public class SolutionVector<P> implements Comparable<SolutionVector>
 	{
 	/**
-	 * Used by the caching mechanism to keep track of which SVs are the most active.  Redundant with idToRankMap, but
-	 * better cache performance this way (?)
+	 * Used by the caching mechanism to keep track of which SVs are the most active.
 	 */
 	public int rank = -1;
+
+	public int compareTo(SolutionVector b)
+		{
+		return rank < b.rank ? -1 : (rank > b.rank ? 1 : 0);
+		}
 
 	public enum Status
 		{
@@ -34,7 +38,7 @@ public class SolutionVector<P>
 	float G_bar;
 
 	// for debugging
-	public boolean wasEvaluated = false;
+	//public boolean wasEvaluated = false;
 	//	private Solver solver;
 
 	/*	public SolutionVector(P key, Boolean value)
