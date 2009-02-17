@@ -76,7 +76,7 @@ public class EpsilonSVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 			}
 
 		QMatrix<P> qMatrix =
-				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
+				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getNumExamples(), param.getCacheRows());
 		RegressionSolver<P> s = new RegressionSolver<P>(solutionVectors, qMatrix, param.C, param.eps, param.shrinking);
 
 

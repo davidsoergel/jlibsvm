@@ -20,12 +20,12 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 	{
 	private static final Logger logger = Logger.getLogger(BinaryModel.class);
 
-	CrossValidationResults cv;
+	//privatecv;
 
 	public CrossValidationResults newCrossValidationResults(int i, int tt, int ft, int tf, int ff)
 		{
-		cv = new CrossValidationResults(i, tt, ft, tf, ff);
-		return cv;
+		return new CrossValidationResults(i, tt, ft, tf, ff);
+		//return cv;
 		}
 
 	public class CrossValidationResults

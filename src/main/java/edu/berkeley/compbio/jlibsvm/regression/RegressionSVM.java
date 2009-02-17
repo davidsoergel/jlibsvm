@@ -74,7 +74,8 @@ public abstract class RegressionSVM<P, R extends SvmProblem<Float, P>> extends S
 			ymv[i] = problem.getTargetValue(i) - ymv[i];
 			mae += Math.abs(ymv[i]);
 			}*/
-		mae /= problem.getExamples().size();		//float std = (float) Math.sqrt(2 * mae * mae);  // PERF
+		mae /= problem.getNumExamples();
+		;		//float std = (float) Math.sqrt(2 * mae * mae);  // PERF
 		float std = SQRT_2 * mae;
 		int count = 0;
 		mae = 0;
@@ -91,7 +92,7 @@ public abstract class RegressionSVM<P, R extends SvmProblem<Float, P>> extends S
 				mae += absVal;
 				}
 			}
-		mae /= (problem.getExamples().size() - count);
+		mae /= (problem.getNumExamples() - count);
 		logger.info("Prob. model for test data: target value = predicted value + z");
 		logger.info("z: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma=" + mae);
 		return mae;

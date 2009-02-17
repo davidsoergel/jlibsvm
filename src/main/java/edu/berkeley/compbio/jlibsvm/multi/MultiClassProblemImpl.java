@@ -8,7 +8,6 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,8 +67,10 @@ public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiC
 			{
 			theInverseMap = new HashMap<L, Set<P>>();
 			for (L label : getLabels())
-				{//** Maintain order for debugging, temporary
-				theInverseMap.put(label, new LinkedHashSet<P>());
+				{
+				//** Maintain order for debugging, temporary:  new LinkedHashSet<P>()
+
+				theInverseMap.put(label, new HashSet<P>());
 				}
 
 			// separate the training set into label-specific sets, caching all the while

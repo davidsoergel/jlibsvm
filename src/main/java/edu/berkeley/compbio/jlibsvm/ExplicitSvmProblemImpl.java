@@ -15,6 +15,7 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 		extends AbstractSvmProblem<L, P, R> implements ExplicitSvmProblem<L, P, R>
 		//	implements java.io.Serializable
 	{
+	protected int numExamples = 0;
 
 	/*	protected L targetValues;
 
@@ -42,13 +43,23 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 		return exampleIds.get(key);
 		}
 
+	public int getNumExamples()
+		{
+		if (examples == null)
+			{
+			return numExamples;
+			}
+
+		return examples.size();
+		}
+
 	public Map<P, Integer> getExampleIds()
 		{
 		return exampleIds;
 		}
 
 	// the unique set of targetvalues, in a defined order
-	private List<L> labels = null;
+	protected List<L> labels = null;
 	// avoid populating for regression!  OK, regression should never call getLabels(), then.
 
 	/*public int getNumLabels()
@@ -140,7 +151,7 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 		{
 		Set<Fold<L, P, R>> result = new HashSet<Fold<L, P, R>>();
 
-		ArrayList<P> points = new ArrayList<P>(getExamples().keySet());
+		List<P> points = new ArrayList<P>(getExamples().keySet());
 
 		Collections.shuffle(points);
 

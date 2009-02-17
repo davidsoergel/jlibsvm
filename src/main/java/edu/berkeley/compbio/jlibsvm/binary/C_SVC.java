@@ -54,7 +54,7 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 			}
 
 		QMatrix<P> qMatrix =
-				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
+				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getNumExamples(), param.getCacheRows());
 		BinarySolver<L, P> s = new BinarySolver<L, P>(solutionVectors, qMatrix, Cp, Cn, param.eps, param.shrinking);
 
 		BinaryModel<L, P> model = s.Solve();
@@ -78,7 +78,7 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 
 		if (Cp == Cn)
 			{
-			logger.debug("nu = " + model.getSumAlpha() / (Cp * problem.getExamples().size()));
+			logger.debug("nu = " + model.getSumAlpha() / (Cp * problem.getNumExamples()));
 			}
 
 		for (Map.Entry<P, Double> entry : model.supportVectors.entrySet())

@@ -83,7 +83,8 @@ public class OneClassSVC<L, P> extends RegressionSVM<P, OneClassProblem<L, P>>
 			logger.warn("OneClassSVC ignores param.C, provided value " + param.C + " + not used");
 			}
 
-		float remainingAlpha = param.nu * problem.getExamples().size();
+		float remainingAlpha = param.nu * problem.getNumExamples();
+		;
 		float linearTerm = 0f;
 		List<SolutionVector<P>> solutionVectors = new ArrayList<SolutionVector<P>>();
 		int c = 0;
@@ -101,7 +102,7 @@ public class OneClassSVC<L, P> extends RegressionSVM<P, OneClassProblem<L, P>>
 			}
 
 		QMatrix<P> qMatrix =
-				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
+				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getNumExamples(), param.getCacheRows());
 		OneClassSolver<L, P> s = new OneClassSolver<L, P>(solutionVectors, qMatrix, 1.0f, param.eps, param.shrinking);
 
 

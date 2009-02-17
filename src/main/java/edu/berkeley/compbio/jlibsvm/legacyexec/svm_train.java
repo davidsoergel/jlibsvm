@@ -102,7 +102,8 @@ public class svm_train
 		double sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
 		//double[] target = new double[problem.l];
 
-		int numExamples = problem.getExamples().size();
+		int numExamples = problem.getNumExamples();
+		;
 		if (svm instanceof RegressionSVM) //param.svm_type == svm_parameter.EPSILON_SVR || param.svm_type == svm_parameter.NU_SVR)
 			{
 			Map cvResult = svm.continuousCrossValidation(problem, nr_fold);

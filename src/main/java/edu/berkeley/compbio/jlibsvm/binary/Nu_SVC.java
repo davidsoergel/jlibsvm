@@ -51,7 +51,8 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 
 
 		//	int i;
-		int l = problem.getExamples().size();
+		int l = problem.getNumExamples();
+		;
 		float nu = param.nu;
 
 		//	boolean[] y;
@@ -103,7 +104,7 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 			}
 
 		QMatrix<P> qMatrix =
-				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
+				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getNumExamples(), param.getCacheRows());
 		BinarySolverNu<L, P> s =
 				new BinarySolverNu<L, P>(solutionVectors, qMatrix, 1.0f, 1.0f, param.eps, param.shrinking);
 

@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Formatter;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -90,6 +91,29 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 			}
 		result.printSolutionInfo(problem);
 		return result;
+		}
+
+	public Callable<BinaryModel<L, P>> trainCallable(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
+		{
+		return new BinarySvmTrainCallable(problem, Cp, Cn);
+		}
+
+	private class BinarySvmTrainCallable implements Callable<BinaryModel<L, P>>
+		{
+		private BinaryClassificationProblem<L, P> problem;
+		private float Cp, Cn;
+
+		public BinarySvmTrainCallable(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
+			{
+			this.problem = problem;
+			this.Cp = Cp;
+			this.Cn = Cn;
+			}
+
+		public BinaryModel<L, P> call() throws Exception
+			{
+			return train(problem, Cp, Cn);
+			}
 		}
 
 	/**

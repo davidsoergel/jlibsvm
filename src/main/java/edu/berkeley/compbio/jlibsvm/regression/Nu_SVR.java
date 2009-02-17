@@ -84,7 +84,7 @@ public class Nu_SVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 
 		return model;
 */
-		float sum = param.C * param.nu * problem.getExamples().size() / 2f;
+		float sum = param.C * param.nu * problem.getNumExamples() / 2f;
 
 		List<SolutionVector<P>> solutionVectors = new ArrayList<SolutionVector<P>>();
 		int c = 0;
@@ -106,7 +106,7 @@ public class Nu_SVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 			}
 
 		QMatrix<P> qMatrix =
-				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
+				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getNumExamples(), param.getCacheRows());
 		RegressionSolverNu<P> s =
 				new RegressionSolverNu<P>(solutionVectors, qMatrix, param.C, param.eps, param.shrinking);
 

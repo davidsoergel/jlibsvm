@@ -39,7 +39,7 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P>> e
 		 {
 		 if (qMatrix == null)
 			 {
-			 qMatrix = new BooleanInvertingKernelQMatrix<P>(kernel, problem.getExamples().size(), param.getCacheRows());
+			 qMatrix = new BooleanInvertingKernelQMatrix<P>(kernel, problem.getNumExamples();, param.getCacheRows());
 			 }
 		 }
  */
@@ -78,7 +78,7 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P>> e
 		{
 		Map<P, Float> predictions = new HashMap<P, Float>();
 
-		if (numberOfFolds >= problem.getExamples().size())
+		if (numberOfFolds >= problem.getNumExamples())
 			{
 			throw new SvmException("Can't have more cross-validation folds than there are examples");
 			}
@@ -102,7 +102,7 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P>> e
 		{
 		Map<P, L> predictions = new HashMap<P, L>();
 
-		if (numberOfFolds >= problem.getExamples().size())
+		if (numberOfFolds >= problem.getNumExamples())
 			{
 			throw new SvmException("Can't have more cross-validation folds than there are examples");
 			}

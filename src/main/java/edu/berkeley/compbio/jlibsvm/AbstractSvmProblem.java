@@ -25,7 +25,7 @@ public abstract class AbstractSvmProblem<L extends Comparable, P, R extends SvmP
 				}
 			}
 	*/
-	private Map<L, Integer> exampleCounts = null;
+	protected Map<L, Integer> exampleCounts = null;
 
 	public Map<L, Integer> getExampleCounts()
 		{
