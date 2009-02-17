@@ -31,7 +31,7 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 	//	public double oneClassThreshold;
 	//	public boolean oneVsAllOnly;
 
-	public double oneVsAllThreshold;
+	public double oneVsAllThreshold = 0.5;
 	public MultiClassModel.OneVsAllMode oneVsAllMode = MultiClassModel.OneVsAllMode.None;
 	public MultiClassModel.AllVsAllMode allVsAllMode = MultiClassModel.AllVsAllMode.AllVsAll;
 	public double minVoteProportion;

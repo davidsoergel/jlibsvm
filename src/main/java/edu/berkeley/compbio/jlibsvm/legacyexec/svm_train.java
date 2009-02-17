@@ -86,7 +86,9 @@ public class svm_train
 				+ "-b probability_estimates: whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)\n"
 				+ "-wi weight: set the parameter C of class i to weight*C, for C-SVC (default 1)\n"
 				+ "-a allVsAllMode: None, AllVsAll, FilteredVsAll, FilteredVsFiltered\n"
+				+ "-j minVoteProportion: the chosen class must have at least this proportion of the total votes\n"
 				+ "-o oneVsAllMode: None, Best, Veto, BreakTies, VetoAndBreakTies \n"
+				+ "-k oneVsAllProb: the chosen class must have at least this one-vs-all probability; if -b is not set, probabilities are 0 or 1\n"
 				+ "-v n: n-fold cross validation mode\n");
 		System.exit(1);
 		}
@@ -303,6 +305,12 @@ public class svm_train
 					break;
 				case 'o':
 					param.oneVsAllMode = MultiClassModel.OneVsAllMode.valueOf(argv[i]);
+					break;
+				case 'k':
+					param.oneVsAllThreshold = Double.parseDouble(argv[i]);
+					break;
+				case 'j':
+					param.minVoteProportion = Double.parseDouble(argv[i]);
 					break;
 				default:
 					System.err.print("Unknown option: " + argv[i - 1] + "\n");

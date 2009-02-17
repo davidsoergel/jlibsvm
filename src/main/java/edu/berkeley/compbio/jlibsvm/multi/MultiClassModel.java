@@ -196,8 +196,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		// now oneVsAllProbabilities is populated with all of the classes that pass the threshold (maybe all of them).
 
 		// if all classes were vetoed, return
-		if ((oneVsAllMode == OneVsAllMode.Veto || oneVsAllMode == OneVsAllMode.VetoAndBreakTies)
-				&& oneVsAllProbabilities.isEmpty())
+		if ((oneVsAllMode == OneVsAllMode.Veto || oneVsAllMode == OneVsAllMode.VetoAndBreakTies
+				|| oneVsAllMode == OneVsAllMode.Best) && oneVsAllProbabilities.isEmpty())
 			{
 			return null;
 			}
