@@ -138,7 +138,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				c++;
 				if (c % 100 == 0)
 					{
-					logger.debug("Trained " + c + " one-vs-all models");
+					logger.info("Trained " + c + " one-vs-all models");
 					}
 				}
 			}

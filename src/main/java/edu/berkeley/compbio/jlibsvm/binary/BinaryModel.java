@@ -106,35 +106,38 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 
 	public void printSolutionInfo(BinaryClassificationProblem<L, P> problem)
 		{
-		logger.info("obj = " + obj + ", rho = " + rho);
-
-		// output SVs
-
-		int nBSV = 0;
-		for (int i = 0; i < numSVs; i++)
+		if (logger.isDebugEnabled())
 			{
-			Double alpha = alphas[i];
-			P point = SVs[i];
-			if (Math.abs(alpha) > 0)
+			logger.debug("obj = " + obj + ", rho = " + rho);
+
+			// output SVs
+
+			int nBSV = 0;
+			for (int i = 0; i < numSVs; i++)
 				{
-				if (problem.getTargetValue(point).equals(trueLabel))
+				Double alpha = alphas[i];
+				P point = SVs[i];
+				if (Math.abs(alpha) > 0)
 					{
-					if (Math.abs(alpha) >= upperBoundPositive)
+					if (problem.getTargetValue(point).equals(trueLabel))
 						{
-						++nBSV;
+						if (Math.abs(alpha) >= upperBoundPositive)
+							{
+							++nBSV;
+							}
 						}
-					}
-				else
-					{
-					if (Math.abs(alpha) >= upperBoundNegative)
+					else
 						{
-						++nBSV;
+						if (Math.abs(alpha) >= upperBoundNegative)
+							{
+							++nBSV;
+							}
 						}
 					}
 				}
-			}
 
-		logger.info("nSV = " + SVs.length + ", nBSV = " + nBSV);
+			logger.debug("nSV = " + SVs.length + ", nBSV = " + nBSV);
+			}
 		}
 
 	public L predictLabel(P x)

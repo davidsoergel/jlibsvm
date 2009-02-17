@@ -591,9 +591,9 @@ public abstract class Solver<L extends Comparable, P>
 				}
 			}
 
-		logger.info(Q.perfString());
+		logger.debug(Q.perfString());
 
-		logger.info("optimization finished, #iter = " + iter);
+		logger.debug("optimization finished, #iter = " + iter);
 		return iter;		// activeSet;
 		}
 
