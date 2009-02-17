@@ -3,10 +3,10 @@ package edu.berkeley.compbio.jlibsvm.legacyexec;
 import edu.berkeley.compbio.jlibsvm.ContinuousModel;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
-import edu.berkeley.compbio.jlibsvm.SparseVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassModel;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionModel;
+import edu.berkeley.compbio.jlibsvm.util.SparseVector;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

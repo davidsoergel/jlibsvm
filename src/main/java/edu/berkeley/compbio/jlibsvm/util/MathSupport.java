@@ -1,4 +1,4 @@
-package edu.berkeley.compbio.jlibsvm;
+package edu.berkeley.compbio.jlibsvm.util;
 
 public class MathSupport
 	{

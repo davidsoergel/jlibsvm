@@ -1,6 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.kernel;
 
-import edu.berkeley.compbio.jlibsvm.SparseVector;
+import edu.berkeley.compbio.jlibsvm.util.SparseVector;
 import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
 

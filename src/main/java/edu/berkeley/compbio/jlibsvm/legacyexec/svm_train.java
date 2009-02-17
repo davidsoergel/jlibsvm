@@ -3,7 +3,6 @@ package edu.berkeley.compbio.jlibsvm.legacyexec;
 import edu.berkeley.compbio.jlibsvm.MutableSvmProblem;
 import edu.berkeley.compbio.jlibsvm.SVM;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
-import edu.berkeley.compbio.jlibsvm.SparseVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
@@ -27,6 +26,7 @@ import edu.berkeley.compbio.jlibsvm.regression.EpsilonSVR;
 import edu.berkeley.compbio.jlibsvm.regression.MutableRegressionProblemImpl;
 import edu.berkeley.compbio.jlibsvm.regression.Nu_SVR;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
+import edu.berkeley.compbio.jlibsvm.util.SparseVector;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;

@@ -1,4 +1,4 @@
-package edu.berkeley.compbio.jlibsvm;
+package edu.berkeley.compbio.jlibsvm.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
