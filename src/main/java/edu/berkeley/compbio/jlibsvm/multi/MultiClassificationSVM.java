@@ -117,8 +117,21 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				final L notLabel = labelInverter.invert(label);
 
 				final Set<P> labelExamples = examplesByLabel.get(label);
-				final Set<P> notlabelExamples = new SubtractionMap<P, L>(problem.getExamples(), labelExamples).keySet();
 
+				Collection<Map.Entry<P, L>> entries = problem.getExamples().entrySet();
+				if (param.falseClassSVlimit != 0)
+					{
+					// guarantee entries in random order if limiting the number of false examples
+					List<Map.Entry<P, L>> entryList = new ArrayList<Map.Entry<P, L>>(entries);
+					Collections.shuffle(entryList);
+					entries = entryList.subList(0, param.falseClassSVlimit + labelExamples.size());
+					}
+
+				final Set<P> notlabelExamples =
+						new SubtractionMap<P, L>(entries, labelExamples, param.falseClassSVlimit).keySet();
+
+
+/*
 				Collection<Map.Entry<P, L>> entries = problem.getExamples().entrySet();
 				if (param.falseClassSVlimit != 0)
 					{
@@ -128,7 +141,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 					entries = entryList;
 					}
 
-				/*	int falseExamples = 0;
+					int falseExamples = 0;
 								for (Map.Entry<P, L> entry : entries)
 									{
 									if (entry.getValue().equals(label))
@@ -196,6 +209,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 						catch (ExecutionException e)
 							{
 							logger.error(e);
+							logger.error(e.getCause());
 							}
 						}
 					}

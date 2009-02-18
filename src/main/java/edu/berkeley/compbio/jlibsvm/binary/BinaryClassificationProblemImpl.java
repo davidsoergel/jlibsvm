@@ -135,6 +135,21 @@ trueLabel =
 	   addExample(point, x.equals(trueLabel));
 	   }*/
 
+	public L getTargetValue(P point)
+		{
+		if (booleanExamples != null)
+			{
+			if (booleanExamples.get(point))
+				{
+				return trueLabel;
+				}
+			else
+				{
+				return falseLabel;
+				}
+			}
+		return examples.get(point); //targetValues[i];
+		}
 
 	protected Fold<L, P, BinaryClassificationProblem<L, P>> makeFold(Set<P> heldOutPoints)
 		{

@@ -397,6 +397,11 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 	public boolean supportsOneVsAllProbability()
 		{
+		if (oneVsAllModels.isEmpty())
+			{
+			throw new SvmException(
+					"Asked for supportsOneVsAllProbability when no oneVsAll models were calculated; likely a bug!");
+			}
 		// just check the first model and assume the rest are the same
 		return oneVsAllModels.values().iterator().next().sigmoid != null;//		return probA != null && probB != null;
 		}

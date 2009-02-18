@@ -112,7 +112,15 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 
 		public BinaryModel<L, P> call() throws Exception
 			{
-			return train(problem, Cp, Cn);
+			try
+				{
+				return train(problem, Cp, Cn);
+				}
+			catch (Exception e)
+				{
+				logger.error(e);
+				throw e;
+				}
 			}
 		}
 

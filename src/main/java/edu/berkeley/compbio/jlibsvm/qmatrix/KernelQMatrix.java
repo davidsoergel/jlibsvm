@@ -582,6 +582,7 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 					buf[i] = computeQ(a, active[i]);
 					widemisses++;
 					}
+				return;
 				// result;
 				}
 

@@ -122,6 +122,9 @@ public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiC
 			}
 
 		// ** copied from above, yuck
+		// PERF this could be more efficient...
+		private Map<L, Set<P>> theInverseMap = null;
+
 		public Map<L, Set<P>> getExamplesByLabel()
 			{
 			if (theInverseMap == null)
