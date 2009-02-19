@@ -730,7 +730,10 @@ public abstract class Solver<L extends Comparable, P>
 
 		// Q.prefetch(GmaxSV);  // this can be built in to the cache itself
 		//float[] Q_GmaxSV =
-		Q.getQ(GmaxSV, active, Q_svA);
+		if (GmaxSV != null)  // => Gmax == Float.NEGATIVE_INFINITY
+			{
+			Q.getQ(GmaxSV, active, Q_svA);
+			}
 
 		//for (SolutionVector sv : active)
 		//int l = active.length;

@@ -2,9 +2,9 @@ package edu.berkeley.compbio.jlibsvm.multi;
 
 import edu.berkeley.compbio.jlibsvm.SVM;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
-import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblemImpl;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
+import edu.berkeley.compbio.jlibsvm.binary.BooleanClassificationProblemImpl;
 import edu.berkeley.compbio.jlibsvm.labelinverter.LabelInverter;
 import edu.berkeley.compbio.jlibsvm.util.SubtractionMap;
 import org.apache.log4j.Logger;
@@ -119,7 +119,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				final Set<P> labelExamples = examplesByLabel.get(label);
 
 				Collection<Map.Entry<P, L>> entries = problem.getExamples().entrySet();
-				if (param.falseClassSVlimit != 0)
+				if (param.falseClassSVlimit != Integer.MAX_VALUE)
 					{
 					// guarantee entries in random order if limiting the number of false examples
 					List<Map.Entry<P, L>> entryList = new ArrayList<Map.Entry<P, L>>(entries);
@@ -160,8 +160,8 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 																				  problem.getExampleIds());*/
 
 				final BinaryClassificationProblem<L, P> subProblem =
-						new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), label, labelExamples,
-						                                          notLabel, notlabelExamples, problem.getExampleIds());
+						new BooleanClassificationProblemImpl<L, P>(problem.getLabelClass(), label, labelExamples,
+						                                           notLabel, notlabelExamples, problem.getExampleIds());
 				//** Unbalanced data: see prepareWeights
 				// since these will be extremely unbalanced, this should nearly guarantee that no positive examples are misclassified.
 
@@ -204,12 +204,12 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 							}
 						catch (InterruptedException e)
 							{
-							logger.error(e);
+							logger.error("Error", e);
 							}
 						catch (ExecutionException e)
 							{
-							logger.error(e);
-							logger.error(e.getCause());
+							logger.error("Error", e);
+							//logger.error("Error",e.getCause());
 							}
 						}
 					}
@@ -217,7 +217,18 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				logger.info("Trained " + c + " one-vs-all models");
 				}
 			}
-		assert execService.isTerminated();
+		/*	try
+			  {
+			  execService.awaitTermination(10, TimeUnit.SECONDS);
+			  }
+		  catch (InterruptedException e)
+			  {
+			  // no problem, just cycle
+			  }
+		  assert execService.isTerminated();
+  */
+		// ** apparently it takes a while for the pool to terminate...
+
 
 		execService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -261,9 +272,9 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 						//BinaryClassificationProblem<P> subProblem = new BinaryClassificationProblem<P>(label1Examples, label2Examples);
 
 						final BinaryClassificationProblem<L, P> subProblem =
-								new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), label1,
-								                                          label1Examples, label2, label2Examples,
-								                                          problem.getExampleIds());
+								new BooleanClassificationProblemImpl<L, P>(problem.getLabelClass(), label1,
+								                                           label1Examples, label2, label2Examples,
+								                                           problem.getExampleIds());
 
 						/*final BinaryClassificationProblem<L, P> subProblem =
 								new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples,
@@ -278,7 +289,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 						c++;
 						if (c % 1000 == 0)
 							{
-							logger.info("Enqueued " + c + " one-vs-one training tasks");
+							logger.debug("Enqueued " + c + " one-vs-one training tasks");
 							}
 						}
 					}
@@ -315,11 +326,11 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 							}
 						catch (InterruptedException e)
 							{
-							logger.error(e);
+							logger.error("Error", e);
 							}
 						catch (ExecutionException e)
 							{
-							logger.error(e);
+							logger.error("Error", e);
 							}
 						}
 					}
@@ -389,7 +400,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 				L inverse = labelInverter.invert(label);
 				int numFalseExamples = param.falseClassSVlimit;
-				if (numFalseExamples == 0)
+				if (numFalseExamples == Integer.MAX_VALUE)
 					{
 					numFalseExamples = numExamples - examples.size();
 					}

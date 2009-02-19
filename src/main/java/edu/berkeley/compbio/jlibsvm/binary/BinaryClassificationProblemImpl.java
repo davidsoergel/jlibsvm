@@ -5,7 +5,6 @@ import edu.berkeley.compbio.jlibsvm.ExplicitSvmProblemImpl;
 import edu.berkeley.compbio.jlibsvm.Fold;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,37 +74,6 @@ public class BinaryClassificationProblemImpl<L extends Comparable, P>
 		this.labelClass = labelClass;
 		}
 
-	Map<P, Boolean> booleanExamples;
-
-	public BinaryClassificationProblemImpl(Class labelClass, L trueLabel, Set<P> trueExamples, L falseLabel,
-	                                       Set<P> falseExamples, Map<P, Integer> exampleIds)
-		{
-		// this is a hack: we leave examples==null and just deal with booleanExamples directly
-
-		super(null, exampleIds);
-		this.falseLabel = falseLabel;
-		this.trueLabel = trueLabel;
-		this.labelClass = labelClass;
-
-		numExamples = trueExamples.size() + falseExamples.size();
-		booleanExamples = new HashMap<P, Boolean>(numExamples);
-		for (P trueExample : trueExamples)
-			{
-			booleanExamples.put(trueExample, Boolean.TRUE);
-			}
-		for (P falseExample : falseExamples)
-			{
-			booleanExamples.put(falseExample, Boolean.FALSE);
-			}
-
-		exampleCounts = new HashMap<L, Integer>(2);
-		exampleCounts.put(trueLabel, trueExamples.size());
-		exampleCounts.put(falseLabel, falseExamples.size());
-
-		labels = new ArrayList<L>(2);
-		labels.add(trueLabel);
-		labels.add(falseLabel);
-		}
 
 	/*	public BinaryClassificationProblem newSubProblem(int numExamples)
 		 {
@@ -137,17 +105,6 @@ trueLabel =
 
 	public L getTargetValue(P point)
 		{
-		if (booleanExamples != null)
-			{
-			if (booleanExamples.get(point))
-				{
-				return trueLabel;
-				}
-			else
-				{
-				return falseLabel;
-				}
-			}
 		return examples.get(point); //targetValues[i];
 		}
 
@@ -159,12 +116,6 @@ trueLabel =
 
 	public Map<P, Boolean> getBooleanExamples()
 		{
-		// hack to accommodate special boolean constructor
-		if (booleanExamples != null)
-			{
-			return booleanExamples;
-			}
-
 		setupLabels();
 
 		Map<P, Boolean> result = new HashMap<P, Boolean>(examples.size());

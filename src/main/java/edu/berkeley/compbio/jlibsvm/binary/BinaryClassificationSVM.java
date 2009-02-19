@@ -118,7 +118,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 				}
 			catch (Exception e)
 				{
-				logger.error(e);
+				logger.error("Error", e);
 				throw e;
 				}
 			}
