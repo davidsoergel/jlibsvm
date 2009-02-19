@@ -1,64 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project relativePaths="false" version="4">
     <component name="ChangeListManager">
-        <list default="true" readonly="true" name="Default" comment="Back out reuse of QMatrix">
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml"
-                    afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_segment.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_segment.xml"/>
-            <change type="NEW" beforePath=""
-                    afterPath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BooleanClassificationProblemImpl.java"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_intellij_annotations_6_0_3.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_intellij_annotations_6_0_3.xml"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java"
-                    afterPath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationProblemImpl.java"
-                    afterPath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationProblemImpl.java"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Test_All.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/Test_All.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/SvmParameter.java"
-                    afterPath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/SvmParameter.java"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationSVM.java"
-                    afterPath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationSVM.java"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml"
-                    afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml"
-                    afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_news20_shark.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_news20_shark.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml"
-                    afterPath="$PROJECT_DIR$/.idea/workspace.xml"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_20080321.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_20080321.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_letter.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_letter.xml"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/Solver.java"
-                    afterPath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/Solver.java"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml"/>
-        </list>
+        <list default="true" readonly="true" name="Default" comment="Back out reuse of QMatrix"/>
         <ignored path="jlibsvm.iws"/>
         <ignored path=".idea/workspace.xml"/>
     </component>
@@ -263,8 +206,8 @@
             <property name="field_breakpoints_groupByClasses" value="true"/>
             <property name="method_breakpoints_groupByClasses" value="true"/>
             <property name="exception_breakpoints_viewId" value="TABLE"/>
-            <property name="exception_breakpoints_groupByClasses" value="true"/>
             <property name="field_breakpoints_viewId" value="TABLE"/>
+            <property name="exception_breakpoints_groupByClasses" value="true"/>
             <property name="method_breakpoints_groupByMethods" value="false"/>
         </ui_properties>
     </component>
@@ -276,37 +219,9 @@
             <file leaf-file-name="MultiClassificationSVM.java" pinned="false" current="false" current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java">
                     <provider selected="true" editor-type-id="text-editor">
-                        <state line="404" column="57" selection-start="13123" selection-end="13123"
+                        <state line="404" column="57" selection-start="13121" selection-end="13121"
                                vertical-scroll-proportion="0.0">
-                            <folding>
-                                <marker date="1235013125000" expanded="false" signature="52:1002" placeholder="..."/>
-                                <marker date="1235013125000" expanded="true" signature="1004:1095"
-                                        placeholder="/**...*/"/>
-                                <marker date="1235013125000" expanded="true" signature="1506:1643" placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="1675:1729" placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="2060:11197"
-                                        placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="11272:14043"
-                                        placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="11272:14043"
-                                        placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="17930:18128"
-                                        placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="17930:18128"
-                                        placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="17988:18032"
-                                        placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="17988:18032"
-                                        placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="18057:18078"
-                                        placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="18057:18078"
-                                        placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="18103:18124"
-                                        placeholder="{...}"/>
-                                <marker date="1235013125000" expanded="true" signature="18103:18124"
-                                        placeholder="{...}"/>
-                            </folding>
+                            <folding/>
                         </state>
                     </provider>
                 </entry>
@@ -325,7 +240,7 @@
                 <entry file="file://$PROJECT_DIR$/src/test/java/edu/berkeley/compbio/jlibsvm/kernel/GaussianRBFKernelTest.java">
                     <provider selected="true" editor-type-id="text-editor">
                         <state line="10" column="13" selection-start="275" selection-end="275"
-                               vertical-scroll-proportion="-0.5869786">
+                               vertical-scroll-proportion="0.01525941">
                             <folding/>
                         </state>
                     </provider>
@@ -345,7 +260,7 @@
                   current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BooleanClassificationProblemImpl.java">
                     <provider selected="true" editor-type-id="text-editor">
-                        <state line="43" column="10" selection-start="1292" selection-end="1292"
+                        <state line="43" column="9" selection-start="1313" selection-end="1313"
                                vertical-scroll-proportion="0.0">
                             <folding/>
                         </state>
@@ -386,11 +301,9 @@
                   current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationProblemImpl.java">
                     <provider selected="true" editor-type-id="text-editor">
-                        <state line="68" column="9" selection-start="1286" selection-end="1531"
+                        <state line="68" column="0" selection-start="1286" selection-end="1531"
                                vertical-scroll-proportion="0.0">
-                            <folding>
-                                <element signature="imports" expanded="true"/>
-                            </folding>
+                            <folding/>
                         </state>
                     </provider>
                 </entry>
@@ -545,9 +458,9 @@
         <property name="GoToClass.toSaveIncludeLibraries" value="false"/>
         <property name="MemberChooser.showClasses" value="true"/>
         <property name="GoToClass.includeLibraries" value="false"/>
-        <property name="dynamic.classpath" value="false"/>
-        <property name="options.splitter.details.proportions" value="0.2"/>
         <property name="options.searchVisible" value="true"/>
+        <property name="options.splitter.details.proportions" value="0.2"/>
+        <property name="dynamic.classpath" value="false"/>
     </component>
     <component name="RecentsManager">
         <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -634,15 +547,15 @@
             <envs/>
         </configuration>
         <list size="9">
-            <item index="0" class="java.lang.String" itemvalue="Application.New letter Shark"/>
-            <item index="1" class="java.lang.String" itemvalue="Application.Legacy mushrooms"/>
-            <item index="2" class="java.lang.String" itemvalue="Application.New mushrooms"/>
-            <item index="3" class="java.lang.String" itemvalue="Application.New mushrooms Shark"/>
-            <item index="4" class="java.lang.String" itemvalue="Application.New sector"/>
-            <item index="5" class="java.lang.String" itemvalue="Application.New letter"/>
-            <item index="6" class="java.lang.String" itemvalue="Application.New news20 shark"/>
-            <item index="7" class="java.lang.String" itemvalue="Application.New segment"/>
-            <item index="8" class="java.lang.String" itemvalue="TestNG.Test All"/>
+            <item index="0" class="java.lang.String" itemvalue="Application.New sector"/>
+            <item index="1" class="java.lang.String" itemvalue="Application.New segment"/>
+            <item index="2" class="java.lang.String" itemvalue="Application.New letter"/>
+            <item index="3" class="java.lang.String" itemvalue="TestNG.Test All"/>
+            <item index="4" class="java.lang.String" itemvalue="Application.New letter Shark"/>
+            <item index="5" class="java.lang.String" itemvalue="Application.Legacy mushrooms"/>
+            <item index="6" class="java.lang.String" itemvalue="Application.New mushrooms"/>
+            <item index="7" class="java.lang.String" itemvalue="Application.New news20 shark"/>
+            <item index="8" class="java.lang.String" itemvalue="Application.New mushrooms Shark"/>
         </list>
         <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
             <Host>localhost</Host>
@@ -816,16 +729,25 @@
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/AbstractFold.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationSVM.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="22" column="11" selection-start="571" selection-end="571" vertical-scroll-proportion="0.0">
+                <state line="114" column="0" selection-start="3148" selection-end="3148"
+                       vertical-scroll-proportion="0.0">
                     <folding/>
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationSVM.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="114" column="0" selection-start="3148" selection-end="3148"
+                <state line="404" column="57" selection-start="13121" selection-end="13121"
+                       vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/SvmParameter.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="37" column="23" selection-start="1274" selection-end="1274"
                        vertical-scroll-proportion="0.0">
                     <folding/>
                 </state>
@@ -839,19 +761,17 @@
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationProblemImpl.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BooleanClassificationProblemImpl.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="68" column="9" selection-start="1286" selection-end="1531"
+                <state line="43" column="9" selection-start="1313" selection-end="1313"
                        vertical-scroll-proportion="0.0">
-                    <folding>
-                        <element signature="imports" expanded="true"/>
-                    </folding>
+                    <folding/>
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BooleanClassificationProblemImpl.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/SVM.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="43" column="10" selection-start="1292" selection-end="1292"
+                <state line="113" column="0" selection-start="3191" selection-end="3191"
                        vertical-scroll-proportion="0.0">
                     <folding/>
                 </state>
@@ -860,6 +780,21 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassProblemImpl.java">
             <provider selected="true" editor-type-id="text-editor">
                 <state line="142" column="0" selection-start="4125" selection-end="4125"
+                       vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/AbstractFold.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="22" column="11" selection-start="571" selection-end="571" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationProblemImpl.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="68" column="0" selection-start="1286" selection-end="1531"
                        vertical-scroll-proportion="0.0">
                     <folding/>
                 </state>
@@ -876,50 +811,10 @@
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/SVM.java">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="113" column="0" selection-start="3191" selection-end="3191"
-                       vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="404" column="57" selection-start="13123" selection-end="13123"
-                       vertical-scroll-proportion="0.0">
-                    <folding>
-                        <marker date="1235013125000" expanded="false" signature="52:1002" placeholder="..."/>
-                        <marker date="1235013125000" expanded="true" signature="1004:1095" placeholder="/**...*/"/>
-                        <marker date="1235013125000" expanded="true" signature="1506:1643" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="1675:1729" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="2060:11197" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="11272:14043" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="11272:14043" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="17930:18128" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="17930:18128" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="17988:18032" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="17988:18032" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="18057:18078" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="18057:18078" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="18103:18124" placeholder="{...}"/>
-                        <marker date="1235013125000" expanded="true" signature="18103:18124" placeholder="{...}"/>
-                    </folding>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/SvmParameter.java">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="37" column="23" selection-start="1274" selection-end="1274"
-                       vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
         <entry file="file://$PROJECT_DIR$/src/test/java/edu/berkeley/compbio/jlibsvm/kernel/GaussianRBFKernelTest.java">
             <provider selected="true" editor-type-id="text-editor">
                 <state line="10" column="13" selection-start="275" selection-end="275"
-                       vertical-scroll-proportion="-0.5869786">
+                       vertical-scroll-proportion="0.01525941">
                     <folding/>
                 </state>
             </provider>
