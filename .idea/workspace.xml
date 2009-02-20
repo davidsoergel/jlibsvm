@@ -1,7 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project relativePaths="false" version="4">
     <component name="ChangeListManager">
-        <list default="true" readonly="true" name="Default" comment="Back out reuse of QMatrix"/>
+        <list default="true" readonly="true" name="Default" comment="Back out reuse of QMatrix">
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"
+                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml"
+                    afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_segment.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_segment.xml"/>
+            <change type="MODIFICATION"
+                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_intellij_annotations_6_0_3.xml"
+                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_intellij_annotations_6_0_3.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Test_All.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/Test_All.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml"
+                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml"
+                    afterPath="$PROJECT_DIR$/.idea/dataSources.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml"
+                    afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml"
+                    afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_news20_shark.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_news20_shark.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/projectCodeStyle.xml"
+                    afterPath="$PROJECT_DIR$/.idea/projectCodeStyle.xml"/>
+            <change type="MODIFICATION"
+                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"
+                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml"
+                    afterPath="$PROJECT_DIR$/.idea/modules.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml"
+                    afterPath="$PROJECT_DIR$/.idea/workspace.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml"
+                    afterPath="$PROJECT_DIR$/.idea/vcs.xml"/>
+            <change type="MODIFICATION"
+                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_20080321.xml"
+                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_20080321.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml"
+                    afterPath="$PROJECT_DIR$/.idea/misc.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_letter.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_letter.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml"
+                    afterPath="$PROJECT_DIR$/.idea/compiler.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml"
+                    afterPath="$PROJECT_DIR$/.idea/encodings.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml"
+                    afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml"/>
+        </list>
         <ignored path="jlibsvm.iws"/>
         <ignored path=".idea/workspace.xml"/>
     </component>
@@ -206,8 +262,8 @@
             <property name="field_breakpoints_groupByClasses" value="true"/>
             <property name="method_breakpoints_groupByClasses" value="true"/>
             <property name="exception_breakpoints_viewId" value="TABLE"/>
-            <property name="field_breakpoints_viewId" value="TABLE"/>
             <property name="exception_breakpoints_groupByClasses" value="true"/>
+            <property name="field_breakpoints_viewId" value="TABLE"/>
             <property name="method_breakpoints_groupByMethods" value="false"/>
         </ui_properties>
     </component>
@@ -458,9 +514,9 @@
         <property name="GoToClass.toSaveIncludeLibraries" value="false"/>
         <property name="MemberChooser.showClasses" value="true"/>
         <property name="GoToClass.includeLibraries" value="false"/>
-        <property name="options.searchVisible" value="true"/>
-        <property name="options.splitter.details.proportions" value="0.2"/>
         <property name="dynamic.classpath" value="false"/>
+        <property name="options.splitter.details.proportions" value="0.2"/>
+        <property name="options.searchVisible" value="true"/>
     </component>
     <component name="RecentsManager">
         <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -601,7 +657,7 @@
         </todo-panel>
     </component>
     <component name="ToolWindowManager">
-        <frame x="-4" y="22" width="1604" height="1152" extended-state="0"/>
+        <frame x="-4" y="22" width="1604" height="1152" extended-state="1"/>
         <editor active="true"/>
         <layout>
             <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
