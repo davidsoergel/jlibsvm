@@ -2,10 +2,10 @@
 <project relativePaths="false" version="4">
     <component name="ChangeListManager">
         <list default="true" readonly="true" name="Default" comment="Back out reuse of QMatrix">
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"/>
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"
                     afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"
+                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"/>
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml"
                     afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml"/>
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_segment.xml"
@@ -31,11 +31,11 @@
                     afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_news20_shark.xml"/>
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/projectCodeStyle.xml"
                     afterPath="$PROJECT_DIR$/.idea/projectCodeStyle.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"/>
             <change type="MODIFICATION"
                     beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"
                     afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"/>
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml"
                     afterPath="$PROJECT_DIR$/.idea/modules.xml"/>
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml"
@@ -58,8 +58,8 @@
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml"
                     afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml"/>
         </list>
-        <ignored path="jlibsvm.iws"/>
         <ignored path=".idea/workspace.xml"/>
+        <ignored path="jlibsvm.iws"/>
     </component>
     <component name="ChangesViewManager" flattened_view="true" show_ignored="false"/>
     <component name="Commander">
@@ -296,7 +296,7 @@
                 <entry file="file://$PROJECT_DIR$/src/test/java/edu/berkeley/compbio/jlibsvm/kernel/GaussianRBFKernelTest.java">
                     <provider selected="true" editor-type-id="text-editor">
                         <state line="10" column="13" selection-start="275" selection-end="275"
-                               vertical-scroll-proportion="0.0154958675">
+                               vertical-scroll-proportion="0.01525941">
                             <folding/>
                         </state>
                     </provider>
@@ -657,7 +657,7 @@
         </todo-panel>
     </component>
     <component name="ToolWindowManager">
-        <frame x="-4" y="22" width="1604" height="1152" extended-state="1"/>
+        <frame x="-4" y="22" width="1604" height="1152" extended-state="0"/>
         <editor active="true"/>
         <layout>
             <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
@@ -689,7 +689,7 @@
             <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
                          type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false"/>
             <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="true" weight="0.32988358" sideWeight="0.0" order="0" side_tool="false"/>
+                         type="DOCKED" visible="true" weight="0.28913325" sideWeight="0.0" order="0" side_tool="false"/>
             <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
                          type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
             <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
@@ -869,7 +869,7 @@
         <entry file="file://$PROJECT_DIR$/src/test/java/edu/berkeley/compbio/jlibsvm/kernel/GaussianRBFKernelTest.java">
             <provider selected="true" editor-type-id="text-editor">
                 <state line="10" column="13" selection-start="275" selection-end="275"
-                       vertical-scroll-proportion="0.0154958675">
+                       vertical-scroll-proportion="0.01525941">
                     <folding/>
                 </state>
             </provider>
