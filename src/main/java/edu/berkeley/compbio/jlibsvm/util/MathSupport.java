@@ -4,6 +4,7 @@ public class MathSupport
 	{
 	public static double powi(double base, int times)
 		{
+		assert times >= 0;
 		double tmp = base, ret = 1.0f;
 
 		for (int t = times; t > 0; t /= 2)
