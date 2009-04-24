@@ -336,7 +336,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				//	|| oneClass > bestOneClassProbability)))
 				{
 				//secondBestLabel = label;
-				secondBestCount = count;
+				secondBestCount = bestCount;
 				secondBestOneVsAllProbability = bestOneVsAllProbability;
 
 				bestLabel = label;
