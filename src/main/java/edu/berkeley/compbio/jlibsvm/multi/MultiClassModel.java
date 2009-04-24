@@ -145,6 +145,20 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	 */
 	public L predictLabel(P x)
 		{
+		return predictLabelWithQuality(x).getBestLabel();
+		}
+
+	public VotingResult<L> predictLabelWithQuality(P x)
+		{
+
+		L bestLabel = null;
+		float bestOneClassProbability = 0;
+		float secondBestOneClassProbability = 0;
+		float bestOneVsAllProbability = 0;
+		// L secondBestLabel = null;
+
+		float secondBestOneVsAllProbability = 0;
+
 		// stage 0: we're going to need the kernel value for x against each of the SVs
 
 		float[] kvalues = new float[allSVs.length];
@@ -205,17 +219,19 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		// if using the OneVsAll Best mode, then we should have had probabilities turned on, and allVsAll voting will be ignored
 		if (oneVsAllMode == OneVsAllMode.Best)
 			{
-			L bestLabel = null;
-			float bestProbability = 0;
+
 			for (Map.Entry<L, Float> entry : oneVsAllProbabilities.entrySet())
 				{
-				if (entry.getValue() > bestProbability)
+				if (entry.getValue() > bestOneVsAllProbability)
 					{
+					//secondBestLabel = bestLabel;
+					secondBestOneVsAllProbability = bestOneVsAllProbability;
 					bestLabel = entry.getKey();
-					bestProbability = entry.getValue();
+					bestOneVsAllProbability = entry.getValue();
 					}
 				}
-			return bestLabel;
+			return new VotingResult<L>(bestLabel, 0, 0, bestOneClassProbability, secondBestOneClassProbability,
+			                           bestOneVsAllProbability, secondBestOneVsAllProbability);
 			}
 
 
@@ -285,9 +301,9 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		// stage 4: find the label with the most votes (and break ties or veto as needed)
 
-		L bestLabel = null;
 		int bestCount = 0;
-		float bestOneVsAllProbability = 0;
+		int secondBestCount = 0;
+
 		//float bestOneClassProbability = 0;
 		int countSum = 0;
 		for (L label : votes.elementSet())
@@ -319,6 +335,10 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			if (count > bestCount || (count == bestCount && oneVsAll > bestOneVsAllProbability))
 				//	|| oneClass > bestOneClassProbability)))
 				{
+				//secondBestLabel = label;
+				secondBestCount = count;
+				secondBestOneVsAllProbability = bestOneVsAllProbability;
+
 				bestLabel = label;
 				bestCount = count;
 				bestOneVsAllProbability = oneVsAll;
@@ -329,7 +349,9 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		// stage 5: check for inadequate evidence filters.
 
-		if (((double) bestCount / (double) countSum) < minVoteProportion)
+		double bestVoteProportion = (double) bestCount / (double) countSum;
+		double secondBestVoteProportion = (double) secondBestCount / (double) countSum;
+		if (bestVoteProportion < minVoteProportion)
 			{
 			return null;
 			}
@@ -341,7 +363,9 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 			}
 
 
-		return bestLabel;
+		return new VotingResult<L>(bestLabel, (float) bestVoteProportion, (float) secondBestVoteProportion,
+		                           bestOneClassProbability, secondBestOneClassProbability, bestOneVsAllProbability,
+		                           secondBestOneVsAllProbability);
 
 		/*
 
