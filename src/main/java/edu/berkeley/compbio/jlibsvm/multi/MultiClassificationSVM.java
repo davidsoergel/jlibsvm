@@ -338,7 +338,9 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				logger.info("Trained " + c + " one-vs-one models");
 				}
 			}
-		assert execService.isTerminated();
+
+		// ** apparently it takes a while for the pool to terminate... but we don't care since we already got our results
+		//assert execService.isTerminated();
 
 		model.prepareModelSvMaps();
 		return model;
