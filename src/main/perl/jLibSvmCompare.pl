@@ -9,7 +9,7 @@ use List::Util qw(sum);
 
 sub main()
 	{
-	chdir "~/src/jlibsvm/src/test/resources";
+	chdir "~/src/jlibsvm/src/test/resources";  # doesn't work
 
 	my @datasets = ("segment.scale", "news20", "letter.scale", "mushrooms", "sector.scale");
 	#my @datasets = ("~/src/jlibsvm/src/test/resources/segment.scale");
@@ -50,6 +50,8 @@ sub main()
     print("<HTML><HEAD><meta http-equiv='refresh' content='10'></HEAD><BODY><TABLE border='1'>\n");
     print("<TR><TD>program</TD><TD>iter</TD><TD>nu</TD><TD>obj</TD><TD>rho</TD><TD>nSV</TD><TD>nBSV</TD><TD>cpu</TD><TD>mem</TD><TD>^unk</TD><TD>cvAcc</TD></TR>\n");
 
+    my $mem = "4G"; # 1500m
+
 	for my $dataset (@datasets)
 		{
 		for my $args (@argsets)
@@ -57,16 +59,16 @@ sub main()
 			print "<TR><TD span=15><B>$args $dataset<B></TD></TR>\n";
 
 			my %commandlines = ("LIBSVM-c" => "~/src-3rdparty/libsvm-2.88/svm-train $args $dataset",
-			"LIBSVM-j" => "java -Xmx1500m -cp ~/src-3rdparty/libsvm-2.88/java/libsvm.jar svm_train $args $dataset",
-			"jLibSvm None AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o None -a AllVsAll -j 0.1 $dataset"
-			, "jLibSvm Best None" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -b 1 -o Best -k 0.2 -a None $dataset",
-			"jLibSvm BreakTies AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o BreakTies -a AllVsAll  -j 0.1 $dataset",
-			"jLibSvm Veto AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -k 0.2 -a AllVsAll  -j 0.1 $dataset",
-			"jLibSvm Veto FilteredVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -k 0.2 -a FilteredVsAll  -j 0.1 $dataset",
-			"jLibSvm Veto FilteredVsFiltered" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -k 0.2 -a FilteredVsFiltered  -j 0.1 $dataset",
-            "jLibSvm VetoAndBreakTies AllVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -k 0.2 -a AllVsAll -j 0.1 $dataset",
-            "jLibSvm VetoAndBreakTies FilteredVsAll" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -k 0.2 -a FilteredVsAll -j 0.1 $dataset",
-			"jLibSvm VetoAndBreakTies FilteredVsFiltered" => "java -Xmx1500m -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -k 0.2 -a FilteredVsFiltered -j 0.1 $dataset"
+			"LIBSVM-j" => "java -Xmx$mem -cp ~/src-3rdparty/libsvm-2.88/java/libsvm.jar svm_train $args $dataset",
+			"jLibSvm None AllVsAll" => "java -Xmx$mem -jar ~/src/jlibsvm/jlibsvm.jar $args -o None -a AllVsAll -j 0.1 $dataset"
+			, "jLibSvm Best None" => "java -Xmx$mem -jar ~/src/jlibsvm/jlibsvm.jar $args -b 1 -o Best -k 0.2 -a None $dataset",
+			"jLibSvm BreakTies AllVsAll" => "java -Xmx$mem -jar ~/src/jlibsvm/jlibsvm.jar $args -o BreakTies -a AllVsAll  -j 0.1 $dataset",
+			"jLibSvm Veto AllVsAll" => "java -Xmx$mem -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -k 0.2 -a AllVsAll  -j 0.1 $dataset",
+			"jLibSvm Veto FilteredVsAll" => "java -Xmx$mem -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -k 0.2 -a FilteredVsAll  -j 0.1 $dataset",
+			"jLibSvm Veto FilteredVsFiltered" => "java -Xmx$mem -jar ~/src/jlibsvm/jlibsvm.jar $args -o Veto -k 0.2 -a FilteredVsFiltered  -j 0.1 $dataset",
+            "jLibSvm VetoAndBreakTies AllVsAll" => "java -Xmx$mem -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -k 0.2 -a AllVsAll -j 0.1 $dataset",
+            "jLibSvm VetoAndBreakTies FilteredVsAll" => "java -Xmx$mem -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -k 0.2 -a FilteredVsAll -j 0.1 $dataset",
+			"jLibSvm VetoAndBreakTies FilteredVsFiltered" => "java -Xmx$mem -jar ~/src/jlibsvm/jlibsvm.jar $args -o VetoAndBreakTies -k 0.2 -a FilteredVsFiltered -j 0.1 $dataset"
             );
 
 			for my $commandname (keys %commandlines)

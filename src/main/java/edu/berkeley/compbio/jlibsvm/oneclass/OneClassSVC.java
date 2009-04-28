@@ -106,7 +106,7 @@ public class OneClassSVC<L, P> extends RegressionSVM<P, OneClassProblem<L, P>>
 		OneClassSolver<L, P> s = new OneClassSolver<L, P>(solutionVectors, qMatrix, 1.0f, param.eps, param.shrinking);
 
 
-		OneClassModel<L, P> model = s.Solve(); //new RegressionModel<P>(binaryModel);
+		OneClassModel<L, P> model = s.solve(); //new RegressionModel<P>(binaryModel);
 		model.kernel = kernel;
 		model.param = param;
 		model.label = problem.getLabel();

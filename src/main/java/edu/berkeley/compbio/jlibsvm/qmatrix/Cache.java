@@ -16,7 +16,7 @@ class Cache
 	private final int l;
 	private long size;
 
-	private final class head_t
+	private static final class head_t
 		{
 		head_t prev, next;// a cicular list
 		float[] data;
@@ -40,7 +40,7 @@ class Cache
 			head[i] = new head_t();
 			}
 		size /= 4;
-		size -= l * (16 / 4);// sizeof(head_t) == 16
+		size -= l * (16L / 4L);// sizeof(head_t) == 16
 		size = Math.max(size, 2 * (long) l);// cache must be large enough for two columns
 		lru_head = new head_t();
 		lru_head.next = lru_head.prev = lru_head;

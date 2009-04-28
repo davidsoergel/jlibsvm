@@ -43,6 +43,10 @@
         <option name="myVersion" value="124"/>
         <option name="mySupportsUserInfoFilter" value="true"/>
     </component>
+    <component name="TestDoxConfiguration">
+        <option name="createTestIfMissing" value="true"/>
+        <option name="deletePackageOccurrences" value="true"/>
+    </component>
     <UsedPathMacros>
         <macro name="MAVEN_REPOSITORY"/>
     </UsedPathMacros>

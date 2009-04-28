@@ -8,6 +8,6 @@ public class ByteLabelInverter implements LabelInverter<Byte>
 	{
 	public Byte invert(Byte label)
 		{
-		return new Byte((byte) -label);
+		return (byte) (-label);
 		}
 	}

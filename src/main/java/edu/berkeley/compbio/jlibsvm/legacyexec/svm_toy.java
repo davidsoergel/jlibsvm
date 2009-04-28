@@ -70,7 +70,7 @@ public class svm_toy extends Applet
 			new Color(200, 0, 200)
 	};
 
-	class point
+	static class point
 		{
 		point(float x, float y, byte value)
 			{
@@ -493,7 +493,7 @@ public class svm_toy extends Applet
 				v.indexes[1] = 2;
 				v.values[1] = p.y;
 
-				prob.addExample(v, new Byte(p.value));
+				prob.addExample(v, p.value);
 				}
 
 			if (svm instanceof BinaryClassificationSVM && prob.getLabels().size() > 2)

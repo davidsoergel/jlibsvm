@@ -22,7 +22,7 @@ public class OneClassSolver<L, P> extends Solver<Float, P>
 		}
 
 
-	public OneClassModel<L, P> Solve()
+	public OneClassModel<L, P> solve()
 		{
 		int iter = optimize();
 

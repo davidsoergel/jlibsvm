@@ -22,7 +22,7 @@ public class BinarySolver<L extends Comparable, P> extends Solver<L, P>
 		super(solutionVectors, Q, Cp, Cn, eps, shrinking);
 		}
 
-	public BinaryModel<L, P> Solve()
+	public BinaryModel<L, P> solve()
 		{
 		int iter = optimize();
 

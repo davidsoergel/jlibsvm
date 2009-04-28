@@ -9,6 +9,7 @@ import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
@@ -148,6 +149,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		return predictLabelWithQuality(x).getBestLabel();
 		}
 
+	@NotNull
 	public VotingResult<L> predictLabelWithQuality(P x)
 		{
 
@@ -213,7 +215,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		if ((oneVsAllMode == OneVsAllMode.Veto || oneVsAllMode == OneVsAllMode.VetoAndBreakTies
 				|| oneVsAllMode == OneVsAllMode.Best) && oneVsAllProbabilities.isEmpty())
 			{
-			return null;
+			return new VotingResult<L>();
 			}
 
 		// if using the OneVsAll Best mode, then we should have had probabilities turned on, and allVsAll voting will be ignored
@@ -353,13 +355,13 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		double secondBestVoteProportion = (double) secondBestCount / (double) countSum;
 		if (bestVoteProportion < minVoteProportion)
 			{
-			return null;
+			return new VotingResult<L>();
 			}
 
 		if ((oneVsAllMode == OneVsAllMode.VetoAndBreakTies || oneVsAllMode == OneVsAllMode.Veto)
 				&& bestOneVsAllProbability < oneVsAllThreshold)
 			{
-			return null;
+			return new VotingResult<L>();
 			}
 
 

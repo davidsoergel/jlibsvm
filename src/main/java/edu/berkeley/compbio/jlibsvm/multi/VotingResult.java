@@ -6,13 +6,17 @@ package edu.berkeley.compbio.jlibsvm.multi;
  */
 public class VotingResult<L>
 	{
-	L bestLabel;
-	float bestVoteProportion;
-	float secondBestVoteProportion;
-	float bestProbability;
-	float secondBestProbability;
-	float bestOneVsAllProbability;
-	float secondBestOneVsAllProbability;
+	private L bestLabel = null;
+	private float bestVoteProportion = 0;
+	private float secondBestVoteProportion = 0;
+	private float bestProbability = 0;
+	private float secondBestProbability = 0;
+	private float bestOneVsAllProbability = 0;
+	private float secondBestOneVsAllProbability = 0;
+
+	public VotingResult()
+		{
+		}
 
 	public VotingResult(L bestLabel, float bestVoteProportion, float secondBestVoteProportion, float bestProbability,
 	                    float secondBestProbability, float bestOneVsAllProbability, float secondBestOneVsAllProbability)

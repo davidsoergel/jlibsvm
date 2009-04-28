@@ -23,7 +23,7 @@ public class RegressionSolver<P> extends Solver<Float, P>
 		}
 
 
-	public RegressionModel<P> Solve()
+	public RegressionModel<P> solve()
 		{
 		int iter = optimize();
 

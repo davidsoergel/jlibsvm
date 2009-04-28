@@ -31,10 +31,16 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 	{
 	private static final Logger logger = Logger.getLogger(MultiClassificationSVM.class);
 
-	BinaryClassificationSVM<L, P> binarySvm;	//private Class labelClass;
+	private BinaryClassificationSVM<L, P> binarySvm;	//private Class labelClass;
 
-	boolean redistributeUnbalancedC;
+	private boolean redistributeUnbalancedC;
 
+	/**
+	 * @param binarySvm
+	 * @param redistributeUnbalancedC For unbalanced data, redistribute the misclassification cost C according to the
+	 *                                numbers of examples in each class, so that each class has the same total
+	 *                                misclassification weight assigned to it and the average is param.C
+	 */
 	public MultiClassificationSVM(BinaryClassificationSVM<L, P> binarySvm, boolean redistributeUnbalancedC)
 		{
 		super(binarySvm.kernel, binarySvm.param);
@@ -42,6 +48,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		this.redistributeUnbalancedC = redistributeUnbalancedC;
 		}
 
+	@Override
 	public String getSvmType()
 		{
 		return "multiclass " + binarySvm.getSvmType();
@@ -370,18 +377,11 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			}
 		else
 			{
-			//** Unbalanced data: redistribute the misclassification cost C according to
-			// the numbers of examples in each class, so that each class has the same total
-			// misclassification weight assigned to it and the average is param.C
-
 			int numExamples = problem.getNumExamples();
-			;
-
 
 			int numClasses = examplesByLabel.size();
 
-			// first figu
-			// re out the average total C for each class if the samples were uniformly distributed
+			// first figure out the average total C for each class if the samples were uniformly distributed
 			float totalCPerClass = param.C * numExamples / numClasses;
 			//float totalCPerRemainder = totalCPerClass * (numClasses - 1);
 
@@ -389,23 +389,23 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			// then assign the proper C per _sample_ within each class by distributing the per-class C
 			for (Map.Entry<L, Set<P>> entry : examplesByLabel.entrySet())
 				{
+				// the weight per sample is just the total class weight divided by the number of samples
+
 				L label = entry.getKey();
 				Set<P> examples = entry.getValue();
 				float weight = totalCPerClass / examples.size();
 
 				weights.put(label, weight);
 
+				// also prepare weights for the one-vs-all case.
 
-				//** For one-vs-all, we want the inverse class to have the same total weight as the positive class, i.e. totalCPerClass.
-				//** Note scaling problem: we can't scale up the positive class, so we have to scale down the negative class
-				//** i.e. we pretend that all of the negative examples are in one class, and so have totalCPerClass.
+				// For one-vs-all, we want the inverse class to have the same total weight as the positive class, i.e. totalCPerClass.
+				// Note scaling problem: we can't scale up the positive class, so we have to scale down the negative class
+				//*i.e. we pretend that all of the negative examples are in one class, and so have totalCPerClass.
 
 				L inverse = labelInverter.invert(label);
-				int numFalseExamples = param.falseClassSVlimit;
-				if (numFalseExamples == Integer.MAX_VALUE)
-					{
-					numFalseExamples = numExamples - examples.size();
-					}
+				int numFalseExamples = numExamples - examples.size();
+				numFalseExamples = Math.min(numFalseExamples, param.falseClassSVlimit);
 				float inverseWeight = totalCPerClass / numFalseExamples;
 				weights.put(inverse, inverseWeight);
 				}

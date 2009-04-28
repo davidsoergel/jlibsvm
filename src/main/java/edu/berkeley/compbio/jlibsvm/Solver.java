@@ -669,7 +669,7 @@ public abstract class Solver<L extends Comparable, P>
 			}
 		}
 
-	protected static SolutionVector[] EMPTY_SV_ARRAY = new SolutionVector[0];
+	protected final static SolutionVector[] EMPTY_SV_ARRAY = new SolutionVector[0];
 
 	protected SolutionVectorPair selectWorkingPair()
 		{		/*

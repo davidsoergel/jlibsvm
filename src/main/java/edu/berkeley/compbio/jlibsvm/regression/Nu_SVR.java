@@ -111,7 +111,7 @@ public class Nu_SVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 				new RegressionSolverNu<P>(solutionVectors, qMatrix, param.C, param.eps, param.shrinking);
 
 
-		RegressionModel<P> model = s.Solve(); //new RegressionModel<P>(binaryModel);
+		RegressionModel<P> model = s.solve(); //new RegressionModel<P>(binaryModel);
 		model.kernel = kernel;
 		model.param = param;
 		model.setSvmType(getSvmType());

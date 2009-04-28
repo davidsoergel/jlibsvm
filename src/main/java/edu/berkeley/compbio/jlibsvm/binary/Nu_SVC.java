@@ -109,7 +109,7 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 				new BinarySolverNu<L, P>(solutionVectors, qMatrix, 1.0f, 1.0f, param.eps, param.shrinking);
 
 
-		BinaryModel<L, P> model = s.Solve();
+		BinaryModel<L, P> model = s.solve();
 		model.kernel = kernel;
 		model.param = param;
 		model.trueLabel = problem.getTrueLabel();

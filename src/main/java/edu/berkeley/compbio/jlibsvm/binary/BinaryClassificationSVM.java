@@ -356,12 +356,19 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		float[] decisionValueArray = new float[decisionValues.size()];
 		boolean[] labelArray = new boolean[decisionValues.size()];
 		L trueLabel = problem.getTrueLabel();
-		for (P point : decisionValues.keySet())
+
+		for (Map.Entry<P, Float> entry : decisionValues.entrySet())
+			{
+			decisionValueArray[i] = entry.getValue();
+			labelArray[i] = problem.getTargetValue(entry.getKey()).equals(trueLabel);
+			i++;
+			}
+/*		for (P point : decisionValues.keySet())
 			{
 			decisionValueArray[i] = decisionValues.get(point);
 			labelArray[i] = problem.getTargetValue(point).equals(trueLabel);
 			i++;
-			}
+			}*/
 
 
 		// while we're at it, since we've done a cross-validation anyway, we may as well report the accuracy.

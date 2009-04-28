@@ -1,5 +1,7 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -24,7 +26,7 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 	   return targetValues;
 	   }*/
 
-	protected ExplicitSvmProblemImpl(Map<P, L> examples, Map<P, Integer> exampleIds)
+	protected ExplicitSvmProblemImpl(@NotNull Map<P, L> examples, @NotNull Map<P, Integer> exampleIds)
 		{
 		this.examples = examples;
 		this.exampleIds = exampleIds;
@@ -33,6 +35,7 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 	public Map<P, L> examples;
 	public Map<P, Integer> exampleIds; // maintain a known order
 
+	@NotNull
 	public Map<P, L> getExamples()
 		{
 		return examples;
@@ -53,6 +56,7 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 		return examples.size();
 		}
 
+	@NotNull
 	public Map<P, Integer> getExampleIds()
 		{
 		return exampleIds;

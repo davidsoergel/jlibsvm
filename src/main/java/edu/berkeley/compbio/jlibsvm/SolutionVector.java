@@ -16,6 +16,28 @@ public class SolutionVector<P> implements Comparable<SolutionVector>
 		return rank < b.rank ? -1 : (rank > b.rank ? 1 : 0);
 		}
 
+	@Override
+	public boolean equals(Object o)
+		{
+		if (this == o)
+			{
+			return true;
+			}
+		if (o == null || getClass() != o.getClass())
+			{
+			return false;
+			}
+
+		SolutionVector that = (SolutionVector) o;
+
+		if (rank != that.rank)
+			{
+			return false;
+			}
+
+		return true;
+		}
+
 	public enum Status
 		{
 			LOWER_BOUND, UPPER_BOUND, FREE
