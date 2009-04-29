@@ -3,6 +3,8 @@ package edu.berkeley.compbio.jlibsvm.multi;
 import edu.berkeley.compbio.jlibsvm.MutableSvmProblem;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.labelinverter.LabelInverter;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
@@ -21,9 +23,11 @@ public class MutableMultiClassProblemImpl<L extends Comparable, P> extends Multi
 	 * @param labelClass
 	 * @param numExamples
 	 */
-	public MutableMultiClassProblemImpl(Class labelClass, LabelInverter<L> labelInverter, int numExamples)
+	public MutableMultiClassProblemImpl(Class labelClass, LabelInverter<L> labelInverter, int numExamples,
+	                                    @NotNull ScalingModel<P> scalingModel)
 		{
-		super(labelClass, labelInverter, new HashMap<P, L>(numExamples), new HashMap<P, Integer>(numExamples));
+		super(labelClass, labelInverter, new HashMap<P, L>(numExamples), new HashMap<P, Integer>(numExamples),
+		      scalingModel);
 		//targetValues = (T[]) java.lang.reflect.Array.newInstance(type, length);
 		}
 

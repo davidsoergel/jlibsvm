@@ -33,7 +33,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 	private BinaryClassificationSVM<L, P> binarySvm;	//private Class labelClass;
 
-	private boolean redistributeUnbalancedC;
+	//private boolean redistributeUnbalancedC;
 
 	/**
 	 * @param binarySvm
@@ -41,11 +41,11 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 	 *                                numbers of examples in each class, so that each class has the same total
 	 *                                misclassification weight assigned to it and the average is param.C
 	 */
-	public MultiClassificationSVM(BinaryClassificationSVM<L, P> binarySvm, boolean redistributeUnbalancedC)
+	public MultiClassificationSVM(BinaryClassificationSVM<L, P> binarySvm) //, boolean redistributeUnbalancedC)
 		{
-		super(binarySvm.kernel, binarySvm.param);
+		super(binarySvm.kernel, binarySvm.scalingModelLearner, binarySvm.param);
 		this.binarySvm = binarySvm;
-		this.redistributeUnbalancedC = redistributeUnbalancedC;
+		//this.redistributeUnbalancedC = param.redistributeUnbalancedC;
 		}
 
 	@Override
@@ -71,9 +71,18 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 	public MultiClassModel<L, P> train(MultiClassProblem<L, P> problem)
 		{
+		if (scalingModelLearner != null && !param.scaleBinaryMachinesIndependently)
+			{
+			// scale the entire problem before doing anything else
+			problem = problem.getScaledCopy(scalingModelLearner);
+			}
+
+
 		int numLabels = problem.getLabels().size();
 
 		MultiClassModel<L, P> model = new MultiClassModel<L, P>(kernel, param, numLabels);
+
+		model.setScalingModel(problem.getScalingModel());
 
 
 		final Map<L, Float> weights = prepareWeights(problem);
@@ -362,7 +371,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 		final Map<L, Set<P>> examplesByLabel = problem.getExamplesByLabel();
 
-		if (!redistributeUnbalancedC)
+		if (!param.redistributeUnbalancedC)
 			{
 			for (Map.Entry<L, Set<P>> entry : examplesByLabel.entrySet())
 				{

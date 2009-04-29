@@ -5,7 +5,10 @@ import edu.berkeley.compbio.jlibsvm.DiscreteModel;
 import edu.berkeley.compbio.jlibsvm.SigmoidProbabilityModel;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -20,7 +23,7 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 	{
 	private static final Logger logger = Logger.getLogger(BinaryModel.class);
 
-	//privatecv;
+	//private cv;
 
 	public CrossValidationResults newCrossValidationResults(int i, int tt, int ft, int tf, int ff)
 		{
@@ -68,6 +71,20 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 	public float upperBoundNegative;
 
 	public SigmoidProbabilityModel sigmoid;
+
+
+	public ScalingModel<P> scalingModel = new NoopScalingModel<P>();
+
+	@NotNull
+	public ScalingModel<P> getScalingModel()
+		{
+		return scalingModel;
+		}
+
+	public void setScalingModel(@NotNull ScalingModel<P> scalingModel)
+		{
+		this.scalingModel = scalingModel;
+		}
 
 	L trueLabel;
 	L falseLabel;
@@ -149,9 +166,11 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		{
 		float sum = 0;
 
+		P scaledX = scalingModel.scaledCopy(x);
+
 		for (int i = 0; i < numSVs; i++)
 			{
-			float kvalue = (float) kernel.evaluate(x, SVs[i]);
+			float kvalue = (float) kernel.evaluate(scaledX, SVs[i]);
 			sum += alphas[i] * kvalue;
 			}
 

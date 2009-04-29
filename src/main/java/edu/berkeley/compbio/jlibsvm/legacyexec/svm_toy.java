@@ -27,6 +27,7 @@ import edu.berkeley.compbio.jlibsvm.regression.EpsilonSVR;
 import edu.berkeley.compbio.jlibsvm.regression.MutableRegressionProblemImpl;
 import edu.berkeley.compbio.jlibsvm.regression.Nu_SVR;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
+import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
 import edu.berkeley.compbio.jlibsvm.util.SparseVector;
 
 import java.applet.Applet;
@@ -348,19 +349,19 @@ public class svm_toy extends Applet
 		switch (svm_type)
 			{
 			case svm_train.C_SVC:
-				svm = new C_SVC(kernel, param);
+				svm = new C_SVC(kernel, null, param);
 				break;
 			case svm_train.NU_SVC:
-				svm = new Nu_SVC(kernel, param);
+				svm = new Nu_SVC(kernel, null, param);
 				break;
 			case svm_train.ONE_CLASS:
-				svm = new OneClassSVC(kernel, param);
+				svm = new OneClassSVC(kernel, null, param);
 				break;
 			case svm_train.EPSILON_SVR:
-				svm = new EpsilonSVR(kernel, param);
+				svm = new EpsilonSVR(kernel, null, param);
 				break;
 			case svm_train.NU_SVR:
-				svm = new Nu_SVR(kernel, param);
+				svm = new Nu_SVR(kernel, null, param);
 				break;
 			default:
 				throw new SvmException("Unknown svm type: " + kernel_type);
@@ -390,7 +391,8 @@ public class svm_toy extends Applet
 			else
 				{
 				prob = new MutableMultiClassProblemImpl<Byte, SparseVector>(Byte.class, new ByteLabelInverter(),
-				                                                            point_list.size());
+				                                                            point_list.size(),
+				                                                            new NoopScalingModel<SparseVector>());
 				}
 
 		//prob.l = point_list.size();
@@ -498,7 +500,7 @@ public class svm_toy extends Applet
 
 			if (svm instanceof BinaryClassificationSVM && prob.getLabels().size() > 2)
 				{
-				svm = new MultiClassificationSVM((BinaryClassificationSVM) svm, param.redistributeUnbalancedC);
+				svm = new MultiClassificationSVM((BinaryClassificationSVM) svm);
 				}
 			// build model & classify
 			//svm.setupQMatrix(prob);

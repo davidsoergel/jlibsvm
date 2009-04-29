@@ -6,6 +6,7 @@ import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,9 @@ import java.util.Map;
 public class EpsilonSVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 	{
 
-	public EpsilonSVR(KernelFunction<P> kernel, SvmParameter param)
+	public EpsilonSVR(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
 		{
-		super(kernel, param);
+		super(kernel, scalingModelLearner, param);
 		if (param.p < 0)
 			{
 			throw new SvmException("p < 0");

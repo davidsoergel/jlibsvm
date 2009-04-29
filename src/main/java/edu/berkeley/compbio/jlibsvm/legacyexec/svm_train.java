@@ -26,6 +26,11 @@ import edu.berkeley.compbio.jlibsvm.regression.EpsilonSVR;
 import edu.berkeley.compbio.jlibsvm.regression.MutableRegressionProblemImpl;
 import edu.berkeley.compbio.jlibsvm.regression.Nu_SVR;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
+import edu.berkeley.compbio.jlibsvm.scaler.LinearScalingModelLearner;
+import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
+import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModelLearner;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
+import edu.berkeley.compbio.jlibsvm.scaler.ZscoreScalingModelLearner;
 import edu.berkeley.compbio.jlibsvm.util.SparseVector;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -89,7 +94,8 @@ public class svm_train
 				+ "-j minVoteProportion: the chosen class must have at least this proportion of the total votes\n"
 				+ "-o oneVsAllMode: None, Best, Veto, BreakTies, VetoAndBreakTies \n"
 				+ "-k oneVsAllProb: the chosen class must have at least this one-vs-all probability; if -b is not set, probabilities are 0 or 1\n"
-				+ "-v n: n-fold cross validation mode\n");
+				+ "-v n: n-fold cross validation mode\n" + "-f scalingmode : m = none (default), linear, zscore\n"
+				+ "-l 2: project to unit sphere (normalize L2 distance)\n");
 		System.exit(1);
 		}
 
@@ -143,7 +149,9 @@ public class svm_train
 
 			int classifiedExamples = numExamples - total_unknown;
 			System.out.print("Cross Validation Classified = " + 100.0 * classifiedExamples / numExamples + "%\n");
-			System.out.print("Cross Validation Accuracy = " + 100.0 * total_correct / classifiedExamples + "%\n");
+			System.out.print("Cross Validation Accuracy (of those classified) = "
+					+ 100.0 * total_correct / classifiedExamples + "%\n");
+			System.out.print("Cross Validation Accuracy (of total) = " + 100.0 * total_correct / numExamples + "%\n");
 			}
 		}
 
@@ -157,7 +165,7 @@ public class svm_train
 
 		if (svm instanceof BinaryClassificationSVM && problem.getLabels().size() > 2)
 			{
-			svm = new MultiClassificationSVM((BinaryClassificationSVM) svm, param.redistributeUnbalancedC);
+			svm = new MultiClassificationSVM((BinaryClassificationSVM) svm);
 			}
 
 /*		if (error_msg != null)
@@ -230,6 +238,8 @@ public class svm_train
 		//param.weightLabel = new int[0];
 		//param.weight = new float[0];
 
+
+		ScalingModelLearner<SparseVector> scalingModelLearner = new NoopScalingModelLearner<SparseVector>();
 
 		int svm_type = 0;
 		int kernel_type = 2;
@@ -313,6 +323,40 @@ public class svm_train
 				case 'j':
 					param.minVoteProportion = Double.parseDouble(argv[i]);
 					break;
+				case 'f':
+					if (argv[i].equals("linear"))
+						{
+						scalingModelLearner = new LinearScalingModelLearner(param);
+						}
+					else if (argv[i].equals("zscore"))
+						{
+						scalingModelLearner = new ZscoreScalingModelLearner(param);
+						}
+					break;
+				case 'l':
+					int normalizeDim = Integer.parseInt(argv[i]);
+					if (normalizeDim == 2)
+						{
+						param.normalizeL2 = true;
+						}
+					else
+						{
+						System.err.print("-l must == 2\n");
+						exit_with_help();
+						}
+					break;
+				case 'z':
+					int scale = Integer.parseInt(argv[i]);
+					if (scale == 1)
+						{
+						param.scaleBinaryMachinesIndependently = true;
+						}
+					else
+						{
+						System.err.print("-z must == 1\n");
+						exit_with_help();
+						}
+					break;
 				default:
 					System.err.print("Unknown option: " + argv[i - 1] + "\n");
 					exit_with_help();
@@ -364,19 +408,19 @@ public class svm_train
 		switch (svm_type)
 			{
 			case svm_train.C_SVC:
-				svm = new C_SVC(kernel, param);
+				svm = new C_SVC(kernel, scalingModelLearner, param);
 				break;
 			case svm_train.NU_SVC:
-				svm = new Nu_SVC(kernel, param);
+				svm = new Nu_SVC(kernel, scalingModelLearner, param);
 				break;
 			case svm_train.ONE_CLASS:
-				svm = new OneClassSVC(kernel, param);
+				svm = new OneClassSVC(kernel, scalingModelLearner, param);
 				break;
 			case svm_train.EPSILON_SVR:
-				svm = new EpsilonSVR(kernel, param);
+				svm = new EpsilonSVR(kernel, scalingModelLearner, param);
 				break;
 			case svm_train.NU_SVR:
-				svm = new Nu_SVR(kernel, param);
+				svm = new Nu_SVR(kernel, scalingModelLearner, param);
 				break;
 			default:
 				throw new SvmException("Unknown svm type: " + kernel_type);
@@ -440,7 +484,8 @@ public class svm_train
 				{
 				problem =
 						new MutableMultiClassProblemImpl<String, SparseVector>(String.class, new StringLabelInverter(),
-						                                                       vy.size());
+						                                                       vy.size(),
+						                                                       new NoopScalingModel<SparseVector>());
 				}
 
 			/*for (int i = 0; i < vy.size(); i++)

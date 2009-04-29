@@ -5,6 +5,7 @@ import edu.berkeley.compbio.jlibsvm.SVM;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.SvmProblem;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.apache.log4j.Logger;
 
 import java.util.Map;
@@ -17,9 +18,10 @@ public abstract class RegressionSVM<P, R extends SvmProblem<Float, P>> extends S
 	{
 	private static final Logger logger = Logger.getLogger(RegressionSVM.class);
 
-	protected RegressionSVM(KernelFunction<P> kernel, SvmParameter<Float> param)
+	protected RegressionSVM(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner,
+	                        SvmParameter<Float> param)
 		{
-		super(kernel, param);
+		super(kernel, scalingModelLearner, param);
 		}
 
 	public abstract RegressionModel<P> train(R problem);

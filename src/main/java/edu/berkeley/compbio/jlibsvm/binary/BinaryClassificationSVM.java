@@ -6,7 +6,9 @@ import edu.berkeley.compbio.jlibsvm.SigmoidProbabilityModel;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Formatter;
 import java.util.Map;
@@ -21,9 +23,10 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 	{
 	private static final Logger logger = Logger.getLogger(BinaryClassificationSVM.class);
 
-	protected BinaryClassificationSVM(KernelFunction<P> kernel, SvmParameter<L> param)
+	protected BinaryClassificationSVM(@NotNull KernelFunction<P> kernel,
+	                                  @NotNull ScalingModelLearner<P> scalingModelLearner, SvmParameter<L> param)
 		{
-		super(kernel, param);
+		super(kernel, scalingModelLearner, param);
 		}
 
 	/*
@@ -41,6 +44,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 			{
 			throw new SvmException("Can't do binary classification; " + problem.getLabels().size() + " classes found");
 			}
+
 
 		//	falseLabel = problem.getLabels().get(0);
 		//	trueLabel = problem.getLabels().get(1);
@@ -84,6 +88,14 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 	 */
 	public BinaryModel<L, P> train(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
 		{
+		if (scalingModelLearner != null && param.scaleBinaryMachinesIndependently)
+			{
+			// ** the examples are copied before scaling, not scaled in place
+			// that way we don't need to worry that the same examples are being used in another thread, or scaled differently in different contexts, etc.
+			// this may cause memory problems though
+
+			problem = problem.getScaledCopy(scalingModelLearner);
+			}
 		BinaryModel<L, P> result = trainOne(problem, Cp, Cn);
 		if (param.probability)
 			{
@@ -226,7 +238,8 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 
 	private SigmoidProbabilityModel svcProbability(BinaryClassificationProblem<L, P> problem, float Cp, float Cn,
 	                                               BinaryModel<L, P> model)
-		{		// ** Original implementation makes a point of not explicitly training if all of the examples are in one class anyway.  Does that matter?
+		{
+		// ** Original implementation makes a point of not explicitly training if all of the examples are in one class anyway.  Does that matter?
 
 		SvmParameter<L> subparam = new SvmParameter<L>(param);
 		subparam.probability = false;

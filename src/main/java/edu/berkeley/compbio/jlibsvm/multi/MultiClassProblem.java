@@ -2,6 +2,7 @@ package edu.berkeley.compbio.jlibsvm.multi;
 
 import edu.berkeley.compbio.jlibsvm.SvmProblem;
 import edu.berkeley.compbio.jlibsvm.labelinverter.LabelInverter;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 
 import java.util.Map;
 import java.util.Set;
@@ -20,4 +21,6 @@ public interface MultiClassProblem<L extends Comparable, P>//, R extends SvmProb
 	LabelInverter<L> getLabelInverter();
 
 	Class getLabelClass();
+
+	MultiClassProblem<L, P> getScaledCopy(ScalingModelLearner<P> scalingModelLearner);
 	}

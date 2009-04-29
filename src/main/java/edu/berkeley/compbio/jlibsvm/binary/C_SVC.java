@@ -6,6 +6,7 @@ import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -20,9 +21,9 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 	{
 	private static final Logger logger = Logger.getLogger(C_SVC.class);
 
-	public C_SVC(KernelFunction<P> kernel, SvmParameter param)
+	public C_SVC(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
 		{
-		super(kernel, param);
+		super(kernel, scalingModelLearner, param);
 		if (param.C <= 0)
 			{
 			throw new SvmException("C <= 0");
@@ -45,8 +46,10 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 
 		List<SolutionVector<P>> solutionVectors = new ArrayList<SolutionVector<P>>(examples.size());
 		int c = 0;
+
 		for (Map.Entry<P, Boolean> example : examples.entrySet())
 			{
+			//P scaledExample = scalingModel.scaledCopy(example.getKey());
 			SolutionVector<P> sv = new SolutionVector<P>(example.getKey(), example.getValue(), linearTerm);
 			sv.id = problem.getId(example.getKey());
 			c++;
@@ -55,6 +58,7 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 
 		QMatrix<P> qMatrix =
 				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getNumExamples(), param.getCacheRows());
+
 		BinarySolver<L, P> s = new BinarySolver<L, P>(solutionVectors, qMatrix, Cp, Cn, param.eps, param.shrinking);
 
 		BinaryModel<L, P> model = s.solve();
@@ -63,6 +67,7 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 		model.trueLabel = problem.getTrueLabel();
 		model.falseLabel = problem.getFalseLabel();
 		model.setSvmType(getSvmType());
+		model.setScalingModel(problem.getScalingModel());
 
 
 		//System.err.println(qMatrix.perfString());

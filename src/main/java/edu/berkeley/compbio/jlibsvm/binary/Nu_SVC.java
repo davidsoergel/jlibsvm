@@ -6,6 +6,7 @@ import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -20,9 +21,9 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 	{
 	private static final Logger logger = Logger.getLogger(Nu_SVC.class);
 
-	public Nu_SVC(KernelFunction<P> kernel, SvmParameter param)
+	public Nu_SVC(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
 		{
-		super(kernel, param);
+		super(kernel, scalingModelLearner, param);
 		if (param.nu <= 0 || param.nu > 1)
 			{
 			throw new SvmException("nu <= 0 or nu > 1");

@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * This acts something like a Map from int to float
+ *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
@@ -104,7 +106,7 @@ public class SparseVector //implements java.io.Serializable
 			}
 		}
 
-	private float get(int i)
+	public float get(int i)
 		{
 		int j = Arrays.binarySearch(indexes, i);
 		if (j < 0)
@@ -147,4 +149,19 @@ public class SparseVector //implements java.io.Serializable
 		{
 		return hashcode;
 		}*/
+
+	public void normalizeL2()
+		{
+		double sumOfSquares = 0;
+		for (float value : values)
+			{
+			sumOfSquares += value * value;
+			}
+
+		double total = Math.sqrt(sumOfSquares);
+		for (int i = 0; i < values.length; i++)
+			{
+			values[i] /= total;
+			}
+		}
 	}

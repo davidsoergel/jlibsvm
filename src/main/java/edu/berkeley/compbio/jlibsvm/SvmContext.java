@@ -11,12 +11,14 @@ import java.util.StringTokenizer;
 public class SvmContext<L extends Comparable, P>
 	{
 	public KernelFunction<P> kernel;
+	//public ScalingModelLearner<P> scalingModelLearner;
 	public SvmParameter<L> param;
 
 	public SvmContext(KernelFunction<P> kernel, SvmParameter<L> param)
 		{
 		this.kernel = kernel;
 		this.param = param;
+		//this.scalingModelLearner = scalingModelLearner;
 		}
 
 	public SvmContext()

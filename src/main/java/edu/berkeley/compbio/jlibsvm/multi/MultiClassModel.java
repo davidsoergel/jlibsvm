@@ -8,6 +8,8 @@ import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -54,6 +56,19 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	List<L> labels;
 
 	private P[] allSVs;
+
+	public ScalingModel<P> scalingModel = new NoopScalingModel<P>();
+
+	@NotNull
+	public ScalingModel<P> getScalingModel()
+		{
+		return scalingModel;
+		}
+
+	public void setScalingModel(@NotNull ScalingModel<P> scalingModel)
+		{
+		this.scalingModel = scalingModel;
+		}
 
 	public MultiClassModel(KernelFunction<P> kernel, SvmParameter<L> param, int numberOfClasses)
 		{
@@ -152,6 +167,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	@NotNull
 	public VotingResult<L> predictLabelWithQuality(P x)
 		{
+		P scaledX = scalingModel.scaledCopy(x);
 
 		L bestLabel = null;
 		float bestOneClassProbability = 0;
@@ -167,7 +183,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		int i = 0;
 		for (P sv : allSVs)
 			{
-			kvalues[i] = (float) kernel.evaluate(x, sv);
+			kvalues[i] = (float) kernel.evaluate(scaledX, sv);
 			i++;
 			}
 
@@ -295,7 +311,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 				if (activeCount >= requiredActive)
 					{
-					votes.add(binaryModel.predictLabel(x));
+					votes.add(binaryModel.predictLabel(scaledX));
 					}
 				}
 			}

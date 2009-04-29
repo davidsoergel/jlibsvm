@@ -1,5 +1,7 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -26,10 +28,18 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 	   return targetValues;
 	   }*/
 
-	protected ExplicitSvmProblemImpl(@NotNull Map<P, L> examples, @NotNull Map<P, Integer> exampleIds)
+	protected ExplicitSvmProblemImpl(Map<P, L> examples, @NotNull Map<P, Integer> exampleIds)
 		{
 		this.examples = examples;
 		this.exampleIds = exampleIds;
+		}
+
+	protected ExplicitSvmProblemImpl(@NotNull Map<P, L> examples, @NotNull Map<P, Integer> exampleIds,
+	                                 @NotNull ScalingModel<P> scalingModel)
+		{
+		this.examples = examples;
+		this.exampleIds = exampleIds;
+		this.scalingModel = scalingModel;
 		}
 
 	public Map<P, L> examples;
@@ -184,4 +194,13 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 		}
 
 	protected abstract Fold<L, P, R> makeFold(Set<P> heldOutPoints);
+
+
+	public ScalingModel<P> scalingModel = new NoopScalingModel<P>();
+
+	@NotNull
+	public ScalingModel<P> getScalingModel()
+		{
+		return scalingModel;
+		}
 	}

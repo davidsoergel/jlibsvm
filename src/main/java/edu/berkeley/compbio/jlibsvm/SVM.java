@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.jlibsvm;
 
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -15,11 +16,12 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P>> e
 	{
 	private static final Logger logger = Logger.getLogger(SVM.class);
 	public static final int LIBSVM_VERSION = 288;
+	public ScalingModelLearner<P> scalingModelLearner;
 
-
-	protected SVM(KernelFunction<P> kernel, SvmParameter<L> param)
+	protected SVM(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter<L> param)
 		{
 		super(kernel, param);
+		this.scalingModelLearner = scalingModelLearner;
 		if (param.eps < 0)
 			{
 			throw new SvmException("eps < 0");

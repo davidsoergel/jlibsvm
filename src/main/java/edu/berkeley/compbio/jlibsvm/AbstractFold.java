@@ -1,6 +1,9 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
 import edu.berkeley.compbio.jlibsvm.util.SubtractionMap;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -20,13 +23,15 @@ public abstract class AbstractFold<L extends Comparable, P, R extends SvmProblem
 	private Map<P, L> subtractionMap;
 	private int numExamples;
 
-	public AbstractFold(Map<P, L> allExamples, Set<P> heldOutPoints)
+	public AbstractFold(Map<P, L> allExamples, Set<P> heldOutPoints, @NotNull ScalingModel<P> scalingModel)
 		{
 		//	this.fullProblem = fullProblem;
 		this.heldOutPoints = heldOutPoints;
 		subtractionMap = new SubtractionMap(allExamples, heldOutPoints);
 		numExamples = subtractionMap.size();
+		this.scalingModel = scalingModel;
 		}
+
 
 	public R asR()
 		{
@@ -46,5 +51,14 @@ public abstract class AbstractFold<L extends Comparable, P, R extends SvmProblem
 	public Set<P> getHeldOutPoints()
 		{
 		return heldOutPoints;
+		}
+
+
+	public ScalingModel<P> scalingModel = new NoopScalingModel<P>();
+
+	@NotNull
+	public ScalingModel<P> getScalingModel()
+		{
+		return scalingModel;
 		}
 	}

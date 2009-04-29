@@ -7,6 +7,7 @@ import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionSVM;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -21,9 +22,9 @@ public class OneClassSVC<L, P> extends RegressionSVM<P, OneClassProblem<L, P>>
 	{
 	private static final Logger logger = Logger.getLogger(OneClassSVC.class);
 
-	public OneClassSVC(KernelFunction<P> kernel, SvmParameter param)
+	public OneClassSVC(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
 		{
-		super(kernel, param);
+		super(kernel, scalingModelLearner, param);
 
 
 		if (param.probability)

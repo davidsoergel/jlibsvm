@@ -1,5 +1,7 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,4 +25,6 @@ public interface SvmProblem<L extends Comparable, P> //, R extends SvmProblem<L,
 	L getTargetValue(P point);
 
 	Map<L, Integer> getExampleCounts();
+
+	ScalingModel<P> getScalingModel();
 	}

@@ -4,6 +4,9 @@ import edu.berkeley.compbio.jlibsvm.AbstractFold;
 import edu.berkeley.compbio.jlibsvm.ExplicitSvmProblemImpl;
 import edu.berkeley.compbio.jlibsvm.Fold;
 import edu.berkeley.compbio.jlibsvm.labelinverter.LabelInverter;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
+import org.jetbrains.annotations.NotNull;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
@@ -29,6 +32,34 @@ public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiC
 
 	private LabelInverter<L> labelInverter;
 
+	// cache the scaled copy, taking care that the scalingModelLearner is the same one.
+	// only bother keeping one (i.e. don't make a map from learners to scaled copies)
+	private ScalingModelLearner<P> lastScalingModelLearner = null;
+	private MultiClassProblem<L, P> scaledCopy = null;
+
+	public MultiClassProblem<L, P> getScaledCopy(@NotNull ScalingModelLearner<P> scalingModelLearner)
+		{
+		if (!scalingModelLearner.equals(lastScalingModelLearner))
+			{
+			ScalingModel<P> scalingModel = scalingModelLearner.learnScaling(examples.keySet());
+
+			Map<P, L> unscaledExamples = getExamples();
+			Map<P, L> scaledExamples = new HashMap<P, L>(examples.size());
+			Map<P, Integer> scaledExampleIds = new HashMap<P, Integer>(exampleIds.size());
+
+			for (Map.Entry<P, L> entry : unscaledExamples.entrySet())
+				{
+				P scaledPoint = scalingModel.scaledCopy(entry.getKey());
+				scaledExamples.put(scaledPoint, entry.getValue());
+				scaledExampleIds.put(scaledPoint, exampleIds.get(entry.getKey()));
+				}
+
+			lastScalingModelLearner = scalingModelLearner;
+			scaledCopy = new MultiClassProblemImpl<L, P>(labelClass, labelInverter, scaledExamples, scaledExampleIds,
+			                                             scalingModel);
+			}
+		return scaledCopy;
+		}
 
 	/**
 	 * For now, pending further cleanup, we need to create arrays of the label type.  That's impossible to do with generics
@@ -39,9 +70,9 @@ public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiC
 	 * @param examples
 	 */
 	public MultiClassProblemImpl(Class labelClass, LabelInverter<L> labelInverter, Map<P, L> examples,
-	                             Map<P, Integer> exampleIds)
+	                             Map<P, Integer> exampleIds, ScalingModel<P> scalingModel)
 		{
-		super(examples, exampleIds);
+		super(examples, exampleIds, scalingModel);
 		this.labelClass = labelClass;
 		this.labelInverter = labelInverter;
 		//targetValues = (T[]) java.lang.reflect.Array.newInstance(type, length);
@@ -97,7 +128,8 @@ public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiC
 		{
 		public MultiClassFold(Set<P> heldOutPoints)
 			{
-			super(MultiClassProblemImpl.this.getExamples(), heldOutPoints);
+			super(MultiClassProblemImpl.this.getExamples(), heldOutPoints,
+			      MultiClassProblemImpl.this.getScalingModel());
 			}
 
 		public List<L> getLabels()
@@ -162,6 +194,39 @@ public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiC
 		public Map<P, Integer> getExampleIds()
 			{
 			return MultiClassProblemImpl.this.getExampleIds();
+			}
+
+		//** Note we scale each fold independently, since that best simulates the real situation (where we can't use the test samples during scaling)
+
+
+		// cache the scaled copy, taking care that the scalingModelLearner is the same one.
+		// only bother keeping one (i.e. don't make a map from learners to scaled copies)
+		private ScalingModelLearner<P> lastScalingModelLearner = null;
+		private MultiClassProblem<L, P> scaledCopy = null;
+
+		public MultiClassProblem<L, P> getScaledCopy(@NotNull ScalingModelLearner<P> scalingModelLearner)
+			{
+			if (!scalingModelLearner.equals(lastScalingModelLearner))
+				{
+				ScalingModel<P> scalingModel = scalingModelLearner.learnScaling(examples.keySet());
+
+				Map<P, L> unscaledExamples = getExamples();
+				Map<P, L> scaledExamples = new HashMap<P, L>(examples.size());
+				Map<P, Integer> scaledExampleIds = new HashMap<P, Integer>(exampleIds.size());
+
+				for (Map.Entry<P, L> entry : unscaledExamples.entrySet())
+					{
+					P scaledPoint = scalingModel.scaledCopy(entry.getKey());
+					scaledExamples.put(scaledPoint, entry.getValue());
+					scaledExampleIds.put(scaledPoint, exampleIds.get(entry.getKey()));
+					}
+
+				lastScalingModelLearner = scalingModelLearner;
+				scaledCopy =
+						new MultiClassProblemImpl<L, P>(labelClass, labelInverter, scaledExamples, scaledExampleIds,
+						                                scalingModel);
+				}
+			return scaledCopy;
 			}
 		}
 	}

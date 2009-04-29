@@ -36,7 +36,16 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 	public MultiClassModel.AllVsAllMode allVsAllMode = MultiClassModel.AllVsAllMode.AllVsAll;
 	public double minVoteProportion;
 	public int falseClassSVlimit = Integer.MAX_VALUE;
+
+	/**
+	 * For unbalanced data, redistribute the misclassification cost C according to the numbers of examples in each class,
+	 * so that each class has the same total misclassification weight assigned to it and the average is param.C
+	 */
 	public boolean redistributeUnbalancedC = true;
+
+
+	public boolean scaleBinaryMachinesIndependently = false;
+	public boolean normalizeL2 = false;
 
 
 	public SvmParameter()
@@ -59,6 +68,8 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 		allVsAllMode = copyFrom.allVsAllMode;
 		minVoteProportion = copyFrom.minVoteProportion;
 		falseClassSVlimit = copyFrom.falseClassSVlimit;
+		scaleBinaryMachinesIndependently = copyFrom.scaleBinaryMachinesIndependently;
+		normalizeL2 = copyFrom.normalizeL2;
 		}
 
 	public Float getWeight(L key)

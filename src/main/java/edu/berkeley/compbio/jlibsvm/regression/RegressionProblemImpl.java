@@ -43,7 +43,8 @@ public class RegressionProblemImpl<P> extends ExplicitSvmProblemImpl<Float, P, R
 		public RegressionFold(//BinaryClassificationProblemImpl<P> fullProblem,
 		                      Set<P> heldOutPoints)
 			{
-			super(RegressionProblemImpl.this.getExamples(), heldOutPoints);
+			super(RegressionProblemImpl.this.getExamples(), heldOutPoints,
+			      RegressionProblemImpl.this.getScalingModel());
 			//this.fullProblem = fullProblem;
 			}
 

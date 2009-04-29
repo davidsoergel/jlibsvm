@@ -1,5 +1,8 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
+import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,5 +76,17 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 			assert booleanExamples.size() == numExamples;
 			}
 		return booleanExamples;
+		}
+
+
+	/**
+	 * There's no sense in scaling Boolean values, so this is a noop.  note we don't make a copy for efficiency.
+	 *
+	 * @param scalingModelLearner
+	 * @return
+	 */
+	public BinaryClassificationProblem<L, P> getScaledCopy(@NotNull ScalingModelLearner<P> scalingModelLearner)
+		{
+		return this;
 		}
 	}
