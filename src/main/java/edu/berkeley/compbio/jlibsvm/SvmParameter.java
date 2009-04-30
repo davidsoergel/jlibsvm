@@ -47,6 +47,11 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 	public boolean scaleBinaryMachinesIndependently = false;
 	public boolean normalizeL2 = false;
 
+	/**
+	 * When learning scaling, only bother with this many examples, assuming they're in random order.
+	 */
+	public int scalingExamples = Integer.MAX_VALUE;
+
 
 	public SvmParameter()
 		{
@@ -70,6 +75,7 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 		falseClassSVlimit = copyFrom.falseClassSVlimit;
 		scaleBinaryMachinesIndependently = copyFrom.scaleBinaryMachinesIndependently;
 		normalizeL2 = copyFrom.normalizeL2;
+		scalingExamples = copyFrom.scalingExamples;
 		}
 
 	public Float getWeight(L key)

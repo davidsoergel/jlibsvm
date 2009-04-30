@@ -3,7 +3,6 @@ package edu.berkeley.compbio.jlibsvm.scaler;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.util.SparseVector;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,9 +18,12 @@ public class ZscoreScalingModelLearner implements ScalingModelLearner<SparseVect
 	public ZscoreScalingModelLearner(SvmParameter param)
 		{
 		this.param = param;
+		this.maxExamples = param.scalingExamples;
 		}
 
-	public ScalingModel<SparseVector> learnScaling(Collection<SparseVector> examples)
+	int maxExamples;
+
+	public ScalingModel<SparseVector> learnScaling(Iterable<SparseVector> examples)
 		{
 		// PERF we don't know what the maximum index in the SparseVectors will be; just use HashMaps for now
 		Map<Integer, Float> mean = new HashMap<Integer, Float>();
@@ -30,6 +32,10 @@ public class ZscoreScalingModelLearner implements ScalingModelLearner<SparseVect
 		int sampleCount = 0;
 		for (SparseVector example : examples)
 			{
+			if (sampleCount >= maxExamples)
+				{
+				break;
+				}
 			sampleCount++;  // runningMean etc. assume 1-based indexes
 			for (int index : example.indexes)
 				{
