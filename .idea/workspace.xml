@@ -1,57 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project relativePaths="false" version="4">
     <component name="ChangeListManager">
-        <list default="true" readonly="true" name="Default" comment="Integrated scaling and normalization">
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml"
-                    afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_intellij_annotations_6_0_3.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_intellij_annotations_6_0_3.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml"
-                    afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_20080321.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_20080321.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"/>
+        <list default="true" readonly="true" name="Default" comment="">
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_news20_shark.xml"
                     afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_news20_shark.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Test_All.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/Test_All.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"
+                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"/>
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml"
                     afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml"/>
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_segment.xml"
                     afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_segment.xml"/>
+            <change type="MODIFICATION"
+                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_intellij_annotations_6_0_3.xml"
+                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_intellij_annotations_6_0_3.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"/>
+            <change type="MODIFICATION"
+                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"
+                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Test_All.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/Test_All.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml"
+                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml"/>
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml"
                     afterPath="$PROJECT_DIR$/.idea/workspace.xml"/>
+            <change type="MODIFICATION"
+                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_20080321.xml"
+                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_20080321.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_letter.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_letter.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml"
+                    afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml"
+                    afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml"/>
+            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml"
+                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml"/>
         </list>
-        <ignored path="jlibsvm.iws"/>
         <ignored path=".idea/workspace.xml"/>
+        <ignored path="jlibsvm.iws"/>
     </component>
     <component name="ChangesViewManager" flattened_view="true" show_ignored="false"/>
-    <component name="CodeExplorer">
-        <option name="filters">
-            <list>
-                <LibraryFilter/>
-            </list>
-        </option>
-        <option name="showMethodBody" value="true"/>
-    </component>
     <component name="Commander">
         <leftPanel/>
         <rightPanel/>
@@ -62,13 +56,13 @@
         <option name="CLEAR_OUTPUT_DIRECTORY" value="true"/>
     </component>
     <component name="CoverageDataManager">
-        <SUITE FILE_PATH="coverage/jlibsvm$New_letter..es" NAME="New letter Coverage Results" MODIFIED="1240990075148"
+        <SUITE FILE_PATH="coverage/jlibsvm$New_letter..es" NAME="New letter Coverage Results" MODIFIED="1234580703668"
                SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="emma"
                COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
             <FILTER>com.davidsoergel.jlibsvm.*</FILTER>
             <FILTER>libsvm.*</FILTER>
         </SUITE>
-        <SUITE FILE_PATH="coverage/jlibsvm$new_mnist..es" NAME="new mnist Coverage Results" MODIFIED="1240992731574"
+        <SUITE FILE_PATH="coverage/jlibsvm$New_segment..es" NAME="New segment Coverage Results" MODIFIED="1240868905604"
                SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="emma"
                COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
             <FILTER>com.davidsoergel.jlibsvm.*</FILTER>
@@ -80,26 +74,8 @@
             <FILTER>com.davidsoergel.jlibsvm.*</FILTER>
             <FILTER>libsvm.*</FILTER>
         </SUITE>
-        <SUITE FILE_PATH="coverage/jlibsvm$New_segment..es" NAME="New segment Coverage Results" MODIFIED="1241029943991"
-               SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="emma"
-               COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-            <FILTER>com.davidsoergel.jlibsvm.*</FILTER>
-            <FILTER>libsvm.*</FILTER>
-        </SUITE>
-        <SUITE FILE_PATH="coverage/jlibsvm$New_acoustic..es" NAME="New acoustic Coverage Results"
-               MODIFIED="1241030043081" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider"
-               RUNNER="emma" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-            <FILTER>com.davidsoergel.jlibsvm.*</FILTER>
-            <FILTER>libsvm.*</FILTER>
-        </SUITE>
-        <SUITE FILE_PATH="coverage/jlibsvm$New_sector..es" NAME="New sector Coverage Results" MODIFIED="1241030699429"
-               SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="emma"
-               COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-            <FILTER>com.davidsoergel.jlibsvm.*</FILTER>
-            <FILTER>libsvm.*</FILTER>
-        </SUITE>
         <SUITE FILE_PATH="coverage/jlibsvm$New_mushrooms..es" NAME="New mushrooms Coverage Results"
-               MODIFIED="1241030075569" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider"
+               MODIFIED="1234581303469" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider"
                RUNNER="emma" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
             <FILTER>com.davidsoergel.jlibsvm.*</FILTER>
             <FILTER>libsvm.*</FILTER>
@@ -162,7 +138,7 @@
         </exception_breakpoints>
         <line_breakpoints>
             <breakpoint url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassModel.java"
-                        line="419" class="edu.berkeley.compbio.jlibsvm.multi.MultiClassModel"
+                        line="396" class="edu.berkeley.compbio.jlibsvm.multi.MultiClassModel"
                         package="edu.berkeley.compbio.jlibsvm.multi">
                 <option name="ENABLED" value="true"/>
                 <option name="LOG_ENABLED" value="false"/>
@@ -177,9 +153,23 @@
                 <option name="LOG_MESSAGE" value=""/>
             </breakpoint>
             <breakpoint
-                    url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationSVM.java"
-                    line="53" class="edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM"
-                    package="edu.berkeley.compbio.jlibsvm.binary">
+                    url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java"
+                    line="348" class="edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM"
+                    package="edu.berkeley.compbio.jlibsvm.multi">
+                <option name="ENABLED" value="true"/>
+                <option name="LOG_ENABLED" value="false"/>
+                <option name="LOG_EXPRESSION_ENABLED" value="false"/>
+                <option name="SUSPEND_POLICY" value="SuspendAll"/>
+                <option name="COUNT_FILTER_ENABLED" value="false"/>
+                <option name="COUNT_FILTER" value="0"/>
+                <option name="CONDITION_ENABLED" value="false"/>
+                <option name="CLASS_FILTERS_ENABLED" value="false"/>
+                <option name="INSTANCE_FILTERS_ENABLED" value="false"/>
+                <option name="CONDITION" value=""/>
+                <option name="LOG_MESSAGE" value=""/>
+            </breakpoint>
+            <breakpoint url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/SVM.java" line="115"
+                        class="edu.berkeley.compbio.jlibsvm.SVM" package="edu.berkeley.compbio.jlibsvm">
                 <option name="ENABLED" value="true"/>
                 <option name="LOG_ENABLED" value="false"/>
                 <option name="LOG_EXPRESSION_ENABLED" value="false"/>
@@ -193,41 +183,8 @@
                 <option name="LOG_MESSAGE" value=""/>
             </breakpoint>
             <breakpoint
-                    url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationProblemImpl.java"
-                    line="246"
-                    class="edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblemImpl.BinaryClassificationFold"
-                    package="edu.berkeley.compbio.jlibsvm.binary">
-                <option name="ENABLED" value="true"/>
-                <option name="LOG_ENABLED" value="false"/>
-                <option name="LOG_EXPRESSION_ENABLED" value="false"/>
-                <option name="SUSPEND_POLICY" value="SuspendAll"/>
-                <option name="COUNT_FILTER_ENABLED" value="false"/>
-                <option name="COUNT_FILTER" value="0"/>
-                <option name="CONDITION_ENABLED" value="false"/>
-                <option name="CLASS_FILTERS_ENABLED" value="false"/>
-                <option name="INSTANCE_FILTERS_ENABLED" value="false"/>
-                <option name="CONDITION" value=""/>
-                <option name="LOG_MESSAGE" value=""/>
-            </breakpoint>
-            <breakpoint
-                    url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationSVM.java"
-                    line="94" class="edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM"
-                    package="edu.berkeley.compbio.jlibsvm.binary">
-                <option name="ENABLED" value="true"/>
-                <option name="LOG_ENABLED" value="false"/>
-                <option name="LOG_EXPRESSION_ENABLED" value="false"/>
-                <option name="SUSPEND_POLICY" value="SuspendAll"/>
-                <option name="COUNT_FILTER_ENABLED" value="false"/>
-                <option name="COUNT_FILTER" value="0"/>
-                <option name="CONDITION_ENABLED" value="false"/>
-                <option name="CLASS_FILTERS_ENABLED" value="false"/>
-                <option name="INSTANCE_FILTERS_ENABLED" value="false"/>
-                <option name="CONDITION" value=""/>
-                <option name="LOG_MESSAGE" value=""/>
-            </breakpoint>
-            <breakpoint
-                    url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassProblemImpl.java"
-                    line="43" class="edu.berkeley.compbio.jlibsvm.multi.MultiClassProblemImpl"
+                    url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java"
+                    line="120" class="edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM"
                     package="edu.berkeley.compbio.jlibsvm.multi">
                 <option name="ENABLED" value="true"/>
                 <option name="LOG_ENABLED" value="false"/>
@@ -242,72 +199,9 @@
                 <option name="LOG_MESSAGE" value=""/>
             </breakpoint>
             <breakpoint
-                    url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BooleanClassificationProblemImpl.java"
-                    line="89" class="edu.berkeley.compbio.jlibsvm.binary.BooleanClassificationProblemImpl"
-                    package="edu.berkeley.compbio.jlibsvm.binary">
-                <option name="ENABLED" value="true"/>
-                <option name="LOG_ENABLED" value="false"/>
-                <option name="LOG_EXPRESSION_ENABLED" value="false"/>
-                <option name="SUSPEND_POLICY" value="SuspendAll"/>
-                <option name="COUNT_FILTER_ENABLED" value="false"/>
-                <option name="COUNT_FILTER" value="0"/>
-                <option name="CONDITION_ENABLED" value="false"/>
-                <option name="CLASS_FILTERS_ENABLED" value="false"/>
-                <option name="INSTANCE_FILTERS_ENABLED" value="false"/>
-                <option name="CONDITION" value=""/>
-                <option name="LOG_MESSAGE" value=""/>
-            </breakpoint>
-            <breakpoint
-                    url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationProblemImpl.java"
-                    line="83" class="edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblemImpl"
-                    package="edu.berkeley.compbio.jlibsvm.binary">
-                <option name="ENABLED" value="true"/>
-                <option name="LOG_ENABLED" value="false"/>
-                <option name="LOG_EXPRESSION_ENABLED" value="false"/>
-                <option name="SUSPEND_POLICY" value="SuspendAll"/>
-                <option name="COUNT_FILTER_ENABLED" value="false"/>
-                <option name="COUNT_FILTER" value="0"/>
-                <option name="CONDITION_ENABLED" value="false"/>
-                <option name="CLASS_FILTERS_ENABLED" value="false"/>
-                <option name="INSTANCE_FILTERS_ENABLED" value="false"/>
-                <option name="CONDITION" value=""/>
-                <option name="LOG_MESSAGE" value=""/>
-            </breakpoint>
-            <breakpoint
-                    url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/scaler/LinearScalingModelLearner.java"
-                    line="29" class="edu.berkeley.compbio.jlibsvm.scaler.LinearScalingModelLearner"
-                    package="edu.berkeley.compbio.jlibsvm.scaler">
-                <option name="ENABLED" value="true"/>
-                <option name="LOG_ENABLED" value="false"/>
-                <option name="LOG_EXPRESSION_ENABLED" value="false"/>
-                <option name="SUSPEND_POLICY" value="SuspendAll"/>
-                <option name="COUNT_FILTER_ENABLED" value="false"/>
-                <option name="COUNT_FILTER" value="0"/>
-                <option name="CONDITION_ENABLED" value="false"/>
-                <option name="CLASS_FILTERS_ENABLED" value="false"/>
-                <option name="INSTANCE_FILTERS_ENABLED" value="false"/>
-                <option name="CONDITION" value=""/>
-                <option name="LOG_MESSAGE" value=""/>
-            </breakpoint>
-            <breakpoint
-                    url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/scaler/LinearScalingModelLearner.java"
-                    line="74" class="edu.berkeley.compbio.jlibsvm.scaler.LinearScalingModelLearner.LinearScalingModel"
-                    package="edu.berkeley.compbio.jlibsvm.scaler">
-                <option name="ENABLED" value="true"/>
-                <option name="LOG_ENABLED" value="false"/>
-                <option name="LOG_EXPRESSION_ENABLED" value="false"/>
-                <option name="SUSPEND_POLICY" value="SuspendAll"/>
-                <option name="COUNT_FILTER_ENABLED" value="false"/>
-                <option name="COUNT_FILTER" value="0"/>
-                <option name="CONDITION_ENABLED" value="false"/>
-                <option name="CLASS_FILTERS_ENABLED" value="false"/>
-                <option name="INSTANCE_FILTERS_ENABLED" value="false"/>
-                <option name="CONDITION" value=""/>
-                <option name="LOG_MESSAGE" value=""/>
-            </breakpoint>
-            <breakpoint url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryModel.java"
-                        line="168" class="edu.berkeley.compbio.jlibsvm.binary.BinaryModel"
-                        package="edu.berkeley.compbio.jlibsvm.binary">
+                    url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java"
+                    line="207" class="edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM"
+                    package="edu.berkeley.compbio.jlibsvm.multi">
                 <option name="ENABLED" value="true"/>
                 <option name="LOG_ENABLED" value="false"/>
                 <option name="LOG_EXPRESSION_ENABLED" value="false"/>
@@ -355,22 +249,22 @@
         </breakpoint_any>
         <breakpoint_rules/>
         <ui_properties>
-            <property name="exception_breakpoints_flattenPackages" value="true"/>
-            <property name="line_breakpoints_groupByClasses" value="true"/>
-            <property name="exception_breakpoints_groupByMethods" value="false"/>
-            <property name="method_breakpoints_viewId" value="TABLE"/>
-            <property name="exception_breakpoints_groupByClasses" value="true"/>
-            <property name="line_breakpoints_viewId" value="TABLE"/>
-            <property name="method_breakpoints_groupByMethods" value="false"/>
-            <property name="field_breakpoints_flattenPackages" value="true"/>
-            <property name="line_breakpoints_flattenPackages" value="true"/>
-            <property name="exception_breakpoints_viewId" value="TABLE"/>
-            <property name="field_breakpoints_groupByClasses" value="true"/>
-            <property name="method_breakpoints_flattenPackages" value="true"/>
-            <property name="field_breakpoints_viewId" value="TABLE"/>
             <property name="line_breakpoints_groupByMethods" value="false"/>
-            <property name="method_breakpoints_groupByClasses" value="true"/>
+            <property name="line_breakpoints_viewId" value="TABLE"/>
+            <property name="exception_breakpoints_flattenPackages" value="true"/>
+            <property name="method_breakpoints_flattenPackages" value="true"/>
+            <property name="field_breakpoints_flattenPackages" value="true"/>
+            <property name="exception_breakpoints_groupByMethods" value="false"/>
+            <property name="line_breakpoints_groupByClasses" value="true"/>
+            <property name="method_breakpoints_viewId" value="TABLE"/>
             <property name="field_breakpoints_groupByMethods" value="false"/>
+            <property name="line_breakpoints_flattenPackages" value="true"/>
+            <property name="field_breakpoints_groupByClasses" value="true"/>
+            <property name="method_breakpoints_groupByClasses" value="true"/>
+            <property name="exception_breakpoints_viewId" value="TABLE"/>
+            <property name="exception_breakpoints_groupByClasses" value="true"/>
+            <property name="field_breakpoints_viewId" value="TABLE"/>
+            <property name="method_breakpoints_groupByMethods" value="false"/>
         </ui_properties>
     </component>
     <component name="FavoritesManager">
@@ -378,50 +272,30 @@
     </component>
     <component name="FileEditorManager">
         <leaf>
-            <file leaf-file-name="BinaryClassificationProblemImpl.java" pinned="false" current="false"
-                  current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationProblemImpl.java">
+            <file leaf-file-name="svm_train.java" pinned="false" current="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/legacyexec/svm_train.java">
                     <provider selected="true" editor-type-id="text-editor">
-                        <state line="19" column="13" selection-start="632" selection-end="632"
-                               vertical-scroll-proportion="0.0">
-                            <folding>
-                                <marker date="1241041485000" expanded="false" signature="53:525" placeholder="..."/>
-                                <marker date="1241041485000" expanded="true" signature="3110:3195" placeholder="{...}"/>
-                                <marker date="1241041485000" expanded="true" signature="3402:3546" placeholder="{...}"/>
-                                <marker date="1241041485000" expanded="true" signature="4220:4274" placeholder="{...}"/>
-                                <marker date="1241041485000" expanded="true" signature="4366:4471" placeholder="{...}"/>
-                                <marker date="1241041485000" expanded="true" signature="4520:4789" placeholder="{...}"/>
-                            </folding>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="BinaryModel.java" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryModel.java">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="164" column="0" selection-start="3550" selection-end="3550"
-                               vertical-scroll-proportion="0.0">
-                            <folding>
-                                <marker date="1241041482000" expanded="false" signature="53:602" placeholder="..."/>
-                            </folding>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="ContinuousModel.java" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/ContinuousModel.java">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="8" column="0" selection-start="170" selection-end="170"
+                        <state line="330" column="53" selection-start="11210" selection-end="11210"
                                vertical-scroll-proportion="0.0">
                             <folding/>
                         </state>
                     </provider>
                 </entry>
             </file>
-            <file leaf-file-name="OneClassModel.java" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/oneclass/OneClassModel.java">
+            <file leaf-file-name="PrecomputedKernel.java" pinned="false" current="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/kernel/PrecomputedKernel.java">
                     <provider selected="true" editor-type-id="text-editor">
-                        <state line="31" column="17" selection-start="635" selection-end="635"
+                        <state line="17" column="11" selection-start="456" selection-end="456"
+                               vertical-scroll-proportion="0.0">
+                            <folding/>
+                        </state>
+                    </provider>
+                </entry>
+            </file>
+            <file leaf-file-name="Cache.java" pinned="false" current="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/qmatrix/Cache.java">
+                    <provider selected="true" editor-type-id="text-editor">
+                        <state line="42" column="29" selection-start="813" selection-end="813"
                                vertical-scroll-proportion="0.0">
                             <folding/>
                         </state>
@@ -431,18 +305,58 @@
             <file leaf-file-name="MultiClassificationSVM.java" pinned="false" current="false" current-in-tab="false">
                 <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java">
                     <provider selected="true" editor-type-id="text-editor">
-                        <state line="340" column="0" selection-start="11401" selection-end="11401"
+                        <state line="48" column="8" selection-start="1983" selection-end="1983"
                                vertical-scroll-proportion="0.0">
                             <folding/>
                         </state>
                     </provider>
                 </entry>
             </file>
-            <file leaf-file-name="BinaryClassificationSVM.java" pinned="false" current="true" current-in-tab="true">
-                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationSVM.java">
+            <file leaf-file-name="svm_scale.java" pinned="false" current="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/legacyexec/svm_scale.java">
                     <provider selected="true" editor-type-id="text-editor">
-                        <state line="126" column="15" selection-start="3782" selection-end="3782"
-                               vertical-scroll-proportion="0.71362585">
+                        <state line="36" column="19" selection-start="1209" selection-end="1209"
+                               vertical-scroll-proportion="0.0">
+                            <folding/>
+                        </state>
+                    </provider>
+                </entry>
+            </file>
+            <file leaf-file-name="LinearKernel.java" pinned="false" current="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/kernel/LinearKernel.java">
+                    <provider selected="true" editor-type-id="text-editor">
+                        <state line="11" column="13" selection-start="291" selection-end="291"
+                               vertical-scroll-proportion="0.0">
+                            <folding/>
+                        </state>
+                    </provider>
+                </entry>
+            </file>
+            <file leaf-file-name="PolynomialKernel.java" pinned="false" current="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/kernel/PolynomialKernel.java">
+                    <provider selected="true" editor-type-id="text-editor">
+                        <state line="12" column="13" selection-start="341" selection-end="341"
+                               vertical-scroll-proportion="0.0">
+                            <folding/>
+                        </state>
+                    </provider>
+                </entry>
+            </file>
+            <file leaf-file-name="GaussianRBFKernel.java" pinned="false" current="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/kernel/GaussianRBFKernel.java">
+                    <provider selected="true" editor-type-id="text-editor">
+                        <state line="179" column="13" selection-start="5225" selection-end="5225"
+                               vertical-scroll-proportion="0.0">
+                            <folding/>
+                        </state>
+                    </provider>
+                </entry>
+            </file>
+            <file leaf-file-name="ExplicitSvmProblemImpl.java" pinned="false" current="true" current-in-tab="true">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/ExplicitSvmProblemImpl.java">
+                    <provider selected="true" editor-type-id="text-editor">
+                        <state line="33" column="34" selection-start="946" selection-end="946"
+                               vertical-scroll-proportion="-1.3470411">
                             <folding>
                                 <element signature="imports" expanded="true"/>
                             </folding>
@@ -450,48 +364,12 @@
                     </provider>
                 </entry>
             </file>
-            <file leaf-file-name="SVM.java" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/SVM.java">
+            <file leaf-file-name="jLibSvmCompare.pl" pinned="false" current="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/src/main/perl/jLibSvmCompare.pl">
                     <provider selected="true" editor-type-id="text-editor">
-                        <state line="115" column="0" selection-start="3400" selection-end="3400"
+                        <state line="34" column="59" selection-start="1205" selection-end="1205"
                                vertical-scroll-proportion="0.0">
                             <folding/>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="MultiClassProblemImpl.java" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassProblemImpl.java">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="208" column="0" selection-start="6690" selection-end="6690"
-                               vertical-scroll-proportion="0.0">
-                            <folding>
-                                <marker date="1241041485000" expanded="false" signature="52:615" placeholder="..."/>
-                            </folding>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="ZscoreScalingModelLearner.java" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/scaler/ZscoreScalingModelLearner.java">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="57" column="0" selection-start="1501" selection-end="1501"
-                               vertical-scroll-proportion="0.0">
-                            <folding>
-                                <element signature="imports" expanded="true"/>
-                            </folding>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="MultiClassModel.java" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassModel.java">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="169" column="0" selection-start="5246" selection-end="5246"
-                               vertical-scroll-proportion="0.0">
-                            <folding>
-                                <marker date="1241041482000" expanded="false" signature="52:956" placeholder="..."/>
-                            </folding>
                         </state>
                     </provider>
                 </entry>
@@ -547,7 +425,7 @@
                     <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode"/>
                 </PATH_ELEMENT>
                 <PATH_ELEMENT>
-                    <option name="myItemId" value="scaler"/>
+                    <option name="myItemId" value="util"/>
                     <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode"/>
                 </PATH_ELEMENT>
             </PATH>
@@ -583,7 +461,7 @@
                     <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode"/>
                 </PATH_ELEMENT>
                 <PATH_ELEMENT>
-                    <option name="myItemId" value="binary"/>
+                    <option name="myItemId" value="kernel"/>
                     <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode"/>
                 </PATH_ELEMENT>
             </PATH>
@@ -613,56 +491,41 @@
             <showLibraryContents/>
             <hideEmptyPackages/>
             <abbreviatePackageNames/>
-            <showStructure PackagesPane="true" ProjectPane="true"/>
+            <showStructure PackagesPane="false" ProjectPane="true"/>
             <autoscrollToSource/>
             <autoscrollFromSource/>
             <sortByType/>
         </navigator>
     </component>
     <component name="PropertiesComponent">
-        <property name="project.structure.proportion" value="0.15"/>
         <property name="project.structure.last.edited" value="Project"/>
-        <property name="MemberChooser.copyJavadoc" value="false"/>
-        <property name="options.splitter.main.proportions" value="0.3"/>
-        <property name="MemberChooser.sorted" value="false"/>
-        <property name="options.searchVisible" value="true"/>
         <property name="GoToFile.includeJavaFiles" value="false"/>
-        <property name="options.splitter.details.proportions" value="0.2"/>
+        <property name="project.structure.proportion" value="0.15"/>
+        <property name="options.splitter.main.proportions" value="0.3"/>
+        <property name="RunManagerConfig.showSettingsBeforeRunnig" value="false"/>
+        <property name="MemberChooser.sorted" value="false"/>
+        <property name="options.lastSelected" value="errors"/>
+        <property name="project.structure.side.proportion" value="0.0"/>
+        <property name="MemberChooser.copyJavadoc" value="false"/>
+        <property name="GoToClass.toSaveIncludeLibraries" value="false"/>
+        <property name="MemberChooser.showClasses" value="true"/>
         <property name="GoToClass.includeLibraries" value="false"/>
         <property name="dynamic.classpath" value="false"/>
-        <property name="MemberChooser.showClasses" value="true"/>
-        <property name="project.structure.side.proportion" value="0.0"/>
-        <property name="options.lastSelected" value="com.intellij.compiler.options.JavaCompilersTab"/>
-        <property name="GoToClass.toSaveIncludeLibraries" value="false"/>
-        <property name="RunManagerConfig.showSettingsBeforeRunnig" value="false"/>
+        <property name="options.splitter.details.proportions" value="0.2"/>
+        <property name="options.searchVisible" value="true"/>
     </component>
     <component name="RecentsManager">
-        <key name="CopyClassDialog.RECENTS_KEY">
-            <recent name="edu.berkeley.compbio.jlibsvm.scaler"/>
-        </key>
         <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
             <recent name="edu.berkeley.compbio.jlibsvm.util"/>
         </key>
     </component>
-    <component name="RunManager" selected="Application.New sector">
+    <component name="RunManager" selected="Application.New segment">
         <configuration default="true" type="Remote" factoryName="Remote">
             <option name="USE_SOCKET_TRANSPORT" value="true"/>
             <option name="SERVER_MODE" value="false"/>
             <option name="SHMEM_ADDRESS" value="javadebug"/>
             <option name="HOST" value="localhost"/>
             <option name="PORT" value="5005"/>
-        </configuration>
-        <configuration default="true" type="Applet" factoryName="Applet">
-            <module name=""/>
-            <option name="MAIN_CLASS_NAME"/>
-            <option name="HTML_FILE_NAME"/>
-            <option name="HTML_USED" value="false"/>
-            <option name="WIDTH" value="400"/>
-            <option name="HEIGHT" value="300"/>
-            <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy"/>
-            <option name="VM_PARAMETERS"/>
-            <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
-            <option name="ALTERNATIVE_JRE_PATH"/>
         </configuration>
         <configuration default="true" type="TestNG" factoryName="TestNG" enabled="false" merge="false" runner="emma">
             <module name=""/>
@@ -690,6 +553,32 @@
             <properties/>
             <listeners/>
         </configuration>
+        <configuration default="true" type="Applet" factoryName="Applet">
+            <module name=""/>
+            <option name="MAIN_CLASS_NAME"/>
+            <option name="HTML_FILE_NAME"/>
+            <option name="HTML_USED" value="false"/>
+            <option name="WIDTH" value="400"/>
+            <option name="HEIGHT" value="300"/>
+            <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy"/>
+            <option name="VM_PARAMETERS"/>
+            <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
+            <option name="ALTERNATIVE_JRE_PATH"/>
+        </configuration>
+        <configuration default="true" type="Application" factoryName="Application" enabled="false" merge="false"
+                       runner="emma">
+            <option name="MAIN_CLASS_NAME"/>
+            <option name="VM_PARAMETERS"/>
+            <option name="PROGRAM_PARAMETERS"/>
+            <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$"/>
+            <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
+            <option name="ALTERNATIVE_JRE_PATH"/>
+            <option name="ENABLE_SWING_INSPECTOR" value="false"/>
+            <option name="ENV_VARIABLES"/>
+            <option name="PASS_PARENT_ENVS" value="true"/>
+            <module name=""/>
+            <envs/>
+        </configuration>
         <configuration default="true" type="JUnit" factoryName="JUnit" enabled="false" merge="false" runner="emma">
             <module name=""/>
             <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
@@ -709,31 +598,16 @@
             </option>
             <envs/>
         </configuration>
-        <configuration default="true" type="Application" factoryName="Application" enabled="false" merge="false"
-                       runner="emma">
-            <option name="MAIN_CLASS_NAME"/>
-            <option name="VM_PARAMETERS"/>
-            <option name="PROGRAM_PARAMETERS"/>
-            <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$"/>
-            <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
-            <option name="ALTERNATIVE_JRE_PATH"/>
-            <option name="ENABLE_SWING_INSPECTOR" value="false"/>
-            <option name="ENV_VARIABLES"/>
-            <option name="PASS_PARENT_ENVS" value="true"/>
-            <module name=""/>
-            <envs/>
-        </configuration>
-        <list size="10">
+        <list size="9">
             <item index="0" class="java.lang.String" itemvalue="Application.New sector"/>
             <item index="1" class="java.lang.String" itemvalue="Application.New segment"/>
-            <item index="2" class="java.lang.String" itemvalue="Application.New acoustic"/>
-            <item index="3" class="java.lang.String" itemvalue="Application.New letter Shark"/>
-            <item index="4" class="java.lang.String" itemvalue="Application.Legacy mushrooms"/>
-            <item index="5" class="java.lang.String" itemvalue="Application.New mushrooms"/>
-            <item index="6" class="java.lang.String" itemvalue="Application.New news20 shark"/>
-            <item index="7" class="java.lang.String" itemvalue="Application.New mushrooms Shark"/>
-            <item index="8" class="java.lang.String" itemvalue="Application.new mnist"/>
-            <item index="9" class="java.lang.String" itemvalue="TestNG.Test All"/>
+            <item index="2" class="java.lang.String" itemvalue="Application.New letter"/>
+            <item index="3" class="java.lang.String" itemvalue="TestNG.Test All"/>
+            <item index="4" class="java.lang.String" itemvalue="Application.New letter Shark"/>
+            <item index="5" class="java.lang.String" itemvalue="Application.Legacy mushrooms"/>
+            <item index="6" class="java.lang.String" itemvalue="Application.New mushrooms"/>
+            <item index="7" class="java.lang.String" itemvalue="Application.New news20 shark"/>
+            <item index="8" class="java.lang.String" itemvalue="Application.New mushrooms Shark"/>
         </list>
         <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
             <Host>localhost</Host>
@@ -779,71 +653,75 @@
         </todo-panel>
     </component>
     <component name="ToolWindowManager">
-        <frame x="0" y="22" width="1680" height="1028" extended-state="7"/>
+        <frame x="-4" y="25" width="3209" height="1154" extended-state="7"/>
         <editor active="true"/>
         <layout>
-            <window_info id="Dataflow to this" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="8"
-                         side_tool="false"/>
-            <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false"/>
-            <window_info id="Hudson" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED"
-                         visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false"/>
             <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
                          type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false"/>
-            <window_info id="Profile CPU" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
-            <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED"
-                         visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false"/>
-            <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="true" weight="0.30208334" sideWeight="0.61206895" order="0"
-                         side_tool="false"/>
-            <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false"/>
-            <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED"
-                         visible="false" weight="0.32867783" sideWeight="0.5" order="1" side_tool="false"/>
-            <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.32683983" sideWeight="0.5" order="8"
-                         side_tool="false"/>
-            <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false"/>
-            <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
-            <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false"/>
-            <window_info id="FindBugs-IDEA" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
-            <window_info id="Code explorer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false"/>
             <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
                          type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
-            <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED"
-                         visible="false" weight="0.38038793" sideWeight="0.5" order="2" side_tool="false"/>
-            <window_info id="Profile Memory" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
-            <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false"/>
-            <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.34357542" sideWeight="0.5" order="3"
+            <window_info id="CheckThread Output" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.32910156" sideWeight="0.5" order="-1"
                          side_tool="false"/>
-            <window_info id="Hudson Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+            <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false"/>
+            <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED"
+                         visible="false" weight="0.32910156" sideWeight="0.5" order="1" side_tool="false"/>
+            <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.39980546" sideWeight="0.5" order="3"
+                         side_tool="false"/>
+            <window_info id="Dataflow to this" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
+            <window_info id="Hudson" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED"
+                         visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false"/>
+            <window_info id="FindBugs-IDEA" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.32910156" sideWeight="0.5" order="8"
+                         side_tool="false"/>
+            <window_info id="TestDox" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
                          type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false"/>
             <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
                          type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
-            <window_info id="Web Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+            <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.32714844" sideWeight="0.5" order="8"
+                         side_tool="false"/>
+            <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED"
+                         visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false"/>
+            <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false"/>
+            <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false"/>
+            <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false"/>
+            <window_info id="Hudson Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false"/>
+            <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="true" weight="0.14725484" sideWeight="0.6640625" order="0"
+                         side_tool="false"/>
+            <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
                          type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
-            <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false"/>
+            <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.24976198" sideWeight="0.6640625" order="2"
+                         side_tool="false"/>
+            <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false"/>
+            <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED"
+                         visible="false" weight="0.32910156" sideWeight="0.5" order="2" side_tool="false"/>
+            <window_info id="Profile CPU" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
+            <window_info id="Profile Memory" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
             <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
                          type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false"/>
+            <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED"
+                         visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false"/>
+            <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false"/>
             <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED"
                          visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false"/>
             <window_info id="EJB" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED"
                          visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false"/>
-            <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED"
-                         visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false"/>
-            <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
-                         type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false"/>
+            <window_info id="Web Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
         </layout>
     </component>
     <component name="VcsManagerConfiguration">
@@ -855,7 +733,7 @@
         <option name="PERFORM_CHECKOUT_IN_BACKGROUND" value="true"/>
         <option name="PERFORM_ADD_REMOVE_IN_BACKGROUND" value="true"/>
         <option name="FORCE_NON_EMPTY_COMMENT" value="false"/>
-        <option name="LAST_COMMIT_MESSAGE" value="Integrated scaling and normalization"/>
+        <option name="LAST_COMMIT_MESSAGE" value="FindBugs fixes, mostly"/>
         <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true"/>
         <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true"/>
         <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false"/>
@@ -867,7 +745,7 @@
         <option name="SHOW_FILE_HISTORY_AS_TREE" value="false"/>
         <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6"/>
         <MESSAGE value="Back out reuse of QMatrix"/>
-        <MESSAGE value="Integrated scaling and normalization"/>
+        <MESSAGE value="FindBugs fixes, mostly"/>
     </component>
     <component name="XDebuggerManager">
         <breakpoint-manager/>
@@ -877,141 +755,121 @@
         <find-history/>
     </component>
     <component name="editorHistoryManager">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/C_SVC.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/SolutionVector.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="34" column="29" selection-start="1066" selection-end="1066"
-                       vertical-scroll-proportion="0.0">
-                    <folding>
-                        <element signature="imports" expanded="true"/>
-                    </folding>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassProblem.java">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="24" column="28" selection-start="653" selection-end="653" vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BooleanClassificationProblemImpl.java">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="90" column="0" selection-start="2343" selection-end="2343"
+                <state line="73" column="15" selection-start="1469" selection-end="1469"
                        vertical-scroll-proportion="0.0">
                     <folding/>
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationProblem.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/labelinverter/ByteLabelInverter.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="23" column="0" selection-start="527" selection-end="527" vertical-scroll-proportion="0.0">
+                <state line="13" column="0" selection-start="278" selection-end="278" vertical-scroll-proportion="0.0">
                     <folding/>
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/scaler/LinearScalingModelLearner.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/Solver.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="72" column="28" selection-start="1945" selection-end="1945"
+                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinarySolver.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="26" column="18" selection-start="781" selection-end="781" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/oneclass/OneClassSolver.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="26" column="0" selection-start="731" selection-end="731" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/regression/RegressionSolver.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="27" column="0" selection-start="760" selection-end="760" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/legacyexec/svm_train.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="330" column="53" selection-start="11210" selection-end="11210"
                        vertical-scroll-proportion="0.0">
                     <folding/>
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/scaler/ScalingModel.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/kernel/PrecomputedKernel.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="8" column="0" selection-start="174" selection-end="174" vertical-scroll-proportion="0.0">
+                <state line="17" column="11" selection-start="456" selection-end="456" vertical-scroll-proportion="0.0">
                     <folding/>
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationProblemImpl.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/qmatrix/Cache.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="19" column="13" selection-start="632" selection-end="632" vertical-scroll-proportion="0.0">
-                    <folding>
-                        <marker date="1241041485000" expanded="false" signature="53:525" placeholder="..."/>
-                        <marker date="1241041485000" expanded="true" signature="3110:3195" placeholder="{...}"/>
-                        <marker date="1241041485000" expanded="true" signature="3402:3546" placeholder="{...}"/>
-                        <marker date="1241041485000" expanded="true" signature="4220:4274" placeholder="{...}"/>
-                        <marker date="1241041485000" expanded="true" signature="4366:4471" placeholder="{...}"/>
-                        <marker date="1241041485000" expanded="true" signature="4520:4789" placeholder="{...}"/>
-                    </folding>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/ContinuousModel.java">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="8" column="0" selection-start="170" selection-end="170" vertical-scroll-proportion="0.0">
+                <state line="42" column="29" selection-start="813" selection-end="813" vertical-scroll-proportion="0.0">
                     <folding/>
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/oneclass/OneClassModel.java">
+        <entry file="file://$PROJECT_DIR$/src/main/perl/jLibSvmCompare.pl">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="31" column="17" selection-start="635" selection-end="635" vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassModel.java">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="169" column="0" selection-start="5246" selection-end="5246"
-                       vertical-scroll-proportion="0.0">
-                    <folding>
-                        <marker date="1241041482000" expanded="false" signature="52:956" placeholder="..."/>
-                    </folding>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/SVM.java">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="115" column="0" selection-start="3400" selection-end="3400"
+                <state line="34" column="59" selection-start="1205" selection-end="1205"
                        vertical-scroll-proportion="0.0">
                     <folding/>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/scaler/ZscoreScalingModelLearner.java">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="57" column="0" selection-start="1501" selection-end="1501"
-                       vertical-scroll-proportion="0.0">
-                    <folding>
-                        <element signature="imports" expanded="true"/>
-                    </folding>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassProblemImpl.java">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="208" column="0" selection-start="6690" selection-end="6690"
-                       vertical-scroll-proportion="0.0">
-                    <folding>
-                        <marker date="1241041485000" expanded="false" signature="52:615" placeholder="..."/>
-                    </folding>
                 </state>
             </provider>
         </entry>
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="340" column="0" selection-start="11401" selection-end="11401"
+                <state line="48" column="8" selection-start="1983" selection-end="1983"
                        vertical-scroll-proportion="0.0">
                     <folding/>
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryModel.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/legacyexec/svm_scale.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="164" column="0" selection-start="3550" selection-end="3550"
+                <state line="36" column="19" selection-start="1209" selection-end="1209"
                        vertical-scroll-proportion="0.0">
-                    <folding>
-                        <marker date="1241041482000" expanded="false" signature="53:602" placeholder="..."/>
-                    </folding>
+                    <folding/>
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryClassificationSVM.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/kernel/LinearKernel.java">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="126" column="15" selection-start="3782" selection-end="3782"
-                       vertical-scroll-proportion="0.71362585">
+                <state line="11" column="13" selection-start="291" selection-end="291" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/kernel/PolynomialKernel.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="12" column="13" selection-start="341" selection-end="341" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/kernel/GaussianRBFKernel.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="179" column="13" selection-start="5225" selection-end="5225"
+                       vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/ExplicitSvmProblemImpl.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="33" column="34" selection-start="946" selection-end="946"
+                       vertical-scroll-proportion="-1.3470411">
                     <folding>
                         <element signature="imports" expanded="true"/>
                     </folding>
@@ -1035,8 +893,15 @@
                     <value>
                         <UIState>
                             <option name="proportions">
-                                <SplitterProportionsDataImpl/>
+                                <SplitterProportionsDataImpl>
+                                    <option name="proportions">
+                                        <list>
+                                            <option value="0.2"/>
+                                        </list>
+                                    </option>
+                                </SplitterProportionsDataImpl>
                             </option>
+                            <option name="lastEditedConfigurable" value="Lorax|IDE Profiles"/>
                         </UIState>
                     </value>
                 </entry>
@@ -1072,8 +937,15 @@
                     <value>
                         <UIState>
                             <option name="proportions">
-                                <SplitterProportionsDataImpl/>
+                                <SplitterProportionsDataImpl>
+                                    <option name="proportions">
+                                        <list>
+                                            <option value="0.2"/>
+                                        </list>
+                                    </option>
+                                </SplitterProportionsDataImpl>
                             </option>
+                            <option name="lastEditedConfigurable" value="Lorax|IDE Profiles"/>
                         </UIState>
                     </value>
                 </entry>
