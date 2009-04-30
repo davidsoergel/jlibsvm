@@ -11,7 +11,7 @@
         </pattern>
         <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train"/>
         <option name="VM_PARAMETERS" value=""/>
-        <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 100  -v 5 -f zscore -l 2 sector"/>
+        <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 100  -v 10 sector"/>
         <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources"/>
         <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
         <option name="ALTERNATIVE_JRE_PATH" value=""/>

@@ -12,7 +12,7 @@
         <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train"/>
         <option name="VM_PARAMETERS" value="-ea -Xmx1024m"/>
         <option name="PROGRAM_PARAMETERS"
-                value="-s 0 -t 2 -c 100 -e .01 -v 5 -m 1000  -o None -a AllVsAll -f zscore -l 2 segment.scale"/>
+                value="-s 0 -t 3 -c 100 -e .001 -v 5 -m 1000  -o Veto -a FilteredVsAll segment.scale"/>
         <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources"/>
         <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
         <option name="ALTERNATIVE_JRE_PATH" value=""/>
