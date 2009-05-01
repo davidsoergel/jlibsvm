@@ -8,5 +8,7 @@ import edu.berkeley.compbio.jlibsvm.regression.RegressionProblem;
  */
 public interface OneClassProblem<L, P> extends RegressionProblem<P>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
 	L getLabel();
 	}

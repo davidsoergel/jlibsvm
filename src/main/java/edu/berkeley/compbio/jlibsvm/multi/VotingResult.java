@@ -6,6 +6,8 @@ package edu.berkeley.compbio.jlibsvm.multi;
  */
 public class VotingResult<L>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private L bestLabel = null;
 	private float bestVoteProportion = 0;
 	private float secondBestVoteProportion = 0;
@@ -13,6 +15,9 @@ public class VotingResult<L>
 	private float secondBestProbability = 0;
 	private float bestOneVsAllProbability = 0;
 	private float secondBestOneVsAllProbability = 0;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public VotingResult()
 		{
@@ -30,19 +35,11 @@ public class VotingResult<L>
 		this.secondBestOneVsAllProbability = secondBestOneVsAllProbability;
 		}
 
+// --------------------- GETTER / SETTER METHODS ---------------------
+
 	public L getBestLabel()
 		{
 		return bestLabel;
-		}
-
-	public float getBestProbability()
-		{
-		return bestProbability;
-		}
-
-	public float getSecondBestProbability()
-		{
-		return secondBestProbability;
 		}
 
 	public float getBestOneVsAllProbability()
@@ -50,14 +47,24 @@ public class VotingResult<L>
 		return bestOneVsAllProbability;
 		}
 
-	public float getSecondBestOneVsAllProbability()
+	public float getBestProbability()
 		{
-		return secondBestOneVsAllProbability;
+		return bestProbability;
 		}
 
 	public float getBestVoteProportion()
 		{
 		return bestVoteProportion;
+		}
+
+	public float getSecondBestOneVsAllProbability()
+		{
+		return secondBestOneVsAllProbability;
+		}
+
+	public float getSecondBestProbability()
+		{
+		return secondBestProbability;
 		}
 
 	public float getSecondBestVoteProportion()

@@ -16,7 +16,14 @@ import java.util.Map;
  */
 public abstract class RegressionSVM<P, R extends SvmProblem<Float, P>> extends SVM<Float, P, R>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(RegressionSVM.class);
+
+	private final float SQRT_2 = (float) Math.sqrt(2);
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	protected RegressionSVM(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner,
 	                        SvmParameter<Float> param)
@@ -24,35 +31,10 @@ public abstract class RegressionSVM<P, R extends SvmProblem<Float, P>> extends S
 		super(kernel, scalingModelLearner, param);
 		}
 
-	public abstract RegressionModel<P> train(R problem);
-
-	/*	@Override
-   public Class getLabelClass()
-	   {
-	   return Float.class;
-	   }*/
-
-
-	// Stratified cross validation
-
-	/*
-	 protected Float[] foldPredict(RegressionProblem<P> subprob, Iterator<P> foldIterator, int length)
-		 {
-		 RegressionModel<P> model = train(subprob);
-		 Float[] result = new Float[length];
-
-		 int i = 0;
-		 while (foldIterator.hasNext())
-			 {
-			 result[i] = model.predictValue(foldIterator.next());
-			 i++;
-			 }
-		 return result;
-		 }
- */
-	private final float SQRT_2 = (float) Math.sqrt(2);
+// -------------------------- OTHER METHODS --------------------------
 
 	// Return parameter of a Laplace distribution
+
 	protected float laplaceParameter(RegressionProblem<P> problem)
 		{
 		int i;
@@ -71,19 +53,16 @@ public abstract class RegressionSVM<P, R extends SvmProblem<Float, P>> extends S
 			float newVal = problem.getTargetValue(entry.getKey()) - entry.getValue();
 			entry.setValue(newVal);
 			mae += Math.abs(newVal);
-			}		/*for (i = 0; i < problem.getNumExamples(); i++)
-			{
-			ymv[i] = problem.getTargetValue(i) - ymv[i];
-			mae += Math.abs(ymv[i]);
-			}*/
+			}
+
 		mae /= problem.getNumExamples();
-		;		//float std = (float) Math.sqrt(2 * mae * mae);  // PERF
+
 		float std = SQRT_2 * mae;
 		int count = 0;
 		mae = 0;
 
 		for (Map.Entry<P, Float> entry : ymv.entrySet())
-			{			//for (i = 0; i < problem.getNumExamples(); i++)			//	{
+			{
 			float absVal = Math.abs(entry.getValue());
 			if (absVal > 5 * std)
 				{
@@ -99,4 +78,6 @@ public abstract class RegressionSVM<P, R extends SvmProblem<Float, P>> extends S
 		logger.info("z: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma=" + mae);
 		return mae;
 		}
+
+	public abstract RegressionModel<P> train(R problem);
 	}

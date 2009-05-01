@@ -6,5 +6,7 @@ package edu.berkeley.compbio.jlibsvm.scaler;
  */
 public interface ScalingModelLearner<P>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
 	public ScalingModel<P> learnScaling(Iterable<P> examples);
 	}

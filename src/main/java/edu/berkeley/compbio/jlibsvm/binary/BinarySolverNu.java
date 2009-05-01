@@ -14,13 +14,20 @@ import java.util.List;
  */
 public class BinarySolverNu<L extends Comparable, P> extends Solver_NU<L, P>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(BinarySolverNu.class);
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public BinarySolverNu(List<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
 	                      boolean shrinking)
 		{
 		super(solutionVectors, Q, Cp, Cn, eps, shrinking);
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	public BinaryModel<L, P> solve()
 		{
@@ -30,11 +37,10 @@ public class BinarySolverNu<L extends Comparable, P> extends Solver_NU<L, P>
 
 		// calculate rho
 
-		//		si.rho =
 		calculate_rho(model);
 
 		// calculate objective value
-		{
+
 		float v = 0;
 		for (SolutionVector svC : active)
 			{
@@ -42,13 +48,10 @@ public class BinarySolverNu<L extends Comparable, P> extends Solver_NU<L, P>
 			}
 
 		model.obj = v / 2;
-		}
+
 
 		// put the solution, mapping the alphas back to their original order
 
-		// note the swapping process applied to the Q matrix as well, so we have to map that back too
-
-		//	model.alpha = new float[numExamples];		//	model.supportVectors = new SparseVector[numExamples];
 		model.supportVectors = new HashMap<P, Double>();
 		for (SolutionVector<P> svC : allExamples)
 			{
@@ -57,7 +60,8 @@ public class BinarySolverNu<L extends Comparable, P> extends Solver_NU<L, P>
 
 		// note at this point the solution includes _all_ vectors, even if their alphas are zero
 
-		// we can't do this yet because in the regression case there are twice as many alphas as vectors		// model.compact();
+		// we can't do this yet because in the regression case there are twice as many alphas as vectors
+		// model.compact();
 
 		model.upperBoundPositive = Cp;
 		model.upperBoundNegative = Cn;

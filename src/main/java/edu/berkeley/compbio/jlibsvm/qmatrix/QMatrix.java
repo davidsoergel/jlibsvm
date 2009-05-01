@@ -20,8 +20,9 @@ import java.util.Collection;
 
 public interface QMatrix<P>
 	{
-//	float[] getQ(int column, int len);
+// -------------------------- OTHER METHODS --------------------------
 
+//	float[] getQ(int column, int len);
 //	float[] getQD();
 
 //	void swapIndex(int i, int j);
@@ -32,15 +33,15 @@ public interface QMatrix<P>
 
 	float evaluateDiagonal(SolutionVector<P> a);
 
-	public String perfString();
+	void getQ(SolutionVector<P> svA, SolutionVector<P>[] active, float[] buf);
 
-	void maintainCache(SolutionVector<P>[] active, SolutionVector<P>[] newlyInactive);
+	void getQ(SolutionVector<P> svA, SolutionVector<P>[] active, SolutionVector<P>[] inactive, float[] buf);
 
 //	void storeRanks(Collection<SolutionVector<P>> allExamples);
 
 	void initRanks(Collection<SolutionVector<P>> allExamples);
 
-	void getQ(SolutionVector<P> svA, SolutionVector<P>[] active, float[] buf);
+	void maintainCache(SolutionVector<P>[] active, SolutionVector<P>[] newlyInactive);
 
-	void getQ(SolutionVector<P> svA, SolutionVector<P>[] active, SolutionVector<P>[] inactive, float[] buf);
+	public String perfString();
 	}

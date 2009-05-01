@@ -21,50 +21,9 @@ import java.util.Properties;
 public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		implements DiscreteModel<L, P>, ContinuousModel<P>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(BinaryModel.class);
-
-	//private cv;
-
-	public CrossValidationResults newCrossValidationResults(int i, int tt, int ft, int tf, int ff)
-		{
-		return new CrossValidationResults(i, tt, ft, tf, ff);
-		//return cv;
-		}
-
-	public class CrossValidationResults
-		{
-		int numExamples;
-		int tt, tf, ft, ff;
-
-		public CrossValidationResults(int numExamples, int tt, int tf, int ft, int ff)
-			{
-			this.numExamples = numExamples;
-			this.tt = tt;
-			this.tf = tf;
-			this.ft = ft;
-			this.ff = ff;
-			}
-
-		float TrueTrueRate()
-			{
-			return (float) tt / (float) numExamples;
-			}
-
-		float TrueFalseRate()
-			{
-			return (float) tf / (float) numExamples;
-			}
-
-		float FalseTrueRate()
-			{
-			return (float) ft / (float) numExamples;
-			}
-
-		float FalseFalseRate()
-			{
-			return (float) ff / (float) numExamples;
-			}
-		}
 
 	public float obj;
 	public float upperBoundPositive;
@@ -74,6 +33,31 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 
 
 	public ScalingModel<P> scalingModel = new NoopScalingModel<P>();
+
+	public float r;// for Solver_NU.  I wanted to factor this out as SolutionInfoNu, but that was too much hassle
+
+	L trueLabel;
+	L falseLabel;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+	public BinaryModel(Properties props)
+		{
+		super(props);
+		}
+
+	public BinaryModel(KernelFunction<P> kernel, SvmParameter<L> param)
+		{
+		super(kernel, param);
+		}
+
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+	public L getFalseLabel()
+		{
+		return falseLabel;
+		}
 
 	@NotNull
 	public ScalingModel<P> getScalingModel()
@@ -86,29 +70,31 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		this.scalingModel = scalingModel;
 		}
 
-	L trueLabel;
-	L falseLabel;
-
-	public float r;// for Solver_NU.  I wanted to factor this out as SolutionInfoNu, but that was too much hassle
-
-	public BinaryModel(KernelFunction<P> kernel, SvmParameter<L> param)
-		{
-		super(kernel, param);
-		}
-
-	public BinaryModel(Properties props)
-		{
-		super(props);
-		}
-
 	public L getTrueLabel()
 		{
 		return trueLabel;
 		}
 
-	public L getFalseLabel()
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface DiscreteModel ---------------------
+
+	public L predictLabel(P x)
 		{
-		return falseLabel;
+		return predictValue(x) > 0 ? trueLabel : falseLabel;
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	public float getSumAlpha()
+		{
+		float result = 0;
+		for (Double aFloat : supportVectors.values())
+			{
+			result += aFloat;
+			}
+		return result;
 		}
 
 	public float getTrueProbability(P x)
@@ -116,9 +102,48 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		return sigmoid.predict(predictValue(x));  // NPE if no sigmoid
 		}
 
+	public Float predictValue(P x)
+		{
+		float sum = 0;
+
+		P scaledX = scalingModel.scaledCopy(x);
+
+		for (int i = 0; i < numSVs; i++)
+			{
+			float kvalue = (float) kernel.evaluate(scaledX, SVs[i]);
+			sum += alphas[i] * kvalue;
+			}
+
+		sum -= rho;
+		return sum;
+		}
+
 	public float getTrueProbability(float[] kvalues, int[] svIndexMap)
 		{
 		return sigmoid.predict(predictValue(kvalues, svIndexMap));  // NPE if no sigmoid
+		}
+
+	public Float predictValue(float[] kvalues, int[] svIndexMap)
+		{
+		float sum = 0;
+
+		for (int i = 0; i < numSVs; i++)
+			{
+			sum += alphas[i] * kvalues[svIndexMap[i]];
+			}
+
+		sum -= rho;
+		return sum;
+		}
+
+	public CrossValidationResults newCrossValidationResults(int i, int tt, int ft, int tf, int ff)
+		{
+		return new CrossValidationResults(i, tt, ft, tf, ff);
+		}
+
+	public L predictLabel(float[] kvalues, int[] svIndexMap)
+		{
+		return predictValue(kvalues, svIndexMap) > 0 ? trueLabel : falseLabel;
 		}
 
 	public void printSolutionInfo(BinaryClassificationProblem<L, P> problem)
@@ -157,47 +182,6 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 			}
 		}
 
-	public L predictLabel(P x)
-		{
-		return predictValue(x) > 0 ? trueLabel : falseLabel;
-		}
-
-	public Float predictValue(P x)
-		{
-		float sum = 0;
-
-		P scaledX = scalingModel.scaledCopy(x);
-
-		for (int i = 0; i < numSVs; i++)
-			{
-			float kvalue = (float) kernel.evaluate(scaledX, SVs[i]);
-			sum += alphas[i] * kvalue;
-			}
-
-		sum -= rho;
-		return sum;
-		}
-
-
-	public L predictLabel(float[] kvalues, int[] svIndexMap)
-		{
-		return predictValue(kvalues, svIndexMap) > 0 ? trueLabel : falseLabel;
-		}
-
-	public Float predictValue(float[] kvalues, int[] svIndexMap)
-		{
-		float sum = 0;
-
-		for (int i = 0; i < numSVs; i++)
-			{
-			//float kvalue = (float) kernel.evaluate(x, SVs[i]);
-			sum += alphas[i] * kvalues[svIndexMap[i]];
-			}
-
-		sum -= rho;
-		return sum;
-		}
-
 	public void writeToStream(DataOutputStream fp) throws IOException
 		{
 		super.writeToStream(fp);
@@ -210,13 +194,47 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		fp.close();
 		}
 
-	public float getSumAlpha()
+// -------------------------- INNER CLASSES --------------------------
+
+	public class CrossValidationResults
 		{
-		float result = 0;
-		for (Double aFloat : supportVectors.values())
+// ------------------------------ FIELDS ------------------------------
+
+		int numExamples;
+		int tt, tf, ft, ff;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+		public CrossValidationResults(int numExamples, int tt, int tf, int ft, int ff)
 			{
-			result += aFloat;
+			this.numExamples = numExamples;
+			this.tt = tt;
+			this.tf = tf;
+			this.ft = ft;
+			this.ff = ff;
 			}
-		return result;
+
+// -------------------------- OTHER METHODS --------------------------
+
+		float FalseFalseRate()
+			{
+			return (float) ff / (float) numExamples;
+			}
+
+		float FalseTrueRate()
+			{
+			return (float) ft / (float) numExamples;
+			}
+
+		float TrueFalseRate()
+			{
+			return (float) tf / (float) numExamples;
+			}
+
+		float TrueTrueRate()
+			{
+			return (float) tt / (float) numExamples;
+			}
 		}
 	}

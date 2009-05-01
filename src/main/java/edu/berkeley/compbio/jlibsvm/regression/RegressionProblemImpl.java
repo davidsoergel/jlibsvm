@@ -18,34 +18,56 @@ import java.util.Set;
 public class RegressionProblemImpl<P> extends ExplicitSvmProblemImpl<Float, P, RegressionProblem<P>>
 		implements RegressionProblem<P>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
+
+	public RegressionProblemImpl(Map<P, Float> examples, HashMap<P, Integer> exampleIds)
+		{
+		super(examples, exampleIds);
+		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface SvmProblem ---------------------
+
 	public List<Float> getLabels()
 		{
 		throw new SvmException("Shouldn't try to get unique target values for a regression problem");
 		}
 
-	public RegressionProblemImpl(Map<P, Float> examples, HashMap<P, Integer> exampleIds)
-		{
-		super(examples, exampleIds);
-		//	targetValues = new Float[numExamples];
-		}
+// -------------------------- OTHER METHODS --------------------------
 
 	protected Fold<Float, P, RegressionProblem<P>> makeFold(Set<P> heldOutPoints)
 		{
-		return new RegressionFold(//this,
-		                          heldOutPoints);
+		return new RegressionFold(heldOutPoints);
 		}
 
+// -------------------------- INNER CLASSES --------------------------
 
 	public class RegressionFold extends AbstractFold<Float, P, RegressionProblem<P>> implements RegressionProblem<P>
 		{
-		//	private BinaryClassificationProblemImpl<P> fullProblem;
+// --------------------------- CONSTRUCTORS ---------------------------
 
-		public RegressionFold(//BinaryClassificationProblemImpl<P> fullProblem,
-		                      Set<P> heldOutPoints)
+		public RegressionFold(Set<P> heldOutPoints)
 			{
 			super(RegressionProblemImpl.this.getExamples(), heldOutPoints,
 			      RegressionProblemImpl.this.getScalingModel());
-			//this.fullProblem = fullProblem;
+			}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface SvmProblem ---------------------
+
+
+		public Map<P, Integer> getExampleIds()
+			{
+			return RegressionProblemImpl.this.getExampleIds();
+			}
+
+		public int getId(P key)
+			{
+			return RegressionProblemImpl.this.getId(key);
 			}
 
 		public List<Float> getLabels()
@@ -59,19 +81,11 @@ public class RegressionProblemImpl<P> extends ExplicitSvmProblemImpl<Float, P, R
 			return RegressionProblemImpl.this.getTargetValue(point);
 			}
 
+// -------------------------- OTHER METHODS --------------------------
+
 		public Set<Fold<Boolean, P, RegressionProblem<P>>> makeFolds(int numberOfFolds)
 			{
 			throw new NotImplementedException();
-			}
-
-		public int getId(P key)
-			{
-			return RegressionProblemImpl.this.getId(key);
-			}
-
-		public Map<P, Integer> getExampleIds()
-			{
-			return RegressionProblemImpl.this.getExampleIds();
 			}
 		}
 	}

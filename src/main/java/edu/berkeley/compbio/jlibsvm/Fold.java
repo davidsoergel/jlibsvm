@@ -8,7 +8,9 @@ import java.util.Set;
  */
 public interface Fold<L extends Comparable, P, R> extends SvmProblem<L, P>
 	{
-	Set<P> getHeldOutPoints();
+// -------------------------- OTHER METHODS --------------------------
 
 	R asR();
+
+	Set<P> getHeldOutPoints();
 	}

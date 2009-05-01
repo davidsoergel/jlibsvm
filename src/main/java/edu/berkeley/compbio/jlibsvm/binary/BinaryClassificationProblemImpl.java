@@ -21,44 +21,28 @@ public class BinaryClassificationProblemImpl<L extends Comparable, P>
 		extends ExplicitSvmProblemImpl<L, P, BinaryClassificationProblem<L, P>>
 		implements BinaryClassificationProblem<L, P>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	Class labelClass;
-
-
-	/*
-   public float[] targetValueAsFloat()
-	   {
-	   float[] result =  new float[targetValues.length];
-	   int i = 0;
-	   for (Boolean targetValue : targetValues)
-		   {
-		   result[i] = targetValue? 1f : -1f;
-		   i++;
-		   }
-	   return result;
-	   }
-	   */
-	/*
-	 public BinaryClassificationProblemImpl(int numExamples)
-		 {
-		 super(numExamples);
-		 //targetValues = new Boolean[numExamples];
-		 }
- */
 
 	// these are redundant with getLabels() but clearer which is which
 	L trueLabel;
 	L falseLabel;
 
-	public L getTrueLabel()
-		{
-		return trueLabel;
-		}
+	// cache the scaled copy, taking care that the scalingModelLearner is the same one.
+	// only bother keeping one (i.e. don't make a map from learners to scaled copies)
+	private ScalingModelLearner<P> lastScalingModelLearner = null;
+	private BinaryClassificationProblem<L, P> scaledCopy = null;
 
-	public L getFalseLabel()
-		{
-		return falseLabel;
-		}
 
+// --------------------------- CONSTRUCTORS ---------------------------
+
+	public BinaryClassificationProblemImpl(Class labelClass, Map<P, L> examples, @NotNull Map<P, Integer> exampleIds)
+		{
+		super(examples, exampleIds);
+		setupLabels();
+		this.labelClass = labelClass;
+		}
 
 	public void setupLabels()
 		{
@@ -72,10 +56,44 @@ public class BinaryClassificationProblemImpl<L extends Comparable, P>
 			}
 		}
 
-	// cache the scaled copy, taking care that the scalingModelLearner is the same one.
-	// only bother keeping one (i.e. don't make a map from learners to scaled copies)
-	private ScalingModelLearner<P> lastScalingModelLearner = null;
-	private BinaryClassificationProblem<L, P> scaledCopy = null;
+	public BinaryClassificationProblemImpl(Class labelClass, Map<P, L> examples, Map<P, Integer> exampleIds,
+	                                       ScalingModel<P> scalingModel, L trueLabel, L falseLabel)
+		{
+		super(examples, exampleIds, scalingModel);
+		this.trueLabel = trueLabel;
+		this.falseLabel = falseLabel;
+		this.labelClass = labelClass;
+		}
+
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+	public L getFalseLabel()
+		{
+		return falseLabel;
+		}
+
+	public L getTrueLabel()
+		{
+		return trueLabel;
+		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface BinaryClassificationProblem ---------------------
+
+
+	public Map<P, Boolean> getBooleanExamples()
+		{
+		setupLabels();
+
+		Map<P, Boolean> result = new HashMap<P, Boolean>(examples.size());
+		for (Map.Entry<P, L> entry : examples.entrySet())
+			{
+			result.put(entry.getKey(), entry.getValue().equals(trueLabel) ? Boolean.TRUE : Boolean.FALSE);
+			}
+		return result;
+		}
 
 	public BinaryClassificationProblem<L, P> getScaledCopy(@NotNull ScalingModelLearner<P> scalingModelLearner)
 		{
@@ -101,107 +119,62 @@ public class BinaryClassificationProblemImpl<L extends Comparable, P>
 		return scaledCopy;
 		}
 
-	public BinaryClassificationProblemImpl(Class labelClass, Map<P, L> examples, @NotNull Map<P, Integer> exampleIds)
-		{
-		super(examples, exampleIds);
-		setupLabels();
-		this.labelClass = labelClass;
-		}
+// --------------------- Interface SvmProblem ---------------------
 
-	public BinaryClassificationProblemImpl(Class labelClass, Map<P, L> examples, Map<P, Integer> exampleIds,
-	                                       ScalingModel<P> scalingModel, L trueLabel, L falseLabel)
-		{
-		super(examples, exampleIds, scalingModel);
-		this.trueLabel = trueLabel;
-		this.falseLabel = falseLabel;
-		this.labelClass = labelClass;
-		}
-
-
-	/*	public BinaryClassificationProblem newSubProblem(int numExamples)
-		 {
-		 return new BinaryClassificationProblem(numExamples);
-		 }
- */
-
-	// not bothering with generic "L"
-	/*	Object trueLabel;
-   Object falseLabel;
-
-   public BinaryClassificationProblemImpl(Object trueLabel, Object falseLabel, Map<P, Boolean> examples)
-	   {
-	   this(examples);
-	   this.trueLabel = trueLabel;
-	   this.falseLabel = falseLabel;
-	   }*/
-
-	//Float trueClass = null;
-
-	/*	public void addExampleFloat(P point, Float x)
-	   {
-	   if (getLabels().size() == 0) // == null)
-		   {
-trueLabel =
-		   }
-	   addExample(point, x.equals(trueLabel));
-	   }*/
 
 	public L getTargetValue(P point)
 		{
-		return examples.get(point); //targetValues[i];
+		return examples.get(point);
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	protected Fold<L, P, BinaryClassificationProblem<L, P>> makeFold(Set<P> heldOutPoints)
 		{
-		return new BinaryClassificationFold(//this,
-		                                    heldOutPoints);
+		return new BinaryClassificationFold(heldOutPoints);
 		}
 
-	public Map<P, Boolean> getBooleanExamples()
-		{
-		setupLabels();
-
-		Map<P, Boolean> result = new HashMap<P, Boolean>(examples.size());
-		for (Map.Entry<P, L> entry : examples.entrySet())
-			{
-			result.put(entry.getKey(), entry.getValue().equals(trueLabel) ? Boolean.TRUE : Boolean.FALSE);
-			}
-		return result;
-		}
+// -------------------------- INNER CLASSES --------------------------
 
 	public class BinaryClassificationFold extends AbstractFold<L, P, BinaryClassificationProblem<L, P>>
 			implements BinaryClassificationProblem<L, P>
 		{
-		//	private BinaryClassificationProblemImpl<P> fullProblem;
+// ------------------------------ FIELDS ------------------------------
 
-		public BinaryClassificationFold(//BinaryClassificationProblemImpl<P> fullProblem,
-		                                Set<P> heldOutPoints)
+		//** Note we scale each fold independently, since that best simulates the real situation (where we can't use the test samples during scaling)
+
+
+		// cache the scaled copy, taking care that the scalingModelLearner is the same one.
+		// only bother keeping one (i.e. don't make a map from learners to scaled copies)
+		private ScalingModelLearner<P> lastScalingModelLearner = null;
+		private BinaryClassificationProblem<L, P> scaledCopy = null;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+		public BinaryClassificationFold(Set<P> heldOutPoints)
 			{
 			super(BinaryClassificationProblemImpl.this.getExamples(), heldOutPoints,
 			      BinaryClassificationProblemImpl.this.getScalingModel());
-			//this.fullProblem = fullProblem;
 			}
 
-		public void setupLabels()
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+		public L getFalseLabel()
 			{
-			BinaryClassificationProblemImpl.this.setupLabels();
+			return falseLabel;
 			}
 
-		public List<L> getLabels()
+		public L getTrueLabel()
 			{
-			return BinaryClassificationProblemImpl.this.getLabels();
+			return trueLabel;
 			}
 
-		public L getTargetValue(P point)
-			{
-			assert !heldOutPoints.contains(point);  // we should never ask to cheat
-			return BinaryClassificationProblemImpl.this.getTargetValue(point);
-			}
+// ------------------------ INTERFACE METHODS ------------------------
 
-		public Set<Fold<Boolean, P, BinaryClassificationProblem<L, P>>> makeFolds(int numberOfFolds)
-			{
-			throw new NotImplementedException();
-			}
+
+// --------------------- Interface BinaryClassificationProblem ---------------------
+
 
 		public Map<P, Boolean> getBooleanExamples()
 			{
@@ -213,34 +186,6 @@ trueLabel =
 				}
 			return result;
 			}
-
-		public L getTrueLabel()
-			{
-			return trueLabel; //BinaryClassificationProblemImpl.this.getTrueLabel();
-			}
-
-		public L getFalseLabel()
-			{
-			return falseLabel; //BinaryClassificationProblemImpl.this.getFalseLabel();
-			}
-
-		public int getId(P key)
-			{
-			return BinaryClassificationProblemImpl.this.getId(key);
-			}
-
-		public Map<P, Integer> getExampleIds()
-			{
-			return BinaryClassificationProblemImpl.this.getExampleIds();
-			}
-
-		//** Note we scale each fold independently, since that best simulates the real situation (where we can't use the test samples during scaling)
-
-
-		// cache the scaled copy, taking care that the scalingModelLearner is the same one.
-		// only bother keeping one (i.e. don't make a map from learners to scaled copies)
-		private ScalingModelLearner<P> lastScalingModelLearner = null;
-		private BinaryClassificationProblem<L, P> scaledCopy = null;
 
 		public BinaryClassificationProblem<L, P> getScaledCopy(@NotNull ScalingModelLearner<P> scalingModelLearner)
 			{
@@ -264,6 +209,42 @@ trueLabel =
 				                                                       scalingModel, trueLabel, falseLabel);
 				}
 			return scaledCopy;
+			}
+
+		public void setupLabels()
+			{
+			BinaryClassificationProblemImpl.this.setupLabels();
+			}
+
+// --------------------- Interface SvmProblem ---------------------
+
+
+		public Map<P, Integer> getExampleIds()
+			{
+			return BinaryClassificationProblemImpl.this.getExampleIds();
+			}
+
+		public int getId(P key)
+			{
+			return BinaryClassificationProblemImpl.this.getId(key);
+			}
+
+		public List<L> getLabels()
+			{
+			return BinaryClassificationProblemImpl.this.getLabels();
+			}
+
+		public L getTargetValue(P point)
+			{
+			assert !heldOutPoints.contains(point);  // we should never ask to cheat
+			return BinaryClassificationProblemImpl.this.getTargetValue(point);
+			}
+
+// -------------------------- OTHER METHODS --------------------------
+
+		public Set<Fold<Boolean, P, BinaryClassificationProblem<L, P>>> makeFolds(int numberOfFolds)
+			{
+			throw new NotImplementedException();
 			}
 		}
 	}

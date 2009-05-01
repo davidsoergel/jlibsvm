@@ -49,15 +49,9 @@ import java.util.Vector;
 
 public class svm_toy extends Applet
 	{
+// ------------------------------ FIELDS ------------------------------
 
 	static final String DEFAULT_PARAM = "-t 2 -c 100";
-	int XLEN;
-	int YLEN;
-
-	// off-screen buffer
-
-	Image buffer;
-	Graphics buffer_gc;
 
 	// pre-allocated colors
 
@@ -70,22 +64,24 @@ public class svm_toy extends Applet
 			new Color(200, 200, 0),
 			new Color(200, 0, 200)
 	};
+	int XLEN;
+	int YLEN;
 
-	static class point
-		{
-		point(float x, float y, byte value)
-			{
-			this.x = x;
-			this.y = y;
-			this.value = value;
-			}
+	// off-screen buffer
 
-		float x, y;
-		byte value;
-		}
+	Image buffer;
+	Graphics buffer_gc;
 
 	Vector<point> point_list = new Vector<point>();
 	byte current_value = 1;
+
+
+// -------------------------- OTHER METHODS --------------------------
+
+	public Dimension getPreferredSize()
+		{
+		return new Dimension(XLEN, YLEN + 50);
+		}
 
 	public void init()
 		{
@@ -180,15 +176,23 @@ public class svm_toy extends Applet
 		this.enableEvents(AWTEvent.MOUSE_EVENT_MASK);
 		}
 
-	void draw_point(point p)
+	public void setSize(Dimension d)
 		{
-		Color c = colors[p.value + 3];
+		setSize(d.width, d.height);
+		}
 
-		Graphics window_gc = getGraphics();
-		buffer_gc.setColor(c);
-		buffer_gc.fillRect((int) (p.x * XLEN), (int) (p.y * YLEN), 4, 4);
-		window_gc.setColor(c);
-		window_gc.fillRect((int) (p.x * XLEN), (int) (p.y * YLEN), 4, 4);
+	void button_change_clicked()
+		{
+		++current_value;
+		if (current_value > 3)
+			{
+			current_value = 1;
+			}
+		}
+
+	void button_clear_clicked()
+		{
+		clear_all();
 		}
 
 	void clear_all()
@@ -202,24 +206,65 @@ public class svm_toy extends Applet
 		repaint();
 		}
 
-	void draw_all_points()
+	void button_save_clicked()
 		{
-		int n = point_list.size();
-		for (int i = 0; i < n; i++)
+		FileDialog dialog = new FileDialog(new Frame(), "Save", FileDialog.SAVE);
+		dialog.setVisible(true);
+		String filename = dialog.getDirectory() + File.separator + dialog.getFile();
+		if (filename == null)
 			{
-			draw_point(point_list.elementAt(i));
+			return;
+			}
+		try
+			{
+			DataOutputStream fp = new DataOutputStream(new FileOutputStream(filename));
+			int n = point_list.size();
+			for (int i = 0; i < n; i++)
+				{
+				point p = point_list.elementAt(i);
+				fp.writeBytes(p.value + " 1:" + p.x + " 2:" + p.y + "\n");
+				}
+			fp.close();
+			}
+		catch (IOException e)
+			{
+			System.err.print(e);
 			}
 		}
 
-	void button_change_clicked()
+	void button_load_clicked()
 		{
-		++current_value;
-		if (current_value > 3)
+		FileDialog dialog = new FileDialog(new Frame(), "Load", FileDialog.LOAD);
+		dialog.setVisible(true);
+		//String filename = dialog.getFile();
+		String filename = dialog.getDirectory() + File.separator + dialog.getFile();
+		if (filename == null)
 			{
-			current_value = 1;
+			return;
 			}
+		clear_all();
+		try
+			{
+			BufferedReader fp = new BufferedReader(new FileReader(filename));
+			String line;
+			while ((line = fp.readLine()) != null)
+				{
+				StringTokenizer st = new StringTokenizer(line, " \t\n\r\f:");
+				byte value = (byte) Integer.parseInt(st.nextToken());
+				st.nextToken();
+				float x = Float.parseFloat(st.nextToken());
+				st.nextToken();
+				float y = Float.parseFloat(st.nextToken());
+				point_list.addElement(new point(x, y, value));
+				}
+			fp.close();
+			}
+		catch (IOException e)
+			{
+			System.err.print(e);
+			}
+		draw_all_points();
 		}
-
 
 	void button_run_clicked(String args)
 		{
@@ -404,7 +449,6 @@ public class svm_toy extends Applet
 			}
 		else if (svm_type == svm_train.EPSILON_SVR || svm_type == svm_train.NU_SVR)
 			{
-
 			if (kernel instanceof GammaKernel && ((GammaKernel) kernel).getGamma() == 0f)
 				{
 				((GammaKernel) kernel).setGamma(1.0f);
@@ -562,69 +606,37 @@ public class svm_toy extends Applet
 		draw_all_points();
 		}
 
-	void button_clear_clicked()
+	void draw_all_points()
 		{
-		clear_all();
-		}
-
-	void button_save_clicked()
-		{
-		FileDialog dialog = new FileDialog(new Frame(), "Save", FileDialog.SAVE);
-		dialog.setVisible(true);
-		String filename = dialog.getDirectory() + File.separator + dialog.getFile();
-		if (filename == null)
+		int n = point_list.size();
+		for (int i = 0; i < n; i++)
 			{
-			return;
-			}
-		try
-			{
-			DataOutputStream fp = new DataOutputStream(new FileOutputStream(filename));
-			int n = point_list.size();
-			for (int i = 0; i < n; i++)
-				{
-				point p = point_list.elementAt(i);
-				fp.writeBytes(p.value + " 1:" + p.x + " 2:" + p.y + "\n");
-				}
-			fp.close();
-			}
-		catch (IOException e)
-			{
-			System.err.print(e);
+			draw_point(point_list.elementAt(i));
 			}
 		}
 
-	void button_load_clicked()
+	void draw_point(point p)
 		{
-		FileDialog dialog = new FileDialog(new Frame(), "Load", FileDialog.LOAD);
-		dialog.setVisible(true);
-		//String filename = dialog.getFile();
-		String filename = dialog.getDirectory() + File.separator + dialog.getFile();
-		if (filename == null)
+		Color c = colors[p.value + 3];
+
+		Graphics window_gc = getGraphics();
+		buffer_gc.setColor(c);
+		buffer_gc.fillRect((int) (p.x * XLEN), (int) (p.y * YLEN), 4, 4);
+		window_gc.setColor(c);
+		window_gc.fillRect((int) (p.x * XLEN), (int) (p.y * YLEN), 4, 4);
+		}
+
+	public void paint(Graphics g)
+		{
+		// create buffer first time
+		if (buffer == null)
 			{
-			return;
+			buffer = this.createImage(XLEN, YLEN);
+			buffer_gc = buffer.getGraphics();
+			buffer_gc.setColor(colors[0]);
+			buffer_gc.fillRect(0, 0, XLEN, YLEN);
 			}
-		clear_all();
-		try
-			{
-			BufferedReader fp = new BufferedReader(new FileReader(filename));
-			String line;
-			while ((line = fp.readLine()) != null)
-				{
-				StringTokenizer st = new StringTokenizer(line, " \t\n\r\f:");
-				byte value = (byte) Integer.parseInt(st.nextToken());
-				st.nextToken();
-				float x = Float.parseFloat(st.nextToken());
-				st.nextToken();
-				float y = Float.parseFloat(st.nextToken());
-				point_list.addElement(new point(x, y, value));
-				}
-			fp.close();
-			}
-		catch (IOException e)
-			{
-			System.err.print(e);
-			}
-		draw_all_points();
+		g.drawImage(buffer, 0, 0, this);
 		}
 
 	protected void processMouseEvent(MouseEvent e)
@@ -641,29 +653,6 @@ public class svm_toy extends Applet
 			}
 		}
 
-	public void paint(Graphics g)
-		{
-		// create buffer first time
-		if (buffer == null)
-			{
-			buffer = this.createImage(XLEN, YLEN);
-			buffer_gc = buffer.getGraphics();
-			buffer_gc.setColor(colors[0]);
-			buffer_gc.fillRect(0, 0, XLEN, YLEN);
-			}
-		g.drawImage(buffer, 0, 0, this);
-		}
-
-	public Dimension getPreferredSize()
-		{
-		return new Dimension(XLEN, YLEN + 50);
-		}
-
-	public void setSize(Dimension d)
-		{
-		setSize(d.width, d.height);
-		}
-
 	public void setSize(int w, int h)
 		{
 		super.setSize(w, h);
@@ -671,6 +660,28 @@ public class svm_toy extends Applet
 		YLEN = h - 50;
 		clear_all();
 		}
+
+// -------------------------- INNER CLASSES --------------------------
+
+	static class point
+		{
+// ------------------------------ FIELDS ------------------------------
+
+		float x, y;
+		byte value;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+		point(float x, float y, byte value)
+			{
+			this.x = x;
+			this.y = y;
+			this.value = value;
+			}
+		}
+
+// --------------------------- main() method ---------------------------
 
 	public static void main(String[] argv)
 		{

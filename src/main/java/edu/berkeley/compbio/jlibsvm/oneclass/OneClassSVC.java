@@ -20,7 +20,12 @@ import java.util.Map;
  */
 public class OneClassSVC<L, P> extends RegressionSVM<P, OneClassProblem<L, P>>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(OneClassSVC.class);
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public OneClassSVC(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
 		{
@@ -37,48 +42,10 @@ public class OneClassSVC<L, P> extends RegressionSVM<P, OneClassProblem<L, P>>
 			}
 		}
 
+// -------------------------- OTHER METHODS --------------------------
+
 	public OneClassModel<L, P> train(OneClassProblem<L, P> problem)
 		{
-/*		int l = problem.getNumExamples();
-		float[] zeros = new float[l];
-		boolean[] ones = new boolean[l];
-		float[] initAlpha = new float[l];
-		int i;
-
-		int n = (int) (param.nu * problem.getNumExamples());// # of alpha's at upper bound
-
-		for (i = 0; i < n; i++)
-			{
-			initAlpha[i] = 1;
-			}
-		if (n < problem.getNumExamples())
-			{
-			initAlpha[n] = param.nu * problem.getNumExamples() - n;
-			}
-		for (i = n + 1; i < l; i++)
-			{
-			initAlpha[i] = 0;
-			}
-
-		for (i = 0; i < l; i++)
-			{
-			zeros[i] = 0;
-			ones[i] = true;
-			}
-
-		RegressionSolver s =
-				new RegressionSolver(new BasicKernelQMatrix(problem, kernel, param.cache_size), zeros, ones, initAlpha, 1.0f, 1.0f,
-				              param.eps, param.shrinking);
-
-		BinaryModel binaryModel = s.Solve();
-		binaryModel.kernel = kernel;
-		binaryModel.param = param;
-		binaryModel.compact();
-		OneClassModel model = new OneClassModel(binaryModel);
-		model.setSvmType(getSvmType());
-		return model;*/
-
-
 		if (param.C != 1f)
 			{
 			logger.warn("OneClassSVC ignores param.C, provided value " + param.C + " + not used");
@@ -116,7 +83,6 @@ public class OneClassSVC<L, P> extends RegressionSVM<P, OneClassProblem<L, P>>
 
 		return model;
 		}
-
 
 	public String getSvmType()
 		{

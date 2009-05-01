@@ -13,18 +13,16 @@ import edu.berkeley.compbio.jlibsvm.SvmException;
 
 class Cache
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private final int l;
 	private long size;
 
-	private static final class head_t
-		{
-		head_t prev, next;// a cicular list
-		float[] data;
-		int len;// data[0,len) is cached in this entry
-		}
-
 	private final head_t[] head;
 	private head_t lru_head;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	Cache(int l_, long size_)
 		{
@@ -46,21 +44,7 @@ class Cache
 		lru_head.next = lru_head.prev = lru_head;
 		}
 
-	private void lru_delete(head_t h)
-		{
-		// delete from current location
-		h.prev.next = h.next;
-		h.next.prev = h.prev;
-		}
-
-	private void lru_insert(head_t h)
-		{
-		// insert to last position
-		h.next = lru_head;
-		h.prev = lru_head.prev;
-		h.prev.next = h;
-		h.next.prev = h;
-		}
+// -------------------------- OTHER METHODS --------------------------
 
 	// request data [0,len)
 	// return some position p where [p,len) need to be filled
@@ -109,6 +93,22 @@ class Cache
 		lru_insert(h);
 		data[0] = h.data;
 		return len;
+		}
+
+	private void lru_delete(head_t h)
+		{
+		// delete from current location
+		h.prev.next = h.next;
+		h.next.prev = h.prev;
+		}
+
+	private void lru_insert(head_t h)
+		{
+		// insert to last position
+		h.next = lru_head;
+		h.prev = lru_head.prev;
+		h.prev.next = h;
+		h.next.prev = h;
 		}
 
 	void swap_index(int i, int j)
@@ -183,5 +183,16 @@ class Cache
 					}
 				}
 			}
+		}
+
+// -------------------------- INNER CLASSES --------------------------
+
+	private static final class head_t
+		{
+// ------------------------------ FIELDS ------------------------------
+
+		head_t prev, next;// a circular list
+		float[] data;
+		int len;// data[0,len) is cached in this entry
 		}
 	}

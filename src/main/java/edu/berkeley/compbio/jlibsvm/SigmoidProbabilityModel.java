@@ -8,8 +8,13 @@ import org.apache.log4j.Logger;
  */
 public class SigmoidProbabilityModel
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(SigmoidProbabilityModel.class);
 	float A, B;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	// Platt's binary SVM Probablistic Output: an improvement from Lin et al.
 
@@ -165,8 +170,10 @@ public class SigmoidProbabilityModel
 		if (iter >= maximumIterations)
 			{
 			logger.error("Reaching maximal iterations in two-class probability estimates");
-			}		//	float[] probAB = new float[2];		//	probAB[0] = A;		//	probAB[1] = B;		//	return probAB;
+			}
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	public float predict(float decisionValue)
 		{

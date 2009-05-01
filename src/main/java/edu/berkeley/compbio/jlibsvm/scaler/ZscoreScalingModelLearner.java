@@ -12,8 +12,45 @@ import java.util.Map;
  */
 public class ZscoreScalingModelLearner implements ScalingModelLearner<SparseVector>
 	{
+// ------------------------------ FIELDS ------------------------------
 
 	SvmParameter param;
+
+	int maxExamples;
+
+
+// -------------------------- STATIC METHODS --------------------------
+
+	// running mean is obvious; running stddev from http://en.wikipedia.org/wiki/Standard_deviation
+
+	public static float runningMean(int sampleCount, float priorMean, float value)
+		{
+		float d = sampleCount;  // cast only once
+		return priorMean + (value - priorMean) / d;
+		}
+
+	public static float runningStddevQ(int sampleCount, float priorMean, float priorQ, float value)
+		{
+		float d = value - priorMean;
+		float result = priorQ + ((sampleCount - 1) * d * d / sampleCount);
+		//	assert result < 1000;  // temporary test
+		//	assert !Float.isInfinite(result);
+		//	assert !Float.isNaN(result);
+		return result;
+		}
+
+	public static void runningStddevQtoStddevInPlace(Map<Integer, Float> stddevQ, int sampleCount)
+		{
+		//Map<Integer, Float> result = new HashMap<Integer,Float>();
+		float d = sampleCount;  // cast only once
+
+		for (Map.Entry<Integer, Float> entry : stddevQ.entrySet())
+			{
+			entry.setValue(new Float(Math.sqrt(entry.getValue() / d)));
+			}
+		}
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public ZscoreScalingModelLearner(SvmParameter param)
 		{
@@ -21,7 +58,10 @@ public class ZscoreScalingModelLearner implements ScalingModelLearner<SparseVect
 		this.maxExamples = param.scalingExamples;
 		}
 
-	int maxExamples;
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface ScalingModelLearner ---------------------
 
 	public ScalingModel<SparseVector> learnScaling(Iterable<SparseVector> examples)
 		{
@@ -56,25 +96,34 @@ public class ZscoreScalingModelLearner implements ScalingModelLearner<SparseVect
 				}
 
 			// if an index is not seen, it's still counted as having a value of zero
-
-
 			}
 
 		runningStddevQtoStddevInPlace(stddevQ, sampleCount);
 		return new ZscoreScalingModel(mean, stddevQ);
 		}
 
+// -------------------------- INNER CLASSES --------------------------
 
 	public class ZscoreScalingModel implements ScalingModel<SparseVector>
 		{
+// ------------------------------ FIELDS ------------------------------
+
 		Map<Integer, Float> mean;
 		Map<Integer, Float> stddev;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 		public ZscoreScalingModel(Map<Integer, Float> mean, Map<Integer, Float> stddev)
 			{
 			this.mean = mean;
 			this.stddev = stddev;
 			}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface ScalingModel ---------------------
 
 		public SparseVector scaledCopy(SparseVector example)
 			{
@@ -94,35 +143,6 @@ public class ZscoreScalingModelLearner implements ScalingModelLearner<SparseVect
 				}
 
 			return result;
-			}
-		}
-
-	// running mean is obvious; running stddev from http://en.wikipedia.org/wiki/Standard_deviation
-
-	public static float runningMean(int sampleCount, float priorMean, float value)
-		{
-		float d = sampleCount;  // cast only once
-		return priorMean + (value - priorMean) / d;
-		}
-
-	public static float runningStddevQ(int sampleCount, float priorMean, float priorQ, float value)
-		{
-		float d = value - priorMean;
-		float result = priorQ + ((sampleCount - 1) * d * d / sampleCount);
-		//	assert result < 1000;  // temporary test
-		//	assert !Float.isInfinite(result);
-		//	assert !Float.isNaN(result);
-		return result;
-		}
-
-	public static void runningStddevQtoStddevInPlace(Map<Integer, Float> stddevQ, int sampleCount)
-		{
-		//Map<Integer, Float> result = new HashMap<Integer,Float>();
-		float d = sampleCount;  // cast only once
-
-		for (Map.Entry<Integer, Float> entry : stddevQ.entrySet())
-			{
-			entry.setValue(new Float(Math.sqrt(entry.getValue() / d)));
 			}
 		}
 	}

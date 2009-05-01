@@ -6,6 +6,11 @@ package edu.berkeley.compbio.jlibsvm.labelinverter;
  */
 public class StringLabelInverter implements LabelInverter<String>
 	{
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface LabelInverter ---------------------
+
 	public String invert(String label)
 		{
 		return "Not " + label;

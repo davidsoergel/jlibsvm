@@ -10,11 +10,19 @@ import java.util.Set;
  */
 public interface ExplicitSvmProblem<L extends Comparable, P, R extends SvmProblem<L, P>> extends SvmProblem<L, P>
 	{
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface SvmProblem ---------------------
+
 	Map<P, L> getExamples();
 
 	List<L> getLabels();
 
 	L getTargetValue(P point);
+
+
+// -------------------------- OTHER METHODS --------------------------
 
 	Set<Fold<L, P, R>> makeFolds(int numberOfFolds);
 	}

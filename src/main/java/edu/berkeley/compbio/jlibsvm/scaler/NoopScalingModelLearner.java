@@ -6,8 +6,17 @@ package edu.berkeley.compbio.jlibsvm.scaler;
  */
 public class NoopScalingModelLearner<P> implements ScalingModelLearner<P>
 	{
-	// default implementation returns the identity ScalingModel; override for interesting behavior
+// ------------------------ INTERFACE METHODS ------------------------
 
+
+// --------------------- Interface ScalingModelLearner ---------------------
+
+	/**
+	 * default implementation returns the identity ScalingModel; override for interesting behavior
+	 *
+	 * @param examples
+	 * @return
+	 */
 	public ScalingModel<P> learnScaling(Iterable<P> examples)
 		{
 		return new NoopScalingModel<P>();

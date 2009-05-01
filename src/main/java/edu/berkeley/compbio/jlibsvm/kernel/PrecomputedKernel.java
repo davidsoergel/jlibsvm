@@ -10,30 +10,41 @@ import java.util.Properties;
  */
 public class PrecomputedKernel implements KernelFunction<SparseVector>
 	{
-	public PrecomputedKernel(Properties props)
-		{
-		throw new UnsupportedOperationException();// ** Hmm, not sure how to load precomputed kernels;
-		}
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public PrecomputedKernel()
 		{
 		throw new UnsupportedOperationException();
 		}
 
-	public double evaluate(SparseVector x, SparseVector y)
+	public PrecomputedKernel(Properties props)
 		{
-		return (double) evaluateF(x, y);
+		throw new UnsupportedOperationException();// ** Hmm, not sure how to load precomputed kernels;
 		}
 
-	public float evaluateF(SparseVector x, SparseVector y)
-		{
-		return x.values[(int) (y.values[0])];
-		}
+// ------------------------ CANONICAL METHODS ------------------------
 
 	public String toString()
 		{
 		StringBuilder sb = new StringBuilder();
 		sb.append("kernel_type precomputed\n");
 		return sb.toString();
+		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface KernelFunction ---------------------
+
+	public double evaluate(SparseVector x, SparseVector y)
+		{
+		return (double) evaluateF(x, y);
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	public float evaluateF(SparseVector x, SparseVector y)
+		{
+		return x.values[(int) (y.values[0])];
 		}
 	}

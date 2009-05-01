@@ -6,6 +6,8 @@ package edu.berkeley.compbio.jlibsvm;
  */
 public class SvmException extends RuntimeException
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	public SvmException()
 		{
 		}
@@ -15,13 +17,13 @@ public class SvmException extends RuntimeException
 		super(s);
 		}
 
-	public SvmException(String s, Throwable throwable)
-		{
-		super(s, throwable);
-		}
-
 	public SvmException(Throwable throwable)
 		{
 		super(throwable);
+		}
+
+	public SvmException(String s, Throwable throwable)
+		{
+		super(s, throwable);
 		}
 	}

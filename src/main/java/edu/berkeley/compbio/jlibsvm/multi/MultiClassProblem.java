@@ -14,13 +14,13 @@ import java.util.Set;
 public interface MultiClassProblem<L extends Comparable, P>//, R extends SvmProblem<L,P>>
 		extends SvmProblem<L, P>
 	{
-	//	void addExampleFloat(P point, Float x);
+// -------------------------- OTHER METHODS --------------------------
 
 	Map<L, Set<P>> getExamplesByLabel();
 
-	LabelInverter<L> getLabelInverter();
-
 	Class getLabelClass();
+
+	LabelInverter<L> getLabelInverter();
 
 	MultiClassProblem<L, P> getScaledCopy(ScalingModelLearner<P> scalingModelLearner);
 	}

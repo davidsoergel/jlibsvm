@@ -19,7 +19,12 @@ import java.util.Map;
  */
 public class Nu_SVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(Nu_SVR.class);
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public Nu_SVR(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
 		{
@@ -34,61 +39,20 @@ public class Nu_SVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 			}
 		}
 
+// -------------------------- OTHER METHODS --------------------------
+
 	public RegressionModel<P> train(RegressionProblem<P> problem)
 		{
 		float laplaceParameter = RegressionModel.NO_LAPLACE_PARAMETER;
 		if (param.probability)
 			{
 			laplaceParameter = laplaceParameter(problem);
-			}/*
-		int l = problem.getNumExamples();
-		float C = param.C;
-		float[] initAlpha = new float[2 * l];
-		float[] linearTerm = new float[2 * l];
-		boolean[] y = new boolean[2 * l];
-		int i;
-
-		float sum = C * param.nu * l / 2;
-		for (i = 0; i < l; i++)
-			{
-			initAlpha[i] = initAlpha[i + l] = Math.min(sum, C);
-			sum -= initAlpha[i];
-
-			linearTerm[i] = -problem.getTargetValue(i);
-			y[i] = true;
-
-			linearTerm[i + l] = problem.getTargetValue(i);
-			y[i + l] = false;
 			}
 
-		Solver_NU s =
-				new Solver_NU(new SVR_Q(problem, kernel, param.cache_size), linearTerm, y, initAlpha, C, C, param.eps,
-				              param.shrinking);
-
-		BinaryModel binaryModel = s.Solve();
-		binaryModel.kernel = kernel;
-		binaryModel.param = param;
-
-		System.out.print("epsilon = " + (-binaryModel.r) + "\n");
-
-		RegressionModel model = new RegressionModel(binaryModel);
-		model.setSvmType(getSvmType());
-		model.laplaceParameter = laplaceParameter;
-
-		float[] alpha = new float[l];
-		for (i = 0; i < l; i++)
-			{
-			alpha[i] = model.alpha[i] - model.alpha[i + l];
-			}
-		model.alpha = alpha;
-		model.compact();
-
-		return model;
-*/
 		float sum = param.C * param.nu * problem.getNumExamples() / 2f;
 
 		List<SolutionVector<P>> solutionVectors = new ArrayList<SolutionVector<P>>();
-		int c = 0;
+
 		for (Map.Entry<P, Float> example : problem.getExamples().entrySet())
 			{
 			float initAlpha = Math.min(sum, param.C);
@@ -98,12 +62,11 @@ public class Nu_SVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 
 			sv = new SolutionVector<P>(example.getKey(), true, -example.getValue(), initAlpha);
 			solutionVectors.add(sv);
-			sv.id = problem.getId(example.getKey());			//sv.id = c;
-			c++;
+			sv.id = problem.getId(example.getKey());
+
 			sv = new SolutionVector<P>(example.getKey(), false, example.getValue(), initAlpha);
 			solutionVectors.add(sv);
-			sv.id = -problem.getId(example.getKey());			//sv.id = c;
-			c++;
+			sv.id = -problem.getId(example.getKey());
 			}
 
 		QMatrix<P> qMatrix =

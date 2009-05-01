@@ -10,20 +10,13 @@ import java.util.StringTokenizer;
  */
 public class SvmContext<L extends Comparable, P>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	public KernelFunction<P> kernel;
-	//public ScalingModelLearner<P> scalingModelLearner;
 	public SvmParameter<L> param;
 
-	public SvmContext(KernelFunction<P> kernel, SvmParameter<L> param)
-		{
-		this.kernel = kernel;
-		this.param = param;
-		//this.scalingModelLearner = scalingModelLearner;
-		}
 
-	public SvmContext()
-		{
-		}
+// -------------------------- STATIC METHODS --------------------------
 
 	public static float[] parseFloatArray(String s)
 		{
@@ -38,7 +31,6 @@ public class SvmContext<L extends Comparable, P>
 		return result;
 		}
 
-
 	public static int[] parseIntArray(String s)
 		{
 		StringTokenizer st = new StringTokenizer(s);
@@ -50,5 +42,17 @@ public class SvmContext<L extends Comparable, P>
 			i++;
 			}
 		return result;
+		}
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+	public SvmContext()
+		{
+		}
+
+	public SvmContext(KernelFunction<P> kernel, SvmParameter<L> param)
+		{
+		this.kernel = kernel;
+		this.param = param;
 		}
 	}

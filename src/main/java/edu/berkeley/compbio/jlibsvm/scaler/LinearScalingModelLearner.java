@@ -16,7 +16,14 @@ import java.util.Map;
  */
 public class LinearScalingModelLearner implements ScalingModelLearner<SparseVector>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	SvmParameter param;
+
+	int maxExamples;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public LinearScalingModelLearner(SvmParameter param)
 		{
@@ -24,7 +31,10 @@ public class LinearScalingModelLearner implements ScalingModelLearner<SparseVect
 		this.maxExamples = param.scalingExamples;
 		}
 
-	int maxExamples;
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface ScalingModelLearner ---------------------
 
 	public ScalingModel<SparseVector> learnScaling(Iterable<SparseVector> examples)
 		{
@@ -64,19 +74,29 @@ public class LinearScalingModelLearner implements ScalingModelLearner<SparseVect
 		return new LinearScalingModel(minima, sizes);
 		}
 
+// -------------------------- INNER CLASSES --------------------------
 
 	public class LinearScalingModel implements ScalingModel<SparseVector>
 		{
+// ------------------------------ FIELDS ------------------------------
 
 		Map<Integer, Float> minima;
 		//double[] maxima;
 		Map<Integer, Float> sizes;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 		public LinearScalingModel(Map<Integer, Float> minima, Map<Integer, Float> sizes)
 			{
 			this.minima = minima;
 			this.sizes = sizes;
 			}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface ScalingModel ---------------------
 
 		public SparseVector scaledCopy(SparseVector example)
 			{

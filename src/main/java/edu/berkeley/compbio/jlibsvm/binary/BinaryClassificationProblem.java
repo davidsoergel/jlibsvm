@@ -12,14 +12,16 @@ import java.util.Map;
  */
 public interface BinaryClassificationProblem<L extends Comparable, P> extends SvmProblem<L, P>
 	{
-	Map<P, Boolean> getBooleanExamples();
+// -------------------------- OTHER METHODS --------------------------
 
-	L getTrueLabel();
+	Map<P, Boolean> getBooleanExamples();
 
 	L getFalseLabel();
 
-	void setupLabels();
-
 	@NotNull
 	BinaryClassificationProblem<L, P> getScaledCopy(ScalingModelLearner<P> scalingModelLearner);
+
+	L getTrueLabel();
+
+	void setupLabels();
 	}

@@ -10,6 +10,8 @@ import java.util.StringTokenizer;
 
 public class svm_scale
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private String line = null;
 	private double lower = -1.0;
 	private double upper = 1.0;
@@ -22,74 +24,12 @@ public class svm_scale
 	private double y_min = Double.MAX_VALUE;
 	private int max_index;
 
-	private static void exit_with_help()
+// --------------------------- main() method ---------------------------
+
+	public static void main(String argv[]) throws IOException
 		{
-		System.out.print("Usage: svm-scale [options] data_filename\n" + "options:\n"
-				+ "-l lower : x scaling lower limit (default -1)\n" + "-u upper : x scaling upper limit (default +1)\n"
-				+ "-y y_lower y_upper : y scaling limits (default: no y scaling)\n"
-				+ "-s save_filename : save scaling parameters to save_filename\n"
-				+ "-r restore_filename : restore scaling parameters from restore_filename\n");
-		System.exit(1);
-		}
-
-	private BufferedReader rewind(BufferedReader fp, String filename) throws IOException
-		{
-		fp.close();
-		return new BufferedReader(new FileReader(filename));
-		}
-
-	private void output_target(double value)
-		{
-		if (y_scaling)
-			{
-			if (value == y_min)
-				{
-				value = y_lower;
-				}
-			else if (value == y_max)
-				{
-				value = y_upper;
-				}
-			else
-				{
-				value = y_lower + (y_upper - y_lower) * (value - y_min) / (y_max - y_min);
-				}
-			}
-
-		System.out.print(value + " ");
-		}
-
-	private void output(int index, double value)
-		{
-		/* skip single-valued attribute */
-		if (feature_max[index] == feature_min[index])
-			{
-			return;
-			}
-
-		if (value == feature_min[index])
-			{
-			value = lower;
-			}
-		else if (value == feature_max[index])
-			{
-			value = upper;
-			}
-		else
-			{
-			value = lower + (upper - lower) * (value - feature_min[index]) / (feature_max[index] - feature_min[index]);
-			}
-
-		if (value != 0)
-			{
-			System.out.print(index + ":" + value + " ");
-			}
-		}
-
-	private String readline(BufferedReader fp) throws IOException
-		{
-		line = fp.readLine();
-		return line;
+		svm_scale s = new svm_scale();
+		s.run(argv);
 		}
 
 	private void run(String[] argv) throws IOException
@@ -377,9 +317,73 @@ public class svm_scale
 		fp.close();
 		}
 
-	public static void main(String argv[]) throws IOException
+	private static void exit_with_help()
 		{
-		svm_scale s = new svm_scale();
-		s.run(argv);
+		System.out.print("Usage: svm-scale [options] data_filename\n" + "options:\n"
+				+ "-l lower : x scaling lower limit (default -1)\n" + "-u upper : x scaling upper limit (default +1)\n"
+				+ "-y y_lower y_upper : y scaling limits (default: no y scaling)\n"
+				+ "-s save_filename : save scaling parameters to save_filename\n"
+				+ "-r restore_filename : restore scaling parameters from restore_filename\n");
+		System.exit(1);
+		}
+
+	private BufferedReader rewind(BufferedReader fp, String filename) throws IOException
+		{
+		fp.close();
+		return new BufferedReader(new FileReader(filename));
+		}
+
+	private String readline(BufferedReader fp) throws IOException
+		{
+		line = fp.readLine();
+		return line;
+		}
+
+	private void output_target(double value)
+		{
+		if (y_scaling)
+			{
+			if (value == y_min)
+				{
+				value = y_lower;
+				}
+			else if (value == y_max)
+				{
+				value = y_upper;
+				}
+			else
+				{
+				value = y_lower + (y_upper - y_lower) * (value - y_min) / (y_max - y_min);
+				}
+			}
+
+		System.out.print(value + " ");
+		}
+
+	private void output(int index, double value)
+		{
+		/* skip single-valued attribute */
+		if (feature_max[index] == feature_min[index])
+			{
+			return;
+			}
+
+		if (value == feature_min[index])
+			{
+			value = lower;
+			}
+		else if (value == feature_max[index])
+			{
+			value = upper;
+			}
+		else
+			{
+			value = lower + (upper - lower) * (value - feature_min[index]) / (feature_max[index] - feature_min[index]);
+			}
+
+		if (value != 0)
+			{
+			System.out.print(index + ":" + value + " ");
+			}
 		}
 	}

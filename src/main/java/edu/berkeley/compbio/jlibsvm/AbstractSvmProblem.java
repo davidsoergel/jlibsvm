@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.jlibsvm;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -9,40 +9,20 @@ import java.util.Map;
  */
 public abstract class AbstractSvmProblem<L extends Comparable, P, R extends SvmProblem<L, P>>
 		implements SvmProblem<L, P>
-	{/*	public class GroupedClasses
-			{
-			public int numberOfClasses;
-			public List<L> label;
-			public List<Integer> count;
-			public int[] start;
+	{
+// ------------------------------ FIELDS ------------------------------
 
-			public GroupedClasses(int numberOfClasses, List<L> label, int[] start, List<Integer> count)
-				{
-				this.numberOfClasses = numberOfClasses;
-				this.label = label;
-				this.start = start;
-				this.count = count;
-				}
-			}
-	*/
-	protected Map<L, Integer> exampleCounts = null;
+	protected Multiset<L> exampleCounts = null;
 
-	public Map<L, Integer> getExampleCounts()
+
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+	public Multiset<L> getExampleCounts()
 		{
 		if (exampleCounts == null)
 			{
-			// would be nice to use a google or apache Bag here, but trying to avoid dependencies
-			exampleCounts = new HashMap<L, Integer>();
-			for (Map.Entry<P, L> entry : getExamples().entrySet())
-				{
-				Integer c = exampleCounts.get(entry.getValue());
-				if (c == null)
-					{
-					c = 0;
-					}
-				c++;
-				exampleCounts.put(entry.getValue(), c);
-				}
+			exampleCounts = new HashMultiset<L>();
+			exampleCounts.addAll(getExamples().values());
 			}
 		return exampleCounts;
 		}

@@ -6,6 +6,11 @@ package edu.berkeley.compbio.jlibsvm.scaler;
  */
 public class NoopScalingModel<P> implements ScalingModel<P>
 	{
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface ScalingModel ---------------------
+
 	/**
 	 * default implementation just returns the original object, but an overriding implementation that actually changes
 	 * something should return a copy

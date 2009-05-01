@@ -10,7 +10,12 @@ import org.testng.annotations.Test;
  */
 public class GaussianRBFKernelTest
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(GaussianRBFKernelTest.class);
+
+
+// -------------------------- OTHER METHODS --------------------------
 
 	@Test
 	public void explicitAndCompositeKernelsAreEqual()
@@ -42,6 +47,8 @@ public class GaussianRBFKernelTest
 			}
 		}
 
+	// no need to waste cycles on the build server
+	/*
 	@Test
 	public void explicitRBFKernelSpeedTest()
 		{		// poor man's profiling
@@ -105,4 +112,5 @@ public class GaussianRBFKernelTest
 		float time = (endTime - startTime) / 1000f;
 		logger.debug("Composite RBF kernel time = " + time + " sec");
 		}
+		*/
 	}

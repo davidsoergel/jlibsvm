@@ -6,6 +6,8 @@ package edu.berkeley.compbio.jlibsvm.binary;
  */
 public class C_SVCTest
 	{
+// -------------------------- OTHER METHODS --------------------------
+
 	public void basicTest()
 		{
 		// not implemented

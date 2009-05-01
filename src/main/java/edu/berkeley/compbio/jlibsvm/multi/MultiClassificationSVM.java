@@ -29,45 +29,28 @@ import java.util.concurrent.TimeUnit;
  */
 public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P, MultiClassProblem<L, P>>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(MultiClassificationSVM.class);
 
 	private BinaryClassificationSVM<L, P> binarySvm;	//private Class labelClass;
 
-	//private boolean redistributeUnbalancedC;
 
-	/**
-	 * @param binarySvm
-	 * @param redistributeUnbalancedC For unbalanced data, redistribute the misclassification cost C according to the
-	 *                                numbers of examples in each class, so that each class has the same total
-	 *                                misclassification weight assigned to it and the average is param.C
-	 */
-	public MultiClassificationSVM(BinaryClassificationSVM<L, P> binarySvm) //, boolean redistributeUnbalancedC)
+// --------------------------- CONSTRUCTORS ---------------------------
+
+	public MultiClassificationSVM(BinaryClassificationSVM<L, P> binarySvm)
 		{
 		super(binarySvm.kernel, binarySvm.scalingModelLearner, binarySvm.param);
 		this.binarySvm = binarySvm;
-		//this.redistributeUnbalancedC = param.redistributeUnbalancedC;
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	@Override
 	public String getSvmType()
 		{
 		return "multiclass " + binarySvm.getSvmType();
 		}
-
-	/*	@Override
-   public Class getLabelClass()
-	   {
-	   return labelClass;
-	   }*/
-
-
-/*	public void setupQMatrix(SvmProblem<L, P> problem)
-		{
-		binarySvm.setupQMatrix(problem);
-		qMatrix = binarySvm.qMatrix; // just for the sake of reporting later
-		}
-*/
-
 
 	public MultiClassModel<L, P> train(MultiClassProblem<L, P> problem)
 		{
@@ -129,7 +112,6 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			LabelInverter<L> labelInverter = problem.getLabelInverter();
 			for (final L label : problem.getLabels())
 				{
-				//Map<P, L> subExamples = new HashMap<P, L>(problem.getNumExamples());
 				final L notLabel = labelInverter.invert(label);
 
 				final Set<P> labelExamples = examplesByLabel.get(label);
@@ -146,35 +128,6 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				final Set<P> notlabelExamples =
 						new SubtractionMap<P, L>(entries, labelExamples, param.falseClassSVlimit).keySet();
 
-
-/*
-				Collection<Map.Entry<P, L>> entries = problem.getExamples().entrySet();
-				if (param.falseClassSVlimit != 0)
-					{
-					// guarantee entries in random order if limiting the number of false examples
-					List<Map.Entry<P, L>> entryList = new ArrayList<Map.Entry<P, L>>(entries);
-					Collections.shuffle(entryList);
-					entries = entryList;
-					}
-
-					int falseExamples = 0;
-								for (Map.Entry<P, L> entry : entries)
-									{
-									if (entry.getValue().equals(label))
-										{
-										subExamples.put(entry.getKey(), label);
-										}
-									else if (param.falseClassSVlimit == 0 || falseExamples < param.falseClassSVlimit)
-										{
-										subExamples.put(entry.getKey(), notLabel);
-										falseExamples++;
-										}
-									}
-
-								final BinaryClassificationProblem<L, P> subProblem =
-										new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples,
-																				  problem.getExampleIds());*/
-
 				final BinaryClassificationProblem<L, P> subProblem =
 						new BooleanClassificationProblemImpl<L, P>(problem.getLabelClass(), label, labelExamples,
 						                                           notLabel, notlabelExamples, problem.getExampleIds());
@@ -187,7 +140,6 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				Future<BinaryModel<L, P>> fut = execService
 						.submit(binarySvm.trainCallable(subProblem, weights.get(label), weights.get(notLabel)));
 
-				//final BinaryModel<L, P> binaryModel =
 				futureMap.put(label, fut);
 				}
 
@@ -233,17 +185,10 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				logger.info("Trained " + c + " one-vs-all models");
 				}
 			}
-		/*	try
-			  {
-			  execService.awaitTermination(10, TimeUnit.SECONDS);
-			  }
-		  catch (InterruptedException e)
-			  {
-			  // no problem, just cycle
-			  }
-		  assert execService.isTerminated();
-  */
-		// ** apparently it takes a while for the pool to terminate...
+
+
+		// ** apparently it takes a while for the pool to terminate... but we don't care since we already got our results
+		//assert execService.isTerminated();
 
 
 		execService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -270,36 +215,16 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 						final Set<P> label1Examples = examplesByLabel.get(label1);
 						final Set<P> label2Examples = examplesByLabel.get(label2);
 
-						// PERF constructing each example set explicitly sucks, especially since they'll later be rebuilt with Boolean values anyway;
-						// can we make a UnionMap or something?
-						/*				Map<P, L> subExamples = new HashMap<P, L>(label1Examples.size() + label2Examples.size());
-
-							 for (P label1Example : label1Examples)
-								 {
-								 subExamples.put(label1Example, label1);
-								 }
-							 for (P label2Example : label2Examples)
-								 {
-								 subExamples.put(label2Example, label2);
-								 }
-	  */
-						//					Map<P,L> subExamples = new BinaryMap<P,L>(label1Examples, label1, label2Examples, label2);
-
-						//BinaryClassificationProblem<P> subProblem = new BinaryClassificationProblem<P>(label1Examples, label2Examples);
-
 						final BinaryClassificationProblem<L, P> subProblem =
 								new BooleanClassificationProblemImpl<L, P>(problem.getLabelClass(), label1,
 								                                           label1Examples, label2, label2Examples,
 								                                           problem.getExampleIds());
 
-						/*final BinaryClassificationProblem<L, P> subProblem =
-								new BinaryClassificationProblemImpl<L, P>(problem.getLabelClass(), subExamples,
-								                                          problem.getExampleIds());*/
 
 						Future<BinaryModel<L, P>> fut = execService
 								.submit(binarySvm.trainCallable(subProblem, weights.get(label1), weights.get(label2)));
 
-						//final BinaryModel<L, P> binaryModel =
+
 						futureMap2d.put(new LabelPair(label1, label2), fut);
 
 						c++;
@@ -449,157 +374,25 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		return weights;
 		}
 
-
-	/*	public MultiClassModel<L, P> train(MultiClassProblem<L, P> problem)
-		 {
-		 MultiClassModel<L, P> model = new MultiClassModel<L, P>(kernel, param);
-		 model.setSvmType(getSvmType());
-
-		 // classification
-		 int l = problem.examples.size();
-		 int[] perm = new int[l];
-
-		 // group training data of the same class
-		 MultiClassProblem<L, P>.GroupedClasses groupedExamples = problem.groupClasses(perm);
-		 int numberOfClasses = groupedExamples.numberOfClasses;
-		 List<L> groupLabels = groupedExamples.label;
-		 int[] groupStarts = groupedExamples.start;
-		 List<Integer> groupCounts = groupedExamples.count;
-
-		 // sort the examples so they occur in class blocks
-		 P[] x = new P[l];
-		 int i;
-		 for (i = 0; i < l; i++)
-			 {
-			 x[i] = problem.examples[perm[i]];
-			 }
-
-		 // calculate weighted C
-
- //		List<Float> weightedC = new ArrayList<Float>(numberOfClasses);
-
- //		for (i = 0; i < numberOfClasses; i++)
- //			{
- //			weightedC.add(param.C);
- //			}
-
-		 // if any weights are provided, apply them; else just use param.C
-		 Map<L, Float> weights = param.getWeights();
-		 for (Map.Entry<L, Float> weightEntry : weights.entrySet())
-			 {
-			 L key = weightEntry.getKey();
-			 Float value = weightEntry.getValue();
-			 int j = groupLabels.indexOf(key);
-			 if (j == -1)
-				 {
-				 System.err.print("warning: class label " + key + " specified in weight is not found\n");
-				 }
-			 else
-				 {
-				 Float w = weightEntry.getValue();
-				 weightEntry.setValue((w == null ? 1f : w) * param.C);
-				 }
-			 }
-
-		 model.oneVsOneModels = new BinaryModel[numberOfClasses * (numberOfClasses - 1) / 2];
-
-		 float[] probA = null, probB = null;
-		 if (param.probability)
-			 {
-			 probA = new float[numberOfClasses * (numberOfClasses - 1) / 2];
-			 probB = new float[numberOfClasses * (numberOfClasses - 1) / 2];
-			 }
-
-		 int oneVsOneIndex = 0;
-		 for (i = 0; i < numberOfClasses; i++)
-			 {
-			 for (int j = i + 1; j < numberOfClasses; j++)
-				 {
-				 int iStart = groupStarts[i], jStart = groupStarts[j];
-				 int iCount = groupCounts.get(i), jCount = groupCounts.get(j);
-				 int subprobLength = iCount + jCount;
-
-				 BinaryClassificationProblem<P> subProblem = new BinaryClassificationProblem<P>(subprobLength);
-
-				 for (int k = 0; k < iCount; k++)
-					 {
-					 subProblem.examples[k] = x[iStart + k];
-					 subProblem.putTargetValue(k, true);
-					 }
-				 for (int k = 0; k < jCount; k++)
-					 {
-					 subProblem.examples[iCount + k] = x[jStart + k];
-					 subProblem.putTargetValue(iCount + k, false);
-					 }
-
-				 if (param.probability)
-					 {
-					 float[] probAB = binarySvm.svcProbability(subProblem, weightedC[i], weightedC[j]);
-					 probA[oneVsOneIndex] = probAB[0];
-					 probB[oneVsOneIndex] = probAB[1];
-					 }
-
-				 model.oneVsOneModels[oneVsOneIndex] = binarySvm.trainOne(subProblem, weightedC[i], weightedC[j]);
-
-				 ++oneVsOneIndex;
-				 }
-			 }
-
-		 // build output
-
-		 model.numberOfClasses = numberOfClasses;
-
-
-		 model.labels = new Object[numberOfClasses];
-		 for (i = 0; i < numberOfClasses; i++)
-			 {
-			 model.labels[i] = groupLabels.get(i);
-			 }
-
-		 if (param.probability)
-			 {
-			 model.probA = new float[numberOfClasses * (numberOfClasses - 1) / 2];
-			 model.probB = new float[numberOfClasses * (numberOfClasses - 1) / 2];
-			 for (i = 0; i < numberOfClasses * (numberOfClasses - 1) / 2; i++)
-				 {
-				 model.probA[i] = probA[i];
-				 model.probB[i] = probB[i];
-				 }
-			 }
-		 else
-			 {
-			 model.probA = null;
-			 model.probB = null;
-			 }
-
-		 return model;
-		 }
- *//*
-	protected L[] foldPredict(MultiClassProblem<L,P> subprob, Iterator<P> foldIterator, int length)
-		{
-		MultiClassModel<L,P> model = train(subprob);
-
-		L[] result = (L[]) new Comparable[length];
-
-		int i = 0;
-		while (foldIterator.hasNext())
-			{
-			result[i] = model.predictLabel(foldIterator.next());
-			i++;
-			}
-		return result;
-		}*/
+// -------------------------- INNER CLASSES --------------------------
 
 	private class LabelPair<T>
 		{
+// ------------------------------ FIELDS ------------------------------
+
 		T one;
 		T two;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 		private LabelPair(T one, T two)
 			{
 			this.one = one;
 			this.two = two;
 			}
+
+// --------------------- GETTER / SETTER METHODS ---------------------
 
 		public T getOne()
 			{

@@ -17,7 +17,64 @@ import java.util.StringTokenizer;
  */
 public abstract class SolutionModel<P> extends SvmContext
 	{
-	public String svmType;  // names the SVM that was used to produce this model; used only for writeToStream
+// ------------------------------ FIELDS ------------------------------
+
+	/**
+	 * names the SVM that was used to produce this model; used only for writeToStream
+	 */
+	public String svmType;
+
+
+// -------------------------- STATIC METHODS --------------------------
+
+	public static SolutionModel identifyTypeAndLoad(String model_file_name)
+		{
+		try
+			{
+			BufferedReader fp = new BufferedReader(new FileReader(model_file_name));
+			Properties props = new Properties();
+			//props.load(new StringReader(readUpToSVs(fp))));  // java 1.6 only
+			props.load(new StringBufferInputStream(readUpToSVs(fp)));
+
+			// first figure out which model type it is
+			Class c = Class.forName(props.getProperty("svm_type"));
+
+			SolutionModel model = (SolutionModel) (c.getConstructor(Properties.class).newInstance(props));
+
+			model.readSupportVectors(fp);
+			fp.close();
+			return model;
+			}
+		catch (Throwable e)
+			{
+			throw new SvmException("Unable to load file " + model_file_name, e);
+			}
+		}
+
+	private static String readUpToSVs(BufferedReader reader) throws IOException
+		{
+		StringBuffer sb = new StringBuffer();
+		while (true)
+			{
+			String l = reader.readLine();
+			if (l.startsWith("SV"))
+				{
+				break;
+				}
+			sb.append(l);
+			}
+		return sb.toString();
+		}
+
+	protected abstract void readSupportVectors(BufferedReader fp) throws IOException;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+	public SolutionModel()
+		{
+		super();
+		}
 
 	public SolutionModel(Properties props)
 		{
@@ -47,27 +104,19 @@ public abstract class SolutionModel<P> extends SvmContext
 			}
 		}
 
-	public void setSvmType(String svmType)
-		{
-		this.svmType = svmType;
-		}
-
-	/*
-	 public SolutionModel(SolutionModel model)
-		 {
-		 super(model.kernel, model.param);
-		 svmType = model.svmType;
-		 }
- */
 	public SolutionModel(KernelFunction kernel, SvmParameter param)
 		{
 		super(kernel, param);
 		}
 
-	public SolutionModel()
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+	public void setSvmType(String svmType)
 		{
-		super();
+		this.svmType = svmType;
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	public void save(String model_file_name) throws IOException
 		{
@@ -92,46 +141,5 @@ public abstract class SolutionModel<P> extends SvmContext
 			fp.writeBytes(" " + i);
 			}
 		fp.writeBytes("\n");
-		}
-
-	public static SolutionModel identifyTypeAndLoad(String model_file_name)
-		{
-		try
-			{
-			BufferedReader fp = new BufferedReader(new FileReader(model_file_name));
-			Properties props = new Properties();
-			//props.load(new StringReader(readUpToSVs(fp))));  // java 1.6 only
-			props.load(new StringBufferInputStream(readUpToSVs(fp)));
-
-			// first figure out which model type it is
-			Class c = Class.forName(props.getProperty("svm_type"));
-
-			SolutionModel model = (SolutionModel) (c.getConstructor(Properties.class).newInstance(props));
-
-			model.readSupportVectors(fp);
-			fp.close();
-			return model;
-			}
-		catch (Throwable e)
-			{
-			throw new SvmException("Unable to load file " + model_file_name, e);
-			}
-		}
-
-	protected abstract void readSupportVectors(BufferedReader fp) throws IOException;
-
-	private static String readUpToSVs(BufferedReader reader) throws IOException
-		{
-		StringBuffer sb = new StringBuffer();
-		while (true)
-			{
-			String l = reader.readLine();
-			if (l.startsWith("SV"))
-				{
-				break;
-				}
-			sb.append(l);
-			}
-		return sb.toString();
 		}
 	}

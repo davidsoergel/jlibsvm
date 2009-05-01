@@ -21,7 +21,88 @@ import java.util.TreeMap;
 
 public class svm_predict
 	{
+// --------------------------- main() method ---------------------------
 
+	public static void main(String argv[]) throws IOException
+		{
+		int i, predict_probability = 0;
+
+		// parse options
+		for (i = 0; i < argv.length; i++)
+			{
+			if (argv[i].charAt(0) != '-')
+				{
+				break;
+				}
+			++i;
+			switch (argv[i - 1].charAt(1))
+				{
+				case 'b':
+					predict_probability = Integer.parseInt(argv[i]);
+					break;
+				default:
+					System.err.print("Unknown option: " + argv[i - 1] + "\n");
+					exit_with_help();
+				}
+			}
+		if (i >= argv.length)
+			{
+			exit_with_help();
+			}
+		try
+			{
+			BufferedReader input = new BufferedReader(new FileReader(argv[i]));
+			DataOutputStream output = new DataOutputStream(new FileOutputStream(argv[i + 2]));
+			SolutionModel model = SolutionModel.identifyTypeAndLoad(argv[i + 1]);
+			if (predict_probability == 1)
+				{
+				if (model instanceof MultiClassModel)
+					{
+					if (!((MultiClassModel) model)
+							.supportsOneVsOneProbability()) //svm.svm_check_probability_model(model)==0)
+						{
+						System.err.print("Model does not support probability estimates\n");
+						System.exit(1);
+						}
+					}
+				else if (model instanceof RegressionModel)
+					{
+					if (!((RegressionModel) model).supportsLaplace()) //svm.svm_check_probability_model(model)==0)
+						{
+						System.err.print("Model does not support probability estimates\n");
+						System.exit(1);
+						}
+					}
+				else
+					{
+					System.err.print("Model does not support probability estimates\n");
+					System.exit(1);
+					}
+				}
+			else
+				{
+				if (model instanceof MultiClassModel && ((MultiClassModel) model).supportsOneVsOneProbability())
+					{
+					System.out.print("Model supports probability estimates, but disabled in prediction.\n");
+					}
+				else if (model instanceof RegressionModel && ((RegressionModel) model).supportsLaplace())
+					{
+					System.out.print("Model supports Laplace parameter estimation, but disabled in prediction.\n");
+					}
+				}
+			predict(input, output, model, predict_probability);
+			input.close();
+			output.close();
+			}
+		catch (FileNotFoundException e)
+			{
+			exit_with_help();
+			}
+		catch (ArrayIndexOutOfBoundsException e)
+			{
+			exit_with_help();
+			}
+		}
 
 	private static void predict(BufferedReader input, DataOutputStream output, SolutionModel model,
 	                            int predict_probability) throws IOException
@@ -115,7 +196,6 @@ public class svm_predict
 
 			if (prediction.equals(target))
 				{
-
 				++correct;
 				}
 			if (prediction instanceof Float)
@@ -149,87 +229,5 @@ public class svm_predict
 		System.err.print("usage: svm_predict [options] test_file model_file output_file\n" + "options:\n"
 				+ "-b probability_estimates: whether to predict probability estimates, 0 or 1 (default 0); one-class SVM not supported yet\n");
 		System.exit(1);
-		}
-
-	public static void main(String argv[]) throws IOException
-		{
-		int i, predict_probability = 0;
-
-		// parse options
-		for (i = 0; i < argv.length; i++)
-			{
-			if (argv[i].charAt(0) != '-')
-				{
-				break;
-				}
-			++i;
-			switch (argv[i - 1].charAt(1))
-				{
-				case 'b':
-					predict_probability = Integer.parseInt(argv[i]);
-					break;
-				default:
-					System.err.print("Unknown option: " + argv[i - 1] + "\n");
-					exit_with_help();
-				}
-			}
-		if (i >= argv.length)
-			{
-			exit_with_help();
-			}
-		try
-			{
-			BufferedReader input = new BufferedReader(new FileReader(argv[i]));
-			DataOutputStream output = new DataOutputStream(new FileOutputStream(argv[i + 2]));
-			SolutionModel model = SolutionModel.identifyTypeAndLoad(argv[i + 1]);
-			if (predict_probability == 1)
-				{
-				if (model instanceof MultiClassModel)
-					{
-					if (!((MultiClassModel) model)
-							.supportsOneVsOneProbability()) //svm.svm_check_probability_model(model)==0)
-						{
-						System.err.print("Model does not support probability estimates\n");
-						System.exit(1);
-						}
-					}
-				else if (model instanceof RegressionModel)
-					{
-
-					if (!((RegressionModel) model).supportsLaplace()) //svm.svm_check_probability_model(model)==0)
-						{
-						System.err.print("Model does not support probability estimates\n");
-						System.exit(1);
-						}
-					}
-				else
-					{
-					System.err.print("Model does not support probability estimates\n");
-					System.exit(1);
-					}
-				}
-			else
-				{
-				if (model instanceof MultiClassModel && ((MultiClassModel) model).supportsOneVsOneProbability())
-					{
-					System.out.print("Model supports probability estimates, but disabled in prediction.\n");
-					}
-				else if (model instanceof RegressionModel && ((RegressionModel) model).supportsLaplace())
-					{
-					System.out.print("Model supports Laplace parameter estimation, but disabled in prediction.\n");
-					}
-				}
-			predict(input, output, model, predict_probability);
-			input.close();
-			output.close();
-			}
-		catch (FileNotFoundException e)
-			{
-			exit_with_help();
-			}
-		catch (ArrayIndexOutOfBoundsException e)
-			{
-			exit_with_help();
-			}
 		}
 	}

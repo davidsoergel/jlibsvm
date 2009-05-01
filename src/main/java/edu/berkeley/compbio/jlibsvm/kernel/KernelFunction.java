@@ -6,11 +6,9 @@ package edu.berkeley.compbio.jlibsvm.kernel;
  */
 public interface KernelFunction<P>
 	{
-	//float evaluate(SvmPoint x, SvmPoint y);
+// -------------------------- OTHER METHODS --------------------------
 
 	double evaluate(P x, P y);
-
-	//double evaluateD(P x, P y);
 
 	/**
 	 * Report performance statistics of the kernel, e.g. how often it was evaluated (which should respond to the cache

@@ -14,58 +14,37 @@ import java.util.Set;
  */
 public class SubtractionMap<P, L> extends AbstractMap<P, L>
 	{
-	//private Map<P,L> orig;
-	//private Set<P> except;
+// ------------------------------ FIELDS ------------------------------
+
 	private Set<Entry<P, L>> entries;
 
-	public SubtractionMap(Map<P, L> orig, Set<P> except, int maxSize)
-		{
-		this(orig.entrySet(), except, maxSize);
-		//this.orig = orig;
-		//this.except = except;
-		/*
-		for(P p : except)
-			{
-			assert orig.containsKey(p);
-			}*/
-		//entries = new SubtractionEntrySet<P, L>(orig.entrySet(), except);
-		}
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public SubtractionMap(Map<P, L> orig, Set<P> except)
 		{
 		this(orig.entrySet(), except);
 		}
 
-
-	public SubtractionMap(Collection<Entry<P, L>> origEntries, Set<P> except, int maxSize)
-		{
-		//this.orig = orig;
-		//this.except = except;
-		/*
-		for(P p : except)
-			{
-			assert orig.containsKey(p);
-			}*/
-		entries = new SubtractionEntrySet<P, L>(origEntries, except, maxSize);
-		}
-
 	public SubtractionMap(Collection<Entry<P, L>> origEntries, Set<P> except)
 		{
-		//this.orig = orig;
-		//this.except = except;
-		/*
-		for(P p : except)
-			{
-			assert orig.containsKey(p);
-			}*/
 		entries = new SubtractionEntrySet<P, L>(origEntries, except);
 		}
 
-
-	public Set<Entry<P, L>> entrySet()
+	public SubtractionMap(Map<P, L> orig, Set<P> except, int maxSize)
 		{
-		return entries;
+		this(orig.entrySet(), except, maxSize);
 		}
+
+	public SubtractionMap(Collection<Entry<P, L>> origEntries, Set<P> except, int maxSize)
+		{
+		entries = new SubtractionEntrySet<P, L>(origEntries, except, maxSize);
+		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface Map ---------------------
 
 	@Override
 	public int size()
@@ -73,12 +52,28 @@ public class SubtractionMap<P, L> extends AbstractMap<P, L>
 		return entries.size();
 		}
 
+	public Set<Entry<P, L>> entrySet()
+		{
+		return entries;
+		}
+
+// -------------------------- INNER CLASSES --------------------------
+
 	private class SubtractionEntrySet<K, V> extends AbstractSet<Entry<K, V>>
 		{
+// ------------------------------ FIELDS ------------------------------
+
 		private Collection<Entry<K, V>> orig;
 		private Set<K> except;
 		private int size;
 
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+		public SubtractionEntrySet(Collection<Entry<K, V>> orig, Set<K> except)
+			{
+			this(orig, except, Integer.MAX_VALUE);
+			}
 
 		public SubtractionEntrySet(Collection<Entry<K, V>> orig, Set<K> except, int maxSize)
 			{
@@ -99,18 +94,8 @@ public class SubtractionMap<P, L> extends AbstractMap<P, L>
 					}
 				c++;
 				}
-			size = c;  // now hasNext() should work right
-			//orig.size() - except.size();  // assume that all of the exceptions were actually in the original set to begin with
-			}
-
-		public SubtractionEntrySet(Collection<Entry<K, V>> orig, Set<K> except)
-			{
-			this(orig, except, Integer.MAX_VALUE);
-			}
-
-		public int size()
-			{
-			return size;
+			size = c;
+			// now hasNext() should work right
 			}
 
 		public Iterator<Entry<K, V>> iterator()
@@ -120,45 +105,35 @@ public class SubtractionMap<P, L> extends AbstractMap<P, L>
 			return new SubtractionEntrySet.ExceptKeyIterator(oi);
 			}
 
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface Collection ---------------------
+
+		public int size()
+			{
+			return size;
+			}
+
+// -------------------------- INNER CLASSES --------------------------
 
 		private class ExceptKeyIterator implements Iterator<Entry<K, V>>
 			{
+// ------------------------------ FIELDS ------------------------------
+
 			Iterator<Entry<K, V>> oi;
+
 			int c = 0;
+
+			Entry<K, V> next;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 			private ExceptKeyIterator(Iterator<Entry<K, V>> oi)
 				{
 				this.oi = oi;
 				prepNext();
-				}
-
-			Entry<K, V> next;
-
-			public boolean hasNext()
-				{
-				return next != null;
-				}
-
-			public Entry<K, V> next()
-				{
-				if (next == null)
-					{
-					throw new NoSuchElementException();
-					}
-				Entry<K, V> result = next;
-				prepNext();
-
-
-				//			assert c <= size;
-
-				c++;
-				// now c is the number of items successfully returned so far, including the one we're about to return
-
-				if (c >= size)
-					{
-					next = null;  // make sure hasNext behaves.  prepNext doesn't know about the count
-					}
-				return result;
 				}
 
 			private void prepNext()
@@ -175,6 +150,36 @@ public class SubtractionMap<P, L> extends AbstractMap<P, L>
 					{
 					next = null;
 					}
+				}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface Iterator ---------------------
+
+			public boolean hasNext()
+				{
+				return next != null;
+				}
+
+			public Entry<K, V> next()
+				{
+				if (next == null)
+					{
+					throw new NoSuchElementException();
+					}
+				Entry<K, V> result = next;
+				prepNext();
+
+
+				c++;
+				// now c is the number of items successfully returned so far, including the one we're about to return
+
+				if (c >= size)
+					{
+					next = null;  // make sure hasNext behaves.  prepNext doesn't know about the count
+					}
+				return result;
 				}
 
 			public void remove()

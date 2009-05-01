@@ -15,6 +15,8 @@ import java.util.HashMap;
 public class MutableMultiClassProblemImpl<L extends Comparable, P> extends MultiClassProblemImpl<L, P>
 		implements MutableSvmProblem<L, P, MultiClassProblem<L, P>>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	/**
 	 * For now, pending further cleanup, we need to create arrays of the label type.  That's impossible to do with generics
 	 * alone, so we need to provide the class object (e.g., String.class or whatever) for the label type used.  Of course
@@ -28,8 +30,12 @@ public class MutableMultiClassProblemImpl<L extends Comparable, P> extends Multi
 		{
 		super(labelClass, labelInverter, new HashMap<P, L>(numExamples), new HashMap<P, Integer>(numExamples),
 		      scalingModel);
-		//targetValues = (T[]) java.lang.reflect.Array.newInstance(type, length);
 		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface MutableSvmProblem ---------------------
 
 	public void addExample(P point, L label)
 		{

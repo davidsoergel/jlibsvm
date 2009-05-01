@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
+import com.google.common.collect.Multiset;
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.SvmParameter;
@@ -19,7 +20,12 @@ import java.util.Map;
  */
 public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(Nu_SVC.class);
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public Nu_SVC(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
 		{
@@ -30,16 +36,11 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 			}
 		}
 
-
-	public String getSvmType()
-		{
-		return "nu_svc";
-		}
+// -------------------------- OTHER METHODS --------------------------
 
 	@Override
 	public BinaryModel<L, P> trainOne(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
-		{	//private static void solve_nu_svc(svm_problem prob, float[] alpha, SolutionInfo si)
-
+		{
 		if (Cp != 1f || Cn != 1f)
 			{
 			logger.warn("Nu_SVC ignores Cp and Cn, provided values " + Cp + " and " + Cn + " + not used");
@@ -51,40 +52,19 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 			}
 
 
-		//	int i;
 		int l = problem.getNumExamples();
-		;
+
 		float nu = param.nu;
-
-		//	boolean[] y;
-
-		//	y = MathSupport.toPrimitive(problem.getTargetValues());
 
 		float sumPos = nu * l / 2;
 		float sumNeg = nu * l / 2;
 
-		/*	float[] initAlpha = new float[l];
 
-	   for (int i = 0; i < l; i++)
-		   {
-		   if (y[i])
-			   {
-			   initAlpha[i] = Math.min(1.0f, sumPos);
-			   sumPos -= initAlpha[i];
-			   }
-		   else
-			   {
-			   initAlpha[i] = Math.min(1.0f, sumNeg);
-			   sumNeg -= initAlpha[i];
-			   }
-		   }*/
-		Map<P, Boolean> examples =
-				problem.getBooleanExamples();		//Map<P, Float> initAlpha = new HashMap<P, Float>();
-
+		Map<P, Boolean> examples = problem.getBooleanExamples();
 
 		float linearTerm = 0f;
 		List<SolutionVector<P>> solutionVectors = new ArrayList<SolutionVector<P>>();
-		int c = 0;
+
 		for (Map.Entry<P, Boolean> entry : examples.entrySet())
 			{
 			float initAlpha;
@@ -100,7 +80,7 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 				}
 			SolutionVector<P> sv = new SolutionVector(entry.getKey(), entry.getValue(), linearTerm, initAlpha);
 			sv.id = problem.getId(entry.getKey());
-			c++;
+
 			solutionVectors.add(sv);
 			}
 
@@ -121,13 +101,6 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 
 		logger.info("C = " + 1 / r);
 
-		/*	float[] alpha = model.alpha;
-
-	   for (int i = 0; i < l; i++)
-		   {
-		   alpha[i] *= (y[i] ? 1f : -1f) / r;
-		   }*/
-
 		for (Map.Entry<P, Double> entry : model.supportVectors.entrySet())
 			{
 			entry.setValue((examples.get(entry.getKey()) ? 1. : -1.) / r);
@@ -146,10 +119,10 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 
 	public boolean isFeasible(BinaryClassificationProblem problem)
 		{
-		Map<Boolean, Integer> counts = problem.getExampleCounts();
+		Multiset<Boolean> counts = problem.getExampleCounts();
 
-		int n1 = counts.get(problem.getTrueLabel());
-		int n2 = counts.get(problem.getFalseLabel());
+		int n1 = counts.count(problem.getTrueLabel());
+		int n2 = counts.count(problem.getFalseLabel());
 
 		if (param.nu * (n1 + n2) / 2 > Math.min(n1, n2))
 			{
@@ -157,5 +130,10 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 			}
 
 		return true;
+		}
+
+	public String getSvmType()
+		{
+		return "nu_svc";
 		}
 	}

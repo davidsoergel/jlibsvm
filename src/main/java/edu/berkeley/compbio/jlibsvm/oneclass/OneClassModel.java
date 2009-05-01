@@ -11,12 +11,12 @@ import java.util.Properties;
  */
 public class OneClassModel<L, P> extends RegressionModel<P> implements DiscreteModel<Boolean, P>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	L label;
-	/*public OneClassModel(BinaryModel binaryModel)
-		{
-		super(binaryModel);
-		}
-*/
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public OneClassModel()
 		{
@@ -28,11 +28,26 @@ public class OneClassModel<L, P> extends RegressionModel<P> implements DiscreteM
 		super(props);
 		}
 
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+	public L getLabel()
+		{
+		return label;
+		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface ContinuousModel ---------------------
+
 	//** Hmmm does this make sense?
+
 	public Float predictValue(P x)
 		{
 		return predictLabel(x) ? 1f : -1f;
 		}
+
+// --------------------- Interface DiscreteModel ---------------------
 
 
 	public Boolean predictLabel(P x)
@@ -40,12 +55,7 @@ public class OneClassModel<L, P> extends RegressionModel<P> implements DiscreteM
 		return super.predictValue(x) > 0;
 		}
 
-
-	public L getLabel()
-		{
-		return label;
-		}
-
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * HACK guess at a probability of being in the one class by logistic function.  To be fancier we could do some sigmoid

@@ -20,12 +20,12 @@ import java.util.List;
  */
 public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	protected Solver_NU(QMatrix<P> Q, float Cp, float Cn, float eps, boolean shrinking)
 		{
 		super(Q, Cp, Cn, eps, shrinking);
 		}
-
 
 	public Solver_NU(List<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
 	                 boolean shrinking)
@@ -33,179 +33,75 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 		super(solutionVectors, Q, Cp, Cn, eps, shrinking);
 		}
 
-	/*	public SolutionInfo Solve(int l, QMatrix Q, float[] p, byte[] y, float[] alpha, float Cp, float Cn, float eps,
-				SolutionInfoNu si, int shrinking)
-		 {
-	 //	this.si = si;
-	 //	super.Solve(l, Q, p, y, alpha, Cp, Cn, eps, si, shrinking);
-		 return super.Solve();
-		 }
- */
-
-	// return null if optimal
+// -------------------------- OTHER METHODS --------------------------
 
 	@Override
-	protected SolutionVectorPair selectWorkingPair()
+	protected void calculate_rho(AlphaModel<L, P> model)
 		{
-		// return i,j such that y_i = y_j and
-		// i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
-		// j: minimizes the decrease of obj value
-		//    (if quadratic coefficeint <= 0, replace it with tau)
-		//    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
-
-		double Gmaxp = Float.NEGATIVE_INFINITY;
-		double Gmaxp2 = Float.NEGATIVE_INFINITY;
-		//int Gmaxp_idx = -1;
-
-		double Gmaxn = Float.NEGATIVE_INFINITY;
-		double Gmaxn2 = Float.NEGATIVE_INFINITY;
-		//int Gmaxn_idx = -1;
+		int nr_free1 = 0, nr_free2 = 0;
+		double ub1 = Double.POSITIVE_INFINITY, ub2 = Double.POSITIVE_INFINITY;
+		double lb1 = Double.NEGATIVE_INFINITY, lb2 = Double.NEGATIVE_INFINITY;
+		double sum_free1 = 0, sum_free2 = 0;
 
 
-		SolutionVector GmaxnSV = null; //-1;
-		SolutionVector GmaxpSV = null; //-1;
-
-		SolutionVector GminSV = null; //-1;
-
-		//int Gmin_idx = -1;
-		double obj_diff_min = Float.POSITIVE_INFINITY;
-
-		for (SolutionVector sv : active)
+		for (SolutionVector<P> sv : allExamples)
 			{
 			if (sv.targetValue)
 				{
-				if (!sv.isUpperBound())
+				if (sv.isLowerBound())
 					{
-					if (-sv.G >= Gmaxp)
-						{
-						Gmaxp = -sv.G;
-						GmaxpSV = sv;
-						}
+					ub1 = Math.min(ub1, sv.G);
+					}
+				else if (sv.isUpperBound())
+					{
+					lb1 = Math.max(lb1, sv.G);
+					}
+				else
+					{
+					++nr_free1;
+					sum_free1 += sv.G;
 					}
 				}
 			else
 				{
-				if (!sv.isLowerBound())
+				if (sv.isLowerBound())
 					{
-					if (sv.G >= Gmaxn)
-						{
-						Gmaxn = sv.G;
-						GmaxnSV = sv;
-						}
+					ub2 = Math.min(ub2, sv.G);
+					}
+				else if (sv.isUpperBound())
+					{
+					lb2 = Math.max(lb2, sv.G);
+					}
+				else
+					{
+					++nr_free2;
+					sum_free2 += sv.G;
 					}
 				}
 			}
 
-		/*
-		int ip = Gmaxp_idx;
-		int in = Gmaxn_idx;
-		float[] Q_ip = null;
-		float[] Q_in = null;
-		if (ip != -1)// null Q_ip not accessed: Gmaxp=Float.NEGATIVE_INFINITY if ip=-1
+		double r1, r2;
+		if (nr_free1 > 0)
 			{
-			Q_ip = Q.getQ(ip, activeSize);
+			r1 = sum_free1 / nr_free1;
 			}
-		if (in != -1)
+		else
 			{
-			Q_in = Q.getQ(in, activeSize);
-			}
-			*/
-		//float[] Q_GmaxpSV = Q.getQ(GmaxpSV, active);
-		//float[] Q_GmaxnSV = Q.getQ(GmaxnSV, active);
-		Q.getQ(GmaxpSV, active, Q_svA);
-		Q.getQ(GmaxnSV, active, Q_svB);
-
-		for (SolutionVector sv : active)
-			{
-			if (sv.targetValue)
-				{
-				if (!sv.isLowerBound())
-					{
-					double grad_diff = Gmaxp + sv.G;
-					if (sv.G >= Gmaxp2)
-						{
-						Gmaxp2 = sv.G;
-						}
-					if (grad_diff > 0)
-						{
-						double obj_diff;
-						//float quad_coef = Q_ip[ip] + QD[j] - 2 * Q_ip[j];
-						double quad_coef = Q.evaluateDiagonal(GmaxpSV) + Q.evaluateDiagonal(sv)
-								- 2.0f * Q_svA[sv.rank]; //Q_GmaxpSV[sv.rank];
-						if (quad_coef > 0)
-							{
-							obj_diff = -(grad_diff * grad_diff) / quad_coef;
-							}
-						else
-							{
-							obj_diff = -(grad_diff * grad_diff) / 1e-12f;
-							}
-
-						if (obj_diff <= obj_diff_min)
-							{
-							GminSV = sv;
-							obj_diff_min = obj_diff;
-							}
-						}
-					}
-				}
-			else
-				{
-				if (!sv.isUpperBound())
-					{
-					double grad_diff = Gmaxn - sv.G;
-					if (-sv.G >= Gmaxn2)
-						{
-						Gmaxn2 = -sv.G;
-						}
-					if (grad_diff > 0)
-						{
-						double obj_diff;
-						//double quad_coef = Q_in[in] + QD[j] - 2 * Q_in[j];
-
-
-						double quad_coef = Q.evaluateDiagonal(GmaxnSV) + Q.evaluateDiagonal(sv)
-								- 2.0f * Q_svB[sv.rank]; //Q_GmaxnSV[sv.rank];
-
-						if (quad_coef > 0)
-							{
-							obj_diff = -(grad_diff * grad_diff) / quad_coef;
-							}
-						else
-							{
-							obj_diff = -(grad_diff * grad_diff) / 1e-12f;
-							}
-
-						if (obj_diff <= obj_diff_min)
-							{
-							GminSV = sv;
-							obj_diff_min = obj_diff;
-							}
-						}
-					}
-				}
+			r1 = (ub1 + lb1) / 2;
 			}
 
-		/*	if (Math.max(Gmaxp + Gmaxp2, Gmaxn + Gmaxn2) < eps)
-			  {
-			  return null;
-			  }
-  */
-		/*	if (y[Gmin_idx])
-			  {
-			  working_set[0] = Gmaxp_idx;
-			  }
-		  else
-			  {
-			  working_set[0] = Gmaxn_idx;
-			  }
-		  working_set[1] = Gmin_idx;
-  */
+		if (nr_free2 > 0)
+			{
+			r2 = sum_free2 / nr_free2;
+			}
+		else
+			{
+			r2 = (ub2 + lb2) / 2;
+			}
 
-		return new SolutionVectorPair(GminSV.targetValue ? GmaxpSV : GmaxnSV, GminSV,
-		                              Math.max(Gmaxp + Gmaxp2, Gmaxn + Gmaxn2) < eps);
+		((BinaryModel) model).r = (float) ((r1 + r2) / 2);
+		model.rho = (float) ((r1 - r2) / 2);
 		}
-
 
 	void do_shrinking()
 		{
@@ -283,71 +179,130 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 		inactive = inactiveList.toArray(EMPTY_SV_ARRAY);
 		}
 
+	// return null if optimal
+
 	@Override
-	protected void calculate_rho(AlphaModel<L, P> model)
+	protected SolutionVectorPair selectWorkingPair()
 		{
-		int nr_free1 = 0, nr_free2 = 0;
-		double ub1 = Double.POSITIVE_INFINITY, ub2 = Double.POSITIVE_INFINITY;
-		double lb1 = Double.NEGATIVE_INFINITY, lb2 = Double.NEGATIVE_INFINITY;
-		double sum_free1 = 0, sum_free2 = 0;
+		// return i,j such that y_i = y_j and
+		// i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
+		// j: minimizes the decrease of obj value
+		//    (if quadratic coefficeint <= 0, replace it with tau)
+		//    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
+		double Gmaxp = Float.NEGATIVE_INFINITY;
+		double Gmaxp2 = Float.NEGATIVE_INFINITY;
 
-		for (SolutionVector<P> sv : allExamples)
+		double Gmaxn = Float.NEGATIVE_INFINITY;
+		double Gmaxn2 = Float.NEGATIVE_INFINITY;
+
+		SolutionVector GmaxnSV = null;
+		SolutionVector GmaxpSV = null;
+
+		SolutionVector GminSV = null;
+
+		double obj_diff_min = Float.POSITIVE_INFINITY;
+
+		for (SolutionVector sv : active)
 			{
 			if (sv.targetValue)
 				{
-				if (sv.isLowerBound())
+				if (!sv.isUpperBound())
 					{
-					ub1 = Math.min(ub1, sv.G);
-					}
-				else if (sv.isUpperBound())
-					{
-					lb1 = Math.max(lb1, sv.G);
-					}
-				else
-					{
-					++nr_free1;
-					sum_free1 += sv.G;
+					if (-sv.G >= Gmaxp)
+						{
+						Gmaxp = -sv.G;
+						GmaxpSV = sv;
+						}
 					}
 				}
 			else
 				{
-				if (sv.isLowerBound())
+				if (!sv.isLowerBound())
 					{
-					ub2 = Math.min(ub2, sv.G);
-					}
-				else if (sv.isUpperBound())
-					{
-					lb2 = Math.max(lb2, sv.G);
-					}
-				else
-					{
-					++nr_free2;
-					sum_free2 += sv.G;
+					if (sv.G >= Gmaxn)
+						{
+						Gmaxn = sv.G;
+						GmaxnSV = sv;
+						}
 					}
 				}
 			}
 
-		double r1, r2;
-		if (nr_free1 > 0)
+		Q.getQ(GmaxpSV, active, Q_svA);
+		Q.getQ(GmaxnSV, active, Q_svB);
+
+		for (SolutionVector sv : active)
 			{
-			r1 = sum_free1 / nr_free1;
-			}
-		else
-			{
-			r1 = (ub1 + lb1) / 2;
+			if (sv.targetValue)
+				{
+				if (!sv.isLowerBound())
+					{
+					double grad_diff = Gmaxp + sv.G;
+					if (sv.G >= Gmaxp2)
+						{
+						Gmaxp2 = sv.G;
+						}
+					if (grad_diff > 0)
+						{
+						double obj_diff;
+						double quad_coef = Q.evaluateDiagonal(GmaxpSV) + Q.evaluateDiagonal(sv)
+								- 2.0f * Q_svA[sv.rank]; //Q_GmaxpSV[sv.rank];
+						if (quad_coef > 0)
+							{
+							obj_diff = -(grad_diff * grad_diff) / quad_coef;
+							}
+						else
+							{
+							obj_diff = -(grad_diff * grad_diff) / 1e-12f;
+							}
+
+						if (obj_diff <= obj_diff_min)
+							{
+							GminSV = sv;
+							obj_diff_min = obj_diff;
+							}
+						}
+					}
+				}
+			else
+				{
+				if (!sv.isUpperBound())
+					{
+					double grad_diff = Gmaxn - sv.G;
+					if (-sv.G >= Gmaxn2)
+						{
+						Gmaxn2 = -sv.G;
+						}
+					if (grad_diff > 0)
+						{
+						double obj_diff;
+
+
+						double quad_coef = Q.evaluateDiagonal(GmaxnSV) + Q.evaluateDiagonal(sv)
+								- 2.0f * Q_svB[sv.rank]; //Q_GmaxnSV[sv.rank];
+
+						if (quad_coef > 0)
+							{
+							obj_diff = -(grad_diff * grad_diff) / quad_coef;
+							}
+						else
+							{
+							obj_diff = -(grad_diff * grad_diff) / 1e-12f;
+							}
+
+						if (obj_diff <= obj_diff_min)
+							{
+							GminSV = sv;
+							obj_diff_min = obj_diff;
+							}
+						}
+					}
+				}
 			}
 
-		if (nr_free2 > 0)
-			{
-			r2 = sum_free2 / nr_free2;
-			}
-		else
-			{
-			r2 = (ub2 + lb2) / 2;
-			}
 
-		((BinaryModel) model).r = (float) ((r1 + r2) / 2);
-		model.rho = (float) ((r1 - r2) / 2);
+		return new SolutionVectorPair(GminSV.targetValue ? GmaxpSV : GmaxnSV, GminSV,
+		                              Math.max(Gmaxp + Gmaxp2, Gmaxn + Gmaxn2) < eps);
 		}
 	}

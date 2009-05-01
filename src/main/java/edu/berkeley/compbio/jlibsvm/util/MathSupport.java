@@ -2,6 +2,8 @@ package edu.berkeley.compbio.jlibsvm.util;
 
 public class MathSupport
 	{
+// -------------------------- STATIC METHODS --------------------------
+
 	public static double powi(double base, int times)
 		{
 		assert times >= 0;
@@ -9,7 +11,7 @@ public class MathSupport
 
 		for (int t = times; t > 0; t /= 2)
 			{
-			if (t % 2 == 1)
+			if (t % 2 != 0)
 				{
 				ret *= tmp;
 				}
@@ -18,6 +20,7 @@ public class MathSupport
 		return ret;
 		}
 
+/*
 	public static float dotOrig(SparseVector x, SparseVector y)
 		{
 		float sum = 0;
@@ -45,6 +48,7 @@ public class MathSupport
 			}
 		return sum;
 		}
+		*/
 
 	public static double dot(SparseVector x, SparseVector y)
 		{
@@ -92,7 +96,6 @@ public class MathSupport
 				}
 			else
 				{
-
 				while (xIndex > yIndex)
 					{
 					// there is an entry for y but not for x at this index => x.value == 0
@@ -129,7 +132,6 @@ public class MathSupport
 		return sum;
 		}
 
-
 	/**
 	 * http://martin.ankerl.com/2007/02/11/optimized-exponential-functions-for-java/
 	 * <p/>
@@ -138,19 +140,19 @@ public class MathSupport
 	 * @param val
 	 * @return
 	 */
-	public static double expApprox(double val)
-		{
-		long tmp = (long) (1512775. * val) + (1072693248L - 60801L);
-		return Double.longBitsToDouble(tmp << 32);
-		/*
-		long tmp = (long) (1512775F * val) + (1072693248L - 0L);
-		double upperbound = Double.longBitsToDouble(tmp << 32);
+//	public static double expApprox(double val)
+//		{
+//		long tmp = (long) (1512775. * val) + (1072693248L - 60801L);
+//		return Double.longBitsToDouble(tmp << 32);
+	/*
+		 long tmp = (long) (1512775F * val) + (1072693248L - 0L);
+		 double upperbound = Double.longBitsToDouble(tmp << 32);
 
-		 tmp -= -90254L;
-		double lowerbound = Double.longBitsToDouble(tmp << 32);
-*/
+		  tmp -= -90254L;
+		 double lowerbound = Double.longBitsToDouble(tmp << 32);
+ */
 
-		}
+//		}
 
 	/**
 	 * This is provided by apache commons, but let's avoid the dependency

@@ -6,7 +6,6 @@ import edu.berkeley.compbio.jlibsvm.binary.AlphaModel;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -15,17 +14,16 @@ import java.util.Properties;
  */
 public class RegressionModel<P> extends AlphaModel<Float, P> implements ContinuousModel<P>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	public static final float NO_LAPLACE_PARAMETER = -1;
 
 	public float laplaceParameter = NO_LAPLACE_PARAMETER;
 
 	public float r;// for Solver_NU.  I wanted to factor this out as SolutionInfoNu, but that was too much hassle
 
-/*	public RegressionModel(BinaryModel<Float, P> binaryModel)
-		{
-		super(binaryModel);
-		}*/
 
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public RegressionModel()
 		{
@@ -38,6 +36,22 @@ public class RegressionModel<P> extends AlphaModel<Float, P> implements Continuo
 		laplaceParameter = Float.parseFloat(props.getProperty("laplace"));
 		}
 
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+	public float getLaplaceParameter()
+		{
+		if (laplaceParameter == NO_LAPLACE_PARAMETER)
+			{
+			throw new SvmException("Model doesn't contain information for SVR probability inference\n");
+			}
+		return laplaceParameter;
+		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface ContinuousModel ---------------------
+
 	public Float predictValue(P x)
 		{
 		float sum = 0;
@@ -49,14 +63,11 @@ public class RegressionModel<P> extends AlphaModel<Float, P> implements Continuo
 		return sum;
 		}
 
+// -------------------------- OTHER METHODS --------------------------
 
-	public float getLaplaceParameter()
+	public boolean supportsLaplace()
 		{
-		if (laplaceParameter == NO_LAPLACE_PARAMETER)
-			{
-			throw new SvmException("Model doesn't contain information for SVR probability inference\n");
-			}
-		return laplaceParameter;
+		return laplaceParameter != NO_LAPLACE_PARAMETER;
 		}
 
 	public void writeToStream(DataOutputStream fp) throws IOException
@@ -68,11 +79,5 @@ public class RegressionModel<P> extends AlphaModel<Float, P> implements Continuo
 		writeSupportVectors(fp);
 
 		fp.close();
-		}
-
-
-	public boolean supportsLaplace()
-		{
-		return laplaceParameter != NO_LAPLACE_PARAMETER;
 		}
 	}

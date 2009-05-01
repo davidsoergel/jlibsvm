@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
+import com.google.common.collect.HashMultiset;
 import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,10 +15,14 @@ import java.util.Set;
  */
 public class BooleanClassificationProblemImpl<L extends Comparable, P> extends BinaryClassificationProblemImpl<L, P>
 	{
+// ------------------------------ FIELDS ------------------------------
 
 	private Map<P, Boolean> booleanExamples;
 	private Set<P> trueExamples;
 	private Set<P> falseExamples;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public BooleanClassificationProblemImpl(Class labelClass, L trueLabel, Set<P> trueExamples, L falseLabel,
 	                                        Set<P> falseExamples, Map<P, Integer> exampleIds)
@@ -36,29 +41,12 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 
 		numExamples = trueExamples.size() + falseExamples.size();
 
-		exampleCounts = new HashMap<L, Integer>(2);
-		exampleCounts.put(trueLabel, trueExamples.size());
-		exampleCounts.put(falseLabel, falseExamples.size());
+		exampleCounts = new HashMultiset<L>(2);
+		exampleCounts.add(trueLabel, trueExamples.size());
+		exampleCounts.add(falseLabel, falseExamples.size());
 		}
 
-	public void setupLabels()
-		{
-		// the constructor already dealt with this
-		}
-
-	public L getTargetValue(P point)
-		{
-
-		if (booleanExamples.get(point))
-			{
-			return trueLabel;
-			}
-		else
-			{
-			return falseLabel;
-			}
-		}
-
+// --------------------- GETTER / SETTER METHODS ---------------------
 
 	public Map<P, Boolean> getBooleanExamples()
 		{
@@ -78,6 +66,11 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 		return booleanExamples;
 		}
 
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface BinaryClassificationProblem ---------------------
+
 
 	/**
 	 * There's no sense in scaling Boolean values, so this is a noop.  note we don't make a copy for efficiency.
@@ -88,5 +81,25 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 	public BinaryClassificationProblem<L, P> getScaledCopy(@NotNull ScalingModelLearner<P> scalingModelLearner)
 		{
 		return this;
+		}
+
+	public void setupLabels()
+		{
+		// the constructor already dealt with this
+		}
+
+// --------------------- Interface SvmProblem ---------------------
+
+
+	public L getTargetValue(P point)
+		{
+		if (booleanExamples.get(point))
+			{
+			return trueLabel;
+			}
+		else
+			{
+			return falseLabel;
+			}
 		}
 	}

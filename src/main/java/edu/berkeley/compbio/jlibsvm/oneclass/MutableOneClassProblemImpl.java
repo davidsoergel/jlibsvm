@@ -12,12 +12,17 @@ import java.util.HashMap;
 public class MutableOneClassProblemImpl<L, P> extends OneClassProblemImpl<L, P>
 		implements MutableSvmProblem<Float, P, RegressionProblem<P>>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	public MutableOneClassProblemImpl(int numExamples, L label)
 		{
 		super(new HashMap<P, Float>(numExamples), new HashMap<P, Integer>(numExamples), label);
-
-		//	targetValues = new Float[numExamples];
 		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface MutableSvmProblem ---------------------
 
 	public void addExample(P point, Float label)
 		{
@@ -28,6 +33,5 @@ public class MutableOneClassProblemImpl<L, P> extends OneClassProblemImpl<L, P>
 	public void addExampleFloat(P point, Float x)
 		{
 		addExample(point, x);
-		//putTargetValue(i, x);
 		}
 	}

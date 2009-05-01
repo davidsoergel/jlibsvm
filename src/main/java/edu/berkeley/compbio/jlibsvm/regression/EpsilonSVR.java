@@ -18,6 +18,7 @@ import java.util.Map;
  */
 public class EpsilonSVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public EpsilonSVR(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
 		{
@@ -32,6 +33,7 @@ public class EpsilonSVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 			}
 		}
 
+// -------------------------- OTHER METHODS --------------------------
 
 	public RegressionModel<P> train(RegressionProblem<P> problem)
 		{
@@ -41,38 +43,20 @@ public class EpsilonSVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 			laplaceParameter = laplaceParameter(problem);
 			}
 
-/*
-		int l = problem.getNumExamples();
-		float[] linearTerm = new float[2 * l];
-		boolean[] y = new boolean[2 * l];
-		int i;
-
-		for (i = 0; i < l; i++)
-			{
-			linearTerm[i] = param.p - problem.getTargetValue(i);
-			y[i] = true;
-
-			linearTerm[i + l] = param.p + problem.getTargetValue(i);
-			y[i + l] = false;
-			}
-
-		Solver s = new Solver(new SVR_Q(problem, kernel, param.cache_size), linearTerm, y, param.C, param.C, param.eps,
-		                      param.shrinking);*/
-
 		List<SolutionVector<P>> solutionVectors = new ArrayList<SolutionVector<P>>();
-		int c = 0;
+
 		for (Map.Entry<P, Float> example : problem.getExamples().entrySet())
 			{
 			SolutionVector<P> sv;
 
 			sv = new SolutionVector<P>(example.getKey(), true, param.p - example.getValue());
 			sv.id = problem.getId(example.getKey());
-			c++;
+
 			solutionVectors.add(sv);
 
 			sv = new SolutionVector<P>(example.getKey(), false, param.p + example.getValue());
 			sv.id = -problem.getId(example.getKey());
-			c++;
+
 			solutionVectors.add(sv);
 			}
 
@@ -81,7 +65,7 @@ public class EpsilonSVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 		RegressionSolver<P> s = new RegressionSolver<P>(solutionVectors, qMatrix, param.C, param.eps, param.shrinking);
 
 
-		RegressionModel<P> model = s.solve(); //new RegressionModel<P>(binaryModel);
+		RegressionModel<P> model = s.solve();
 		model.kernel = kernel;
 		model.param = param;
 		model.setSvmType(getSvmType());

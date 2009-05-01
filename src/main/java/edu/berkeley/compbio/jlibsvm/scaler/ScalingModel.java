@@ -6,5 +6,7 @@ package edu.berkeley.compbio.jlibsvm.scaler;
  */
 public interface ScalingModel<P>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
 	P scaledCopy(P example);
 	}

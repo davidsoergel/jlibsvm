@@ -45,16 +45,7 @@ import java.util.Vector;
 
 public class svm_train
 	{
-	KernelFunction kernel;
-	SVM svm;
-	private SvmParameter param;		// set by parse_command_line
-	private MutableSvmProblem problem;		// set by read_problem
-	private SolutionModel model;
-	private String input_file_name;		// set by parse_command_line
-	private String model_file_name;		// set by parse_command_line
-	//private String error_msg;
-	private int cross_validation;
-	private int nr_fold;
+// ------------------------------ FIELDS ------------------------------
 
 	/* svm_type */
 	static final int C_SVC = 0;
@@ -69,90 +60,23 @@ public class svm_train
 	static final int RBF = 2;
 	static final int SIGMOID = 3;
 	static final int PRECOMPUTED = 4;
+	KernelFunction kernel;
+	SVM svm;
+	private SvmParameter param;		// set by parse_command_line
+	private MutableSvmProblem problem;		// set by read_problem
+	private SolutionModel model;
+	private String input_file_name;		// set by parse_command_line
+	private String model_file_name;		// set by parse_command_line
+	//private String error_msg;
+	private int cross_validation;
+	private int nr_fold;
 
-	private static void exit_with_help()
+// --------------------------- main() method ---------------------------
+
+	public static void main(String argv[]) throws IOException
 		{
-		System.out.print("Usage: svm_train [options] training_set_file [model_file]\n" + "options:\n"
-				+ "-s svm_type : set type of SVM (default 0)\n" + "	0 -- C-SVC\n" + "	1 -- nu-SVC\n"
-				+ "	2 -- one-class SVM\n" + "	3 -- epsilon-SVR\n" + "	4 -- nu-SVR\n"
-				+ "-t kernel_type : set type of kernel function (default 2)\n" + "	0 -- linear: u'*v\n"
-				+ "	1 -- polynomial: (gamma*u'*v + coef0)^degree\n"
-				+ "	2 -- radial basis function: exp(-gamma*|u-v|^2)\n" + "	3 -- sigmoid: tanh(gamma*u'*v + coef0)\n"
-				+ "	4 -- precomputed kernel (kernel values in training_set_file)\n"
-				+ "-d degree : set degree in kernel function (default 3)\n"
-				+ "-g gamma : set gamma in kernel function (default 1/k)\n"
-				+ "-r coef0 : set coef0 in kernel function (default 0)\n"
-				+ "-c cost : set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1)\n"
-				+ "-n nu : set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5)\n"
-				+ "-p epsilon : set the epsilon in loss function of epsilon-SVR (default 0.1)\n"
-				+ "-m cachesize : set cache memory size in MB (default 100)\n"
-				+ "-e epsilon : set tolerance of termination criterion (default 0.001)\n"
-				+ "-h shrinking: whether to use the shrinking heuristics, 0 or 1 (default 1)\n"
-				+ "-b probability_estimates: whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)\n"
-				+ "-wi weight: set the parameter C of class i to weight*C, for C-SVC (default 1)\n"
-				+ "-a allVsAllMode: None, AllVsAll, FilteredVsAll, FilteredVsFiltered\n"
-				+ "-j minVoteProportion: the chosen class must have at least this proportion of the total votes\n"
-				+ "-o oneVsAllMode: None, Best, Veto, BreakTies, VetoAndBreakTies \n"
-				+ "-k oneVsAllProb: the chosen class must have at least this one-vs-all probability; if -b is not set, probabilities are 0 or 1\n"
-				+ "-v n: n-fold cross validation mode\n" + "-f scalingmode : m = none (default), linear, zscore\n"
-				+ "-l 2: project to unit sphere (normalize L2 distance)\n");
-		System.exit(1);
-		}
-
-	private void do_cross_validation()
-		{
-		//int i;
-		int total_correct = 0;
-		int total_unknown = 0;
-		double total_error = 0;
-		double sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
-		//double[] target = new double[problem.l];
-
-		int numExamples = problem.getNumExamples();
-		;
-		if (svm instanceof RegressionSVM) //param.svm_type == svm_parameter.EPSILON_SVR || param.svm_type == svm_parameter.NU_SVR)
-			{
-			Map cvResult = svm.continuousCrossValidation(problem, nr_fold);
-			//for (i = 0; i < numExamples; i++)
-			for (Object p : problem.getExamples().keySet())
-				{
-				Float y = (Float) problem.getTargetValue(p);
-				Float v = (Float) cvResult.get(p);
-				total_error += (v - y) * (v - y);
-				sumv += v;
-				sumy += y;
-				sumvv += v * v;
-				sumyy += y * y;
-				sumvy += v * y;
-				}
-			System.out.print("Cross Validation Mean squared error = " + total_error / numExamples + "\n");
-			System.out.print("Cross Validation Squared correlation coefficient = "
-					+ ((numExamples * sumvy - sumv * sumy) * (numExamples * sumvy - sumv * sumy)) / (
-					(numExamples * sumvv - sumv * sumv) * (numExamples * sumyy - sumy * sumy)) + "\n");
-			}
-		else
-			{
-			Map cvResult = svm.discreteCrossValidation(problem, nr_fold);
-			for (Object p : problem.getExamples().keySet())
-				//	for (i = 0; i < numExamples; i++)
-				{
-				Object prediction = cvResult.get(p);
-				if (prediction == null)
-					{
-					++total_unknown;
-					}
-				else if (prediction.equals(problem.getTargetValue(p)))
-					{
-					++total_correct;
-					}
-				}
-
-			int classifiedExamples = numExamples - total_unknown;
-			System.out.print("Cross Validation Classified = " + 100.0 * classifiedExamples / numExamples + "%\n");
-			System.out.print("Cross Validation Accuracy (of those classified) = "
-					+ 100.0 * total_correct / classifiedExamples + "%\n");
-			System.out.print("Cross Validation Accuracy (of total) = " + 100.0 * total_correct / numExamples + "%\n");
-			}
+		svm_train t = new svm_train();
+		t.run(argv);
 		}
 
 	private void run(String argv[]) throws IOException
@@ -191,12 +115,6 @@ public class svm_train
 		float time = (endTime - startTime) / 1000f;
 
 		System.out.println("Finished in " + time + " secs");
-		}
-
-	public static void main(String argv[]) throws IOException
-		{
-		svm_train t = new svm_train();
-		t.run(argv);
 		}
 
 	/*
@@ -427,6 +345,35 @@ public class svm_train
 			}
 		}
 
+	private static void exit_with_help()
+		{
+		System.out.print("Usage: svm_train [options] training_set_file [model_file]\n" + "options:\n"
+				+ "-s svm_type : set type of SVM (default 0)\n" + "	0 -- C-SVC\n" + "	1 -- nu-SVC\n"
+				+ "	2 -- one-class SVM\n" + "	3 -- epsilon-SVR\n" + "	4 -- nu-SVR\n"
+				+ "-t kernel_type : set type of kernel function (default 2)\n" + "	0 -- linear: u'*v\n"
+				+ "	1 -- polynomial: (gamma*u'*v + coef0)^degree\n"
+				+ "	2 -- radial basis function: exp(-gamma*|u-v|^2)\n" + "	3 -- sigmoid: tanh(gamma*u'*v + coef0)\n"
+				+ "	4 -- precomputed kernel (kernel values in training_set_file)\n"
+				+ "-d degree : set degree in kernel function (default 3)\n"
+				+ "-g gamma : set gamma in kernel function (default 1/k)\n"
+				+ "-r coef0 : set coef0 in kernel function (default 0)\n"
+				+ "-c cost : set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1)\n"
+				+ "-n nu : set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5)\n"
+				+ "-p epsilon : set the epsilon in loss function of epsilon-SVR (default 0.1)\n"
+				+ "-m cachesize : set cache memory size in MB (default 100)\n"
+				+ "-e epsilon : set tolerance of termination criterion (default 0.001)\n"
+				+ "-h shrinking: whether to use the shrinking heuristics, 0 or 1 (default 1)\n"
+				+ "-b probability_estimates: whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)\n"
+				+ "-wi weight: set the parameter C of class i to weight*C, for C-SVC (default 1)\n"
+				+ "-a allVsAllMode: None, AllVsAll, FilteredVsAll, FilteredVsFiltered\n"
+				+ "-j minVoteProportion: the chosen class must have at least this proportion of the total votes\n"
+				+ "-o oneVsAllMode: None, Best, Veto, BreakTies, VetoAndBreakTies \n"
+				+ "-k oneVsAllProb: the chosen class must have at least this one-vs-all probability; if -b is not set, probabilities are 0 or 1\n"
+				+ "-v n: n-fold cross validation mode\n" + "-f scalingmode : m = none (default), linear, zscore\n"
+				+ "-l 2: project to unit sphere (normalize L2 distance)\n");
+		System.exit(1);
+		}
+
 	// read in a problem (in svmlight format)
 
 	private void read_problem() throws IOException
@@ -536,5 +483,61 @@ public class svm_train
 			}
 
 		fp.close();
+		}
+
+	private void do_cross_validation()
+		{
+		//int i;
+		int total_correct = 0;
+		int total_unknown = 0;
+		double total_error = 0;
+		double sumv = 0, sumy = 0, sumvv = 0, sumyy = 0, sumvy = 0;
+		//double[] target = new double[problem.l];
+
+		int numExamples = problem.getNumExamples();
+		;
+		if (svm instanceof RegressionSVM) //param.svm_type == svm_parameter.EPSILON_SVR || param.svm_type == svm_parameter.NU_SVR)
+			{
+			Map cvResult = svm.continuousCrossValidation(problem, nr_fold);
+			//for (i = 0; i < numExamples; i++)
+			for (Object p : problem.getExamples().keySet())
+				{
+				Float y = (Float) problem.getTargetValue(p);
+				Float v = (Float) cvResult.get(p);
+				total_error += (v - y) * (v - y);
+				sumv += v;
+				sumy += y;
+				sumvv += v * v;
+				sumyy += y * y;
+				sumvy += v * y;
+				}
+			System.out.print("Cross Validation Mean squared error = " + total_error / numExamples + "\n");
+			System.out.print("Cross Validation Squared correlation coefficient = "
+					+ ((numExamples * sumvy - sumv * sumy) * (numExamples * sumvy - sumv * sumy)) / (
+					(numExamples * sumvv - sumv * sumv) * (numExamples * sumyy - sumy * sumy)) + "\n");
+			}
+		else
+			{
+			Map cvResult = svm.discreteCrossValidation(problem, nr_fold);
+			for (Object p : problem.getExamples().keySet())
+				//	for (i = 0; i < numExamples; i++)
+				{
+				Object prediction = cvResult.get(p);
+				if (prediction == null)
+					{
+					++total_unknown;
+					}
+				else if (prediction.equals(problem.getTargetValue(p)))
+					{
+					++total_correct;
+					}
+				}
+
+			int classifiedExamples = numExamples - total_unknown;
+			System.out.print("Cross Validation Classified = " + 100.0 * classifiedExamples / numExamples + "%\n");
+			System.out.print("Cross Validation Accuracy (of those classified) = "
+					+ 100.0 * total_correct / classifiedExamples + "%\n");
+			System.out.print("Cross Validation Accuracy (of total) = " + 100.0 * total_correct / numExamples + "%\n");
+			}
 		}
 	}

@@ -6,5 +6,7 @@ package edu.berkeley.compbio.jlibsvm;
  */
 public interface DiscreteModel<L, P>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
 	L predictLabel(P x);
 	}

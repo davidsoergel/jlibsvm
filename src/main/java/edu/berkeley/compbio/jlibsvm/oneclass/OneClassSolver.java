@@ -3,7 +3,6 @@ package edu.berkeley.compbio.jlibsvm.oneclass;
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.Solver;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
-import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,17 +13,18 @@ import java.util.List;
  */
 public class OneClassSolver<L, P> extends Solver<Float, P>
 	{
-	private static final Logger logger = Logger.getLogger(OneClassSolver.class);
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public OneClassSolver(List<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float C, float eps, boolean shrinking)
 		{
 		super(solutionVectors, Q, C, C, eps, shrinking);
 		}
 
+// -------------------------- OTHER METHODS --------------------------
 
 	public OneClassModel<L, P> solve()
 		{
-		int iter = optimize();
+		optimize();
 
 		OneClassModel<L, P> model = new OneClassModel<L, P>();
 

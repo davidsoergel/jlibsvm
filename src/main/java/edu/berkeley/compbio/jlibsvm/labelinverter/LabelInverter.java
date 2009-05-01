@@ -6,5 +6,7 @@ package edu.berkeley.compbio.jlibsvm.labelinverter;
  */
 public interface LabelInverter<L>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
 	L invert(L label);
 	}

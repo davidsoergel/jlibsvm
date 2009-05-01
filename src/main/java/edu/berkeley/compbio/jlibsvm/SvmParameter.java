@@ -11,25 +11,20 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class SvmParameter<L> //implements Cloneable, java.io.Serializable
+public class SvmParameter<L>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	// these are for training only
 	public float cache_size;// in MB
 	public float eps;// stopping criteria
 	public float C;// for C_SVC, EPSILON_SVR and NU_SVR
-
-	// We need to maintain the labels (the key on this map) in insertion order
-	private LinkedHashMap<L, Float> weights = new LinkedHashMap<L, Float>();
 
 	public float nu;// for NU_SVC, ONE_CLASS, and NU_SVR
 	public float p;// for EPSILON_SVR
 	public boolean shrinking;// use the shrinking heuristics
 	public boolean probability;// do probability estimates
 
-	// parameters for multiclass testing
-	//	public boolean oneClassOnly;
-	//	public double oneClassThreshold;
-	//	public boolean oneVsAllOnly;
 
 	public double oneVsAllThreshold = 0.5;
 	public MultiClassModel.OneVsAllMode oneVsAllMode = MultiClassModel.OneVsAllMode.None;
@@ -52,6 +47,11 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 	 */
 	public int scalingExamples = Integer.MAX_VALUE;
 
+	// We need to maintain the labels (the key on this map) in insertion order
+	private LinkedHashMap<L, Float> weights = new LinkedHashMap<L, Float>();
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public SvmParameter()
 		{
@@ -67,7 +67,6 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 		p = copyFrom.p;
 		shrinking = copyFrom.shrinking;
 		probability = copyFrom.probability;
-		//		oneVsAllOnly = copyFrom.oneVsAllOnly;
 		oneVsAllThreshold = copyFrom.oneVsAllThreshold;
 		oneVsAllMode = copyFrom.oneVsAllMode;
 		allVsAllMode = copyFrom.allVsAllMode;
@@ -78,15 +77,14 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 		scalingExamples = copyFrom.scalingExamples;
 		}
 
-	public Float getWeight(L key)
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+	public Map<L, Float> getWeights()
 		{
-		return weights.get(key);
+		return weights;
 		}
 
-	public void putWeight(L key, Float weight)
-		{
-		weights.put(key, weight);
-		}
+// -------------------------- OTHER METHODS --------------------------
 
 	public int getCacheRows()
 		{
@@ -95,13 +93,20 @@ public class SvmParameter<L> //implements Cloneable, java.io.Serializable
 		double kb = mb * 1024;
 		double bytes = kb * 1024;
 		double floats = bytes / 4; // float = 4 bytes
-		double floatrows = Math.sqrt(
-				floats); //Math.sqrt(floats * 2);  // the sqrt 2 term is because the cache will be symmetric // no it won't
+		double floatrows = Math.sqrt(floats);
+		//Math.sqrt(floats * 2);
+		// the sqrt 2 term is because the cache will be symmetric
+		// no it won't
 		return (int) (floatrows);
 		}
 
-	public Map<L, Float> getWeights()
+	public Float getWeight(L key)
 		{
-		return weights;
+		return weights.get(key);
+		}
+
+	public void putWeight(L key, Float weight)
+		{
+		weights.put(key, weight);
 		}
 	}

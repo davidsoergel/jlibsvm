@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import com.google.common.collect.Multiset;
 import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
 
 import java.util.List;
@@ -9,22 +10,23 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface SvmProblem<L extends Comparable, P> //, R extends SvmProblem<L,  P,  R>>
+public interface SvmProblem<L extends Comparable, P>
 	{
-	Map<P, L> getExamples();
+// -------------------------- OTHER METHODS --------------------------
+
+	Multiset<L> getExampleCounts();
 
 	Map<P, Integer> getExampleIds();
 
-	int getId(P key);
-	//int getNumLabels();
+	Map<P, L> getExamples();
 
-	int getNumExamples();
+	int getId(P key);
 
 	List<L> getLabels();
 
-	L getTargetValue(P point);
-
-	Map<L, Integer> getExampleCounts();
+	int getNumExamples();
 
 	ScalingModel<P> getScalingModel();
+
+	L getTargetValue(P point);
 	}
