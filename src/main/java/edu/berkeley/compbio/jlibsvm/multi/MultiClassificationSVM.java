@@ -1,5 +1,8 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.SVM;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
@@ -8,6 +11,7 @@ import edu.berkeley.compbio.jlibsvm.binary.BooleanClassificationProblemImpl;
 import edu.berkeley.compbio.jlibsvm.labelinverter.LabelInverter;
 import edu.berkeley.compbio.jlibsvm.util.SubtractionMap;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,14 +37,14 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 	private static final Logger logger = Logger.getLogger(MultiClassificationSVM.class);
 
-	private BinaryClassificationSVM<L, P> binarySvm;	//private Class labelClass;
+	private BinaryClassificationSVM<L, P> binarySvm;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	public MultiClassificationSVM(BinaryClassificationSVM<L, P> binarySvm)
 		{
-		super(binarySvm.kernel, binarySvm.scalingModelLearner, binarySvm.param);
+		//super(binarySvm.kernel, binarySvm.scalingModelLearner, binarySvm.param);
 		this.binarySvm = binarySvm;
 		}
 
@@ -52,23 +56,110 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		return "multiclass " + binarySvm.getSvmType();
 		}
 
-	public MultiClassModel<L, P> train(MultiClassProblem<L, P> problem)
+	private MultiClassCrossValidationResults<L, P> performCrossValidation(MultiClassProblem<L, P> problem,
+	                                                                      @NotNull ImmutableSvmParameter<L, P> param)
 		{
-		if (scalingModelLearner != null && !param.scaleBinaryMachinesIndependently)
+		Map<P, L> predictions = discreteCrossValidation(problem, param);
+
+		MultiClassCrossValidationResults<L, P> cv = new MultiClassCrossValidationResults<L, P>(problem, predictions);
+		return cv;
+		}
+
+	public MultiClassModel<L, P> train(MultiClassProblem<L, P> problem, @NotNull ImmutableSvmParameter<L, P> param)
+		{
+		validateParam(param);
+
+		MultiClassModel<L, P> result;
+		if (param instanceof ImmutableSvmParameterGrid && !param.gridsearchBinaryMachinesIndependently)
+			{
+			result = trainGrid(problem, (ImmutableSvmParameterGrid<L, P>) param);
+			}
+		else
+			{
+			result = trainScaled(problem, param);
+			}
+		return result;
+		}
+
+	public MultiClassModel<L, P> trainGrid(MultiClassProblem<L, P> problem,
+	                                       @NotNull ImmutableSvmParameterGrid<L, P> param)
+		{
+		// PERF should be concurrent.  Doesn't matter for multiclass since that's already multithreaded, but each binary grid-search will be single-threaded here.
+
+		ImmutableSvmParameterPoint<L, P> bestParam = null;
+		MultiClassCrossValidationResults<L, P> bestCrossValidationResults = null;
+		float bestSensitivity = -1F;
+		for (ImmutableSvmParameterPoint<L, P> gridParam : param.getGridParams())
+			{
+			// note we must use the CV variant in order to know which parameter set is best
+
+			//float gridCp = Cp * gridParam.Cfactor;
+			//float gridCn = Cn * gridParam.Cfactor;
+
+			//MultiClassModel<L, P> result = trainScaledWithCV(problem, gridParam);
+			MultiClassCrossValidationResults<L, P> crossValidationResults = performCrossValidation(problem, gridParam);
+			float sensitivity = crossValidationResults.classNormalizedSensitivity();
+			if (sensitivity > bestSensitivity)
+				{
+				bestParam = gridParam;
+				bestSensitivity = sensitivity;
+				bestCrossValidationResults = crossValidationResults;
+				}
+			}
+
+		logger.info("Chose grid point: " + bestParam);
+
+		// finally train once on all the data (including rescaling)
+		MultiClassModel<L, P> result = trainScaled(problem, bestParam);
+		result.crossValidationResults = bestCrossValidationResults;
+		return result;
+		}
+
+	/**
+	 * Train the classifier, and also prepare the probability sigmoid thing if requested.  Note that svcProbability will
+	 * call this method in the course of cross-validation, but will first ensure that param.probability == false;
+	 *
+	 * @param problem
+	 * @return
+	 */
+	private MultiClassModel<L, P> trainScaledWithCV(MultiClassProblem<L, P> problem,
+	                                                @NotNull ImmutableSvmParameter<L, P> param)
+		{
+		// if scaling each binary machine is enabled, then each fold will be independently scaled also; so we don't need to scale the whole dataset prior to CV
+
+		MultiClassCrossValidationResults<L, P> cv = performCrossValidation(problem, param);
+
+		// finally train once on all the data (including rescaling)
+		MultiClassModel<L, P> result = trainScaled(problem, param);
+		result.crossValidationResults = cv;
+
+		//	result.printSolutionInfo(problem);
+		return result;
+		}
+
+	public MultiClassModel<L, P> trainScaled(MultiClassProblem<L, P> problem,
+	                                         @NotNull ImmutableSvmParameter<L, P> param)
+		{
+		if (param.scalingModelLearner != null && !param.scaleBinaryMachinesIndependently)
 			{
 			// scale the entire problem before doing anything else
-			problem = problem.getScaledCopy(scalingModelLearner);
+			problem = problem.getScaledCopy(param.scalingModelLearner);
 			}
 
 
 		int numLabels = problem.getLabels().size();
 
-		MultiClassModel<L, P> model = new MultiClassModel<L, P>(kernel, param, numLabels);
+		MultiClassModel<L, P> model = new MultiClassModel<L, P>(param, numLabels);
 
 		model.setScalingModel(problem.getScalingModel());
 
-
-		final Map<L, Float> weights = prepareWeights(problem);
+		/**
+		 * The weights are not properly part of the param, because they may depend on the problem (i.e. the proportions of examples in different classes).
+		 * They're also not properly part of the problem, since they certainly depend on the param.C and param.redistributeUnbalancedC.
+		 *
+		 * Now the approach is: just recompute them from scratch within each binary machine
+		 */
+		//final Map<L, Float> weights = prepareWeights(problem, param);
 
 		// ** make number of threads adjustable?
 		ExecutorService execService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -131,14 +222,10 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				final BinaryClassificationProblem<L, P> subProblem =
 						new BooleanClassificationProblemImpl<L, P>(problem.getLabelClass(), label, labelExamples,
 						                                           notLabel, notlabelExamples, problem.getExampleIds());
-				//** Unbalanced data: see prepareWeights
+				// Unbalanced data: see prepareWeights
 				// since these will be extremely unbalanced, this should nearly guarantee that no positive examples are misclassified.
 
-				//float costOfNegativeMisclassification = weights.get(label);
-				//float costOfPositiveMisclassification = weights.get(notLabel);
-
-				Future<BinaryModel<L, P>> fut = execService
-						.submit(binarySvm.trainCallable(subProblem, weights.get(label), weights.get(notLabel)));
+				Future<BinaryModel<L, P>> fut = execService.submit(binarySvm.trainCallable(subProblem, param));
 
 				futureMap.put(label, fut);
 				}
@@ -221,8 +308,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 								                                           problem.getExampleIds());
 
 
-						Future<BinaryModel<L, P>> fut = execService
-								.submit(binarySvm.trainCallable(subProblem, weights.get(label1), weights.get(label2)));
+						Future<BinaryModel<L, P>> fut = execService.submit(binarySvm.trainCallable(subProblem, param));
 
 
 						futureMap2d.put(new LabelPair(label1, label2), fut);
@@ -287,7 +373,31 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		return model;
 		}
 
-	private Map<L, Float> prepareWeights(MultiClassProblem<L, P> problem)
+
+	// REVIEW whether weights should be made consistent across multiple binary machines
+	/**
+	 * Compute weights for each class, by which C should be multiplied later. Does not include the C term already, because
+	 * there may later be a grid search based on Cfactor.
+	 * <p/>
+	 * This method places all classes on the same C scale: i.e., for classes A, B, and C, the pairwise ratios are all
+	 * correct. The upshot is that the average cost of misclassifying a sample is made consistent across all the binary
+	 * machines. Is there a point to that?  If we're doing grid searches for each binary machine anyway, then this
+	 * consistency is obviated.  If not, then a pair of classes with few total examples will be evaluated using a much
+	 * lower C than a pair of classes with a lot of examples.
+	 * <p/>
+	 * Alternatively, if each binary machine (even without a grid search) computes its own weighted C's, then each would
+	 * use a consistent average C (whatever was specified in the parameters).
+	 * <p/>
+	 * Note also that if we don't let each binary machine recompute its own weights, then same weights would be used for
+	 * each cross-validation run.  That should be fine assuming that the folds are uniformly sampled, but it is technically
+	 * unfair in that data about the test samples in an input to training.
+	 * <p/>
+	 * I have no idea what the right solution is.  Perhaps we should do the binary grid searches and see how the optimal
+	 * C's turn out.
+	 * <p/>
+	 * Disabling the whole procedure & delegating to the binary machines for now.
+	 */
+/*	private Map<L, Float> prepareWeights(MultiClassProblem<L, P> problem, @NotNull ImmutableSvmParameter<L, P> param)
 		{
 		LabelInverter<L> labelInverter = problem.getLabelInverter();
 
@@ -302,11 +412,11 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				{
 				L label = entry.getKey();
 
-				weights.put(label, param.C);
+				weights.put(label, 1F);
 
 				L inverse = labelInverter.invert(label);
 
-				weights.put(inverse, param.C);
+				weights.put(inverse, 1F);
 				}
 			}
 		else
@@ -315,19 +425,19 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 			int numClasses = examplesByLabel.size();
 
-			// first figure out the average total C for each class if the samples were uniformly distributed
-			float totalCPerClass = param.C * numExamples / numClasses;
+			// first figure out the average total weight for each class if the samples were uniformly distributed (i.e., the average number of examples with weight 1)
+			float totalWeightPerClass = (float) numExamples / (float) numClasses;
 			//float totalCPerRemainder = totalCPerClass * (numClasses - 1);
 
 
-			// then assign the proper C per _sample_ within each class by distributing the per-class C
+			// then assign the proper weight per _sample_ within each class by distributing the per-class weight
 			for (Map.Entry<L, Set<P>> entry : examplesByLabel.entrySet())
 				{
 				// the weight per sample is just the total class weight divided by the number of samples
 
 				L label = entry.getKey();
 				Set<P> examples = entry.getValue();
-				float weight = totalCPerClass / examples.size();
+				float weight = totalWeightPerClass / (float) examples.size();
 
 				weights.put(label, weight);
 
@@ -340,39 +450,41 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				L inverse = labelInverter.invert(label);
 				int numFalseExamples = numExamples - examples.size();
 				numFalseExamples = Math.min(numFalseExamples, param.falseClassSVlimit);
-				float inverseWeight = totalCPerClass / numFalseExamples;
+				float inverseWeight = totalWeightPerClass / numFalseExamples;
 				weights.put(inverse, inverseWeight);
 				}
 
-			if (!param.getWeights().isEmpty())
+			if (!param.isWeightsEmpty())
 				{
 				logger.warn("Ignoring provided class weights; we compute them from C and the number of examples");
 				}
 			}
-		/*
-	   // use param.C as the default weight...
-	   for (L label : problem.getLabels())
-		   {
-		   weights.put(label, param.C);
-		   }
-
-
-	   // ... but if any weights are provided, apply them
-	   for (Map.Entry<L, Float> weightEntry : param.getWeights().entrySet())
-		   {
-		   L key = weightEntry.getKey();
-		   if (problem.getLabels().contains(key))
-			   {
-			   Float w = weightEntry.getValue();
-			   weights.put(key, w * param.C);
-			   }
-		   else
-			   {
-			   logger.warn("class label " + key + " specified in weight is not found");
-			   }
-		   }*/
+//
+//	   // use param.C as the default weight...
+//	   for (L label : problem.getLabels())
+//		   {
+//		   weights.put(label, param.C);
+//		   }
+//
+//
+//	   // ... but if any weights are provided, apply them
+//	   for (Map.Entry<L, Float> weightEntry : param.getWeights().entrySet())
+//		   {
+//		   L key = weightEntry.getKey();
+//		   if (problem.getLabels().contains(key))
+//			   {
+//			   Float w = weightEntry.getValue();
+//			   weights.put(key, w * param.C);
+//			   }
+//		   else
+//			   {
+//			   logger.warn("class label " + key + " specified in weight is not found");
+//			   }
+//		   }
 		return weights;
 		}
+
+*/
 
 // -------------------------- INNER CLASSES --------------------------
 

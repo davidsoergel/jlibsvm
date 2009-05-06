@@ -1,9 +1,11 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
 import edu.berkeley.compbio.jlibsvm.ContinuousModel;
+import edu.berkeley.compbio.jlibsvm.CrossValidationResults;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
-import edu.berkeley.compbio.jlibsvm.SigmoidProbabilityModel;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
+import edu.berkeley.compbio.jlibsvm.LabelParser;
+import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
 import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
@@ -12,7 +14,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -21,6 +25,15 @@ import java.util.Properties;
 public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		implements DiscreteModel<L, P>, ContinuousModel<P>
 	{
+	// protected final would be nice, but the Solver constructs the Model without knowing about param so we have to set it afterwards.
+	/**
+	 * a thing that is confusing here: if a grid search was done, then the specific point that was the optimum should be
+	 * recorded here.  That works for binary and multiclass models when the grid search is done at the top level.  But when
+	 * param.gridsearchBinaryMachinesIndependently, there is no one point that makes sense.  Really we should just leave it
+	 * null and refer to the subsidiary BinaryModels.
+	 */
+	public ImmutableSvmParameterPoint<L, P> param;
+
 // ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(BinaryModel.class);
@@ -29,29 +42,84 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 	public float upperBoundPositive;
 	public float upperBoundNegative;
 
-	public SigmoidProbabilityModel sigmoid;
+	//public SigmoidProbabilityModel sigmoid;
 
 
 	public ScalingModel<P> scalingModel = new NoopScalingModel<P>();
 
 	public float r;// for Solver_NU.  I wanted to factor this out as SolutionInfoNu, but that was too much hassle
+	public BinaryCrossValidationResults<L, P> crossValidationResults;
+
+	public CrossValidationResults getCrossValidationResults()
+		{
+		return crossValidationResults;
+		}
 
 	L trueLabel;
 	L falseLabel;
 
 
+	public Collection<L> getLabels()
+		{
+		return param.getLabels();
+		}
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public BinaryModel(Properties props)
+	/*(public BinaryModel(Properties props, LabelParser<L> labelParser)
 		{
-		super(props);
+		super(props, labelParser);
+		}
+*/
+
+	public BinaryModel()
+		{
+		super();
 		}
 
-	public BinaryModel(KernelFunction<P> kernel, SvmParameter<L> param)
+
+	public BinaryModel(Properties props, LabelParser<L> labelParser)
 		{
-		super(kernel, param);
+		//super(null); //null, null);
+
+		ImmutableSvmParameterPoint.Builder<L, P> builder = new ImmutableSvmParameterPoint.Builder<L, P>();
+		try
+			{
+			builder.kernel =
+					(KernelFunction) Class.forName(props.getProperty("kernel_type")).getConstructor(Properties.class)
+							.newInstance(props);
+			}
+		catch (Throwable e)
+			{
+			throw new SvmException(e);
+			}
+
+		// param is only useful for training; when loading a trained model for testing, we can leave it null
+		//param = new SvmParameter(props);
+
+		// ... oops, except that we need the labels.
+
+		//param = new ImmutableSvmParameter();
+
+		StringTokenizer st = new StringTokenizer(props.getProperty("label"));
+		while (st.hasMoreTokens())
+			{
+			builder.putWeight(labelParser.parse(st.nextToken()), null);
+			}
+
+		param = builder.build();
 		}
 
+	public BinaryModel(ImmutableSvmParameterPoint<L, P> param)
+		{
+		//super(param);
+		this.param = param;
+		}
+
+/*	public BinaryModel(@NotNull ImmutableSvmParameter<L, P> param)
+		{
+		super(param);
+		}
+*/
 // --------------------- GETTER / SETTER METHODS ---------------------
 
 	public L getFalseLabel()
@@ -99,7 +167,7 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 
 	public float getTrueProbability(P x)
 		{
-		return sigmoid.predict(predictValue(x));  // NPE if no sigmoid
+		return crossValidationResults.sigmoid.predict(predictValue(x));  // NPE if no sigmoid
 		}
 
 	public Float predictValue(P x)
@@ -110,7 +178,7 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 
 		for (int i = 0; i < numSVs; i++)
 			{
-			float kvalue = (float) kernel.evaluate(scaledX, SVs[i]);
+			float kvalue = (float) param.kernel.evaluate(scaledX, SVs[i]);
 			sum += alphas[i] * kvalue;
 			}
 
@@ -120,7 +188,7 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 
 	public float getTrueProbability(float[] kvalues, int[] svIndexMap)
 		{
-		return sigmoid.predict(predictValue(kvalues, svIndexMap));  // NPE if no sigmoid
+		return crossValidationResults.sigmoid.predict(predictValue(kvalues, svIndexMap));  // NPE if no sigmoid
 		}
 
 	public Float predictValue(float[] kvalues, int[] svIndexMap)
@@ -136,11 +204,11 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		return sum;
 		}
 
-	public CrossValidationResults newCrossValidationResults(int i, int tt, int ft, int tf, int ff)
+	/*public CrossValidationResults newCrossValidationResults(int i, int tt, int ft, int tf, int ff)
 		{
 		return new CrossValidationResults(i, tt, ft, tf, ff);
 		}
-
+*/
 	public L predictLabel(float[] kvalues, int[] svIndexMap)
 		{
 		return predictValue(kvalues, svIndexMap) > 0 ? trueLabel : falseLabel;
@@ -192,49 +260,5 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		writeSupportVectors(fp);
 
 		fp.close();
-		}
-
-// -------------------------- INNER CLASSES --------------------------
-
-	public class CrossValidationResults
-		{
-// ------------------------------ FIELDS ------------------------------
-
-		int numExamples;
-		int tt, tf, ft, ff;
-
-
-// --------------------------- CONSTRUCTORS ---------------------------
-
-		public CrossValidationResults(int numExamples, int tt, int tf, int ft, int ff)
-			{
-			this.numExamples = numExamples;
-			this.tt = tt;
-			this.tf = tf;
-			this.ft = ft;
-			this.ff = ff;
-			}
-
-// -------------------------- OTHER METHODS --------------------------
-
-		float FalseFalseRate()
-			{
-			return (float) ff / (float) numExamples;
-			}
-
-		float FalseTrueRate()
-			{
-			return (float) ft / (float) numExamples;
-			}
-
-		float TrueFalseRate()
-			{
-			return (float) tf / (float) numExamples;
-			}
-
-		float TrueTrueRate()
-			{
-			return (float) tt / (float) numExamples;
-			}
 		}
 	}

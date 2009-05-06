@@ -1,12 +1,13 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
 import edu.berkeley.compbio.jlibsvm.ContinuousModel;
+import edu.berkeley.compbio.jlibsvm.CrossValidationResults;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.binary.AlphaModel;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Properties;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -14,6 +15,7 @@ import java.util.Properties;
  */
 public class RegressionModel<P> extends AlphaModel<Float, P> implements ContinuousModel<P>
 	{
+	public ImmutableSvmParameterPoint<Float, P> param;
 // ------------------------------ FIELDS ------------------------------
 
 	public static final float NO_LAPLACE_PARAMETER = -1;
@@ -23,18 +25,25 @@ public class RegressionModel<P> extends AlphaModel<Float, P> implements Continuo
 	public float r;// for Solver_NU.  I wanted to factor this out as SolutionInfoNu, but that was too much hassle
 
 
+	public RegressionCrossValidationResults crossValidationResults;
+
+	public CrossValidationResults getCrossValidationResults()
+		{
+		return crossValidationResults;
+		}
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	public RegressionModel()
 		{
 		super();
 		}
-
-	public RegressionModel(Properties props)
+/*
+	public RegressionModel(Properties props, LabelParser<Float> labelParser)
 		{
-		super(props);
+		super(props, labelParser);
 		laplaceParameter = Float.parseFloat(props.getProperty("laplace"));
 		}
+*/
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -57,7 +66,7 @@ public class RegressionModel<P> extends AlphaModel<Float, P> implements Continuo
 		float sum = 0;
 		for (int i = 0; i < numSVs; i++)
 			{
-			sum += alphas[i] * kernel.evaluate(x, SVs[i]);
+			sum += alphas[i] * param.kernel.evaluate(x, SVs[i]);
 			}
 		sum -= rho;
 		return sum;

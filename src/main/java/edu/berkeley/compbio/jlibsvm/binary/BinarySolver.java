@@ -27,7 +27,7 @@ public class BinarySolver<L extends Comparable, P> extends Solver<L, P>
 		{
 		optimize();
 
-		BinaryModel<L, P> model = new BinaryModel<L, P>(null, null);
+		BinaryModel<L, P> model = new BinaryModel<L, P>();
 
 		// calculate rho
 		calculate_rho(model);

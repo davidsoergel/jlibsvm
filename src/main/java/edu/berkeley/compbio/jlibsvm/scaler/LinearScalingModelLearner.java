@@ -1,6 +1,5 @@
 package edu.berkeley.compbio.jlibsvm.scaler;
 
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.util.SparseVector;
 
 import java.util.HashMap;
@@ -18,17 +17,17 @@ public class LinearScalingModelLearner implements ScalingModelLearner<SparseVect
 	{
 // ------------------------------ FIELDS ------------------------------
 
-	SvmParameter param;
-
-	int maxExamples;
+	//ImmutableSvmParameter param;
+	private final int maxExamples;
+	private final boolean normalizeL2;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public LinearScalingModelLearner(SvmParameter param)
+	public LinearScalingModelLearner(int scalingExamples, boolean normalizeL2)
 		{
-		this.param = param;
-		this.maxExamples = param.scalingExamples;
+		this.maxExamples = scalingExamples;
+		this.normalizeL2 = normalizeL2;
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -111,7 +110,7 @@ public class LinearScalingModelLearner implements ScalingModelLearner<SparseVect
 				result.values[i] = (2F * (v - minima.get(index)) / sizes.get(index)) - 1F;
 				}
 
-			if (param.normalizeL2)
+			if (normalizeL2)
 				{
 				result.normalizeL2();
 				}

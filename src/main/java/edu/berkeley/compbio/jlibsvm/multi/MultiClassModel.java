@@ -1,11 +1,14 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
+import com.google.common.base.Function;
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.MapMaker;
 import com.google.common.collect.Multiset;
+import edu.berkeley.compbio.jlibsvm.CrossValidationResults;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
 import edu.berkeley.compbio.jlibsvm.SvmException;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
@@ -17,18 +20,18 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> implements DiscreteModel<L, P>
+public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P> implements DiscreteModel<L, P>
 	{
 // ------------------------------ FIELDS ------------------------------
 
@@ -61,37 +64,44 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	private HashMap<L, BinaryModel<L, P>> oneVsAllModels;
 
 	private P[] allSVs;
+	public MultiClassCrossValidationResults<L, P> crossValidationResults;
 
+	public CrossValidationResults getCrossValidationResults()
+		{
+		return crossValidationResults;
+		}
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public MultiClassModel(Properties props)
+//	public MultiClassModel(Properties props, LabelParser<L> labelParser)
+//		{
+	//super(props, labelParser);
+
+//		throw new NotImplementedException();
+
+	/*
+					numberOfClasses = Integer.parseInt(props.getProperty("nr_class"));
+
+					StringTokenizer st = new StringTokenizer(props.getProperty("rho"));
+
+					//ArrayList<BinaryModel<P>> models = new ArrayList<BinaryModel<P>>();
+					while (st.hasMoreTokens())
+						{
+						BinaryModel<P> m = new BinaryModel<P>(kernel, param);
+						m.rho = Float.parseFloat(st.nextToken());
+						// no SVs yet
+						oneVsOneModels.add(m);
+						}
+					//oneVsOneModels = models.toArray(new BinaryModel<P>[]{});
+
+					probA = parseFloatArray(props.getProperty("probA"));
+					probB = parseFloatArray(props.getProperty("probB"));*/
+//		}
+
+	public MultiClassModel(ImmutableSvmParameter param, int numberOfClasses)
 		{
-		super(props);
-		throw new NotImplementedException();
-
-		/*
-				numberOfClasses = Integer.parseInt(props.getProperty("nr_class"));
-
-				StringTokenizer st = new StringTokenizer(props.getProperty("rho"));
-
-				//ArrayList<BinaryModel<P>> models = new ArrayList<BinaryModel<P>>();
-				while (st.hasMoreTokens())
-					{
-					BinaryModel<P> m = new BinaryModel<P>(kernel, param);
-					m.rho = Float.parseFloat(st.nextToken());
-					// no SVs yet
-					oneVsOneModels.add(m);
-					}
-				//oneVsOneModels = models.toArray(new BinaryModel<P>[]{});
-
-				probA = parseFloatArray(props.getProperty("probA"));
-				probB = parseFloatArray(props.getProperty("probB"));*/
-		}
-
-	public MultiClassModel(KernelFunction<P> kernel, SvmParameter<L> param, int numberOfClasses)
-		{
-		super(kernel, param);
+		//super(param);
+		super();
 		this.numberOfClasses = numberOfClasses;
 		oneVsOneModels = new SymmetricHashMap2d<L, BinaryModel<L, P>>(numberOfClasses);
 		oneVsAllModels = new HashMap<L, BinaryModel<L, P>>(numberOfClasses);
@@ -150,7 +160,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	@NotNull
 	public VotingResult<L> predictLabelWithQuality(P x)
 		{
-		P scaledX = scalingModel.scaledCopy(x);
+		final P scaledX = scalingModel.scaledCopy(x);
 
 		L bestLabel = null;
 		float bestOneClassProbability = 0;
@@ -160,16 +170,40 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		float secondBestOneVsAllProbability = 0;
 
-		// stage 0: we're going to need the kernel value for x against each of the SVs
+		// stage 0: we're going to need the kernel value for x against each of the SVs, for each of the kernels that was used in a subsidary binary machine
 
-		float[] kvalues = new float[allSVs.length];
-		int i = 0;
-		for (P sv : allSVs)
+		//	KValueCache kValuesPerKernel = new KValueCache(scaledX);
+		Map<KernelFunction<P>, float[]> kValuesPerKernel =
+				new MapMaker().makeComputingMap(new Function<KernelFunction<P>, float[]>()
+				{
+				public float[] apply(@NotNull KernelFunction<P> kernel)
+					{
+					float[] kvalues = new float[allSVs.length];
+					int i = 0;
+					for (P sv : allSVs)
+						{
+						kvalues[i] = (float) kernel.evaluate(scaledX, sv);
+						i++;
+						}
+					return kvalues;
+					}
+				});
+
+/*
+		Map<KernelFunction<P>, float[]> kValuesPerKernel = new HashMap<KernelFunction<P>, float[]>();
+
+		for (KernelFunction<P> kernel : param.getKernels())
 			{
-			kvalues[i] = (float) kernel.evaluate(scaledX, sv);
-			i++;
+			float[] kvalues = new float[allSVs.length];
+			int i = 0;
+			for (P sv : allSVs)
+				{
+				kvalues[i] = (float) kernel.evaluate(scaledX, sv);
+				i++;
+				}
+			kValuesPerKernel.put(kernel,kvalues);
 			}
-
+*/
 
 		// REVIEW ignore one-class models for now; maybe revisit later
 
@@ -206,7 +240,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 
 		Map<L, Float> oneVsAllProbabilities =
-				oneVsAllMode == OneVsAllMode.None ? null : computeOneVsAllProbabilities(kvalues);
+				oneVsAllMode == OneVsAllMode.None ? null : computeOneVsAllProbabilities(kValuesPerKernel);
 
 		// now oneVsAllProbabilities is populated with all of the classes that pass the threshold (maybe all of them).
 
@@ -255,6 +289,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 			for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
 				{
+				float[] kvalues = kValuesPerKernel.get(binaryModel.param.kernel);
 				votes.add(binaryModel.predictLabel(kvalues, svIndexMaps.get(binaryModel)));
 				}
 			}
@@ -378,7 +413,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	   return oneClassProbabilities;
 	   }*/
 
-	public Map<L, Float> computeOneVsAllProbabilities(float[] kvalues)
+	public Map<L, Float> computeOneVsAllProbabilities(Map<KernelFunction<P>, float[]> kValuesPerKernel)
 		{
 		Map<L, Float> oneVsAllProbabilities = new HashMap<L, Float>();
 
@@ -386,6 +421,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 		for (BinaryModel<L, P> binaryModel : oneVsAllModels.values())
 			{
+			float[] kvalues = kValuesPerKernel.get(binaryModel.param.kernel);
+
 			// if probability info isn't available, just substitute 1 and 0.
 			final float probability = prob ? binaryModel.getTrueProbability(kvalues, svIndexMaps.get(binaryModel)) :
 					(binaryModel.predictValue(kvalues, svIndexMaps.get(binaryModel)) > 0. ? 1f : 0f);
@@ -405,7 +442,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 					"Asked for supportsOneVsAllProbability when no oneVsAll models were calculated; likely a bug!");
 			}
 		// just check the first model and assume the rest are the same
-		return oneVsAllModels.values().iterator().next().sigmoid != null;
+		return oneVsAllModels.values().iterator().next().crossValidationResults != null;  //.getSigmoid()
 		}
 
 	/*
@@ -442,7 +479,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 
 				BinaryModel<L, P> binaryModel = oneVsOneModels.get(label1, label2);
 
-				float prob = binaryModel.sigmoid.predict(binaryModel.predictValue(
+				float prob = binaryModel.crossValidationResults.getSigmoid().predict(binaryModel.predictValue(
 						x));				//MathSupport.sigmoidPredict(decisionValues[k], probA[k], probB[k])
 
 				pairwiseProbabilities[i][j] = Math.min(Math.max(prob, minimumProbability), 1 - minimumProbability);
@@ -467,7 +504,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 	public boolean supportsOneVsOneProbability()
 		{
 		// just check the first model and assume the rest are the same
-		return oneVsOneModels.valueIterator().next().sigmoid != null;//		return probA != null && probB != null;
+		return oneVsOneModels.valueIterator().next().crossValidationResults
+				!= null;//		return probA != null && probB != null;
 		}
 
 	// Method 2 from the multiclass_prob paper by Wu, Lin, and Weng
@@ -683,6 +721,10 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 		HashMap<K, Map<K, V>> l1Map;
 		private int sizePerDimension;
 
+		public boolean isEmpty()
+			{
+			return l1Map.isEmpty();
+			}
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -783,5 +825,18 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<P> i
 				}
 			};
 			}
+		}
+
+	public Collection<L> getLabels()
+		{
+		if (oneVsOneModels != null && !oneVsOneModels.isEmpty())
+			{
+			return oneVsOneModels.values().iterator().next().getLabels();
+			}
+		else if (oneVsAllModels != null && !oneVsAllModels.isEmpty())
+			{
+			return oneVsAllModels.values().iterator().next().getLabels();
+			}
+		throw new SvmException("Can't get labels from a MultiClassModel with no subsidiary BinaryModels");
 		}
 	}

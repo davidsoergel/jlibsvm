@@ -1,6 +1,6 @@
 package edu.berkeley.compbio.jlibsvm;
 
-import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -8,22 +8,25 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringBufferInputStream;
+import java.util.Collection;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class SolutionModel<P> extends SvmContext
+public abstract class SolutionModel<L extends Comparable, P> extends SvmContext
 	{
 // ------------------------------ FIELDS ------------------------------
+
 
 	/**
 	 * names the SVM that was used to produce this model; used only for writeToStream
 	 */
 	public String svmType;
 
+
+	public abstract CrossValidationResults getCrossValidationResults();
 
 // -------------------------- STATIC METHODS --------------------------
 
@@ -73,40 +76,7 @@ public abstract class SolutionModel<P> extends SvmContext
 
 	public SolutionModel()
 		{
-		super();
-		}
-
-	public SolutionModel(Properties props)
-		{
-		super(null, null);
-
-		try
-			{
-			kernel = (KernelFunction) Class.forName(props.getProperty("kernel_type")).getConstructor(Properties.class)
-					.newInstance(props);
-			}
-		catch (Throwable e)
-			{
-			throw new SvmException(e);
-			}
-
-		// param is only useful for training; when loading a trained model for testing, we can leave it null
-		//param = new SvmParameter(props);
-
-		// ... oops, except that we need the labels.
-
-		param = new SvmParameter();
-
-		StringTokenizer st = new StringTokenizer(props.getProperty("label"));
-		while (st.hasMoreTokens())
-			{
-			param.putWeight(new Integer(st.nextToken()), null);
-			}
-		}
-
-	public SolutionModel(KernelFunction kernel, SvmParameter param)
-		{
-		super(kernel, param);
+		//super(null);
 		}
 
 // --------------------- GETTER / SETTER METHODS ---------------------
@@ -130,16 +100,29 @@ public abstract class SolutionModel<P> extends SvmContext
 	 * @param fp
 	 * @throws IOException
 	 */
-	protected void writeToStream(DataOutputStream fp) throws IOException
+	public void writeToStream(DataOutputStream fp) throws IOException
 		{
+		// BAD broken with respect to grid search etc.
+
+		throw new NotImplementedException();
+
+		/*
 		fp.writeBytes("svm_type " + svmType + "\n");
-		fp.writeBytes(kernel.toString());
+
+
+		fp.writeBytes(param.kernel.toString());
 
 		fp.writeBytes("label");
-		for (Object i : param.getWeights().keySet())  // note these are in insertion order
+		for (L i : param.getLabels()) //getWeights().keySet())  // note these are in insertion order
 			{
 			fp.writeBytes(" " + i);
 			}
 		fp.writeBytes("\n");
+		*/
+		}
+
+	public Collection<L> getLabels()
+		{
+		throw new NotImplementedException();
 		}
 	}

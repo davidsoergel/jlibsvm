@@ -1,13 +1,14 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
-import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,36 +18,47 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class Nu_SVR<P> extends RegressionSVM<P, RegressionProblem<P>>
+public class Nu_SVR<P, R extends RegressionProblem<P, R>> extends RegressionSVM<P, R>
 	{
 // ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(Nu_SVR.class);
 
 
-// --------------------------- CONSTRUCTORS ---------------------------
-
-	public Nu_SVR(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
-		{
-		super(kernel, scalingModelLearner, param);
-		if (param.nu <= 0 || param.nu > 1)
-			{
-			throw new SvmException("nu <= 0 or nu > 1");
-			}
-		if (param.C <= 0)
-			{
-			throw new SvmException("C <= 0");
-			}
-		}
-
 // -------------------------- OTHER METHODS --------------------------
 
-	public RegressionModel<P> train(RegressionProblem<P> problem)
+	public RegressionModel<P> train(R problem, @NotNull ImmutableSvmParameter<Float, P> param)
 		{
+		validateParam(param);
+		RegressionModel<P> result;
+		if (param instanceof ImmutableSvmParameterGrid && param.gridsearchBinaryMachinesIndependently)
+			{
+			throw new SvmException(
+					"Can't do grid search without cross-validation, which is not implemented for regression SVMs.");
+			}
+		else
+			{
+			result = trainScaled(problem, (ImmutableSvmParameterPoint<Float, P>) param);
+			}
+		return result;
+		}
+
+
+	private RegressionModel<P> trainScaled(R problem, @NotNull ImmutableSvmParameterPoint<Float, P> param)
+		{
+		if (param.scalingModelLearner != null && param.scaleBinaryMachinesIndependently)
+			{
+			// the examples are copied before scaling, not scaled in place
+			// that way we don't need to worry that the same examples are being used in another thread, or scaled differently in different contexts, etc.
+			// this may cause memory problems though
+
+			problem = problem.getScaledCopy(param.scalingModelLearner);
+			}
+
 		float laplaceParameter = RegressionModel.NO_LAPLACE_PARAMETER;
 		if (param.probability)
 			{
-			laplaceParameter = laplaceParameter(problem);
+			laplaceParameter = laplaceParameter(problem, param);
 			}
 
 		float sum = param.C * param.nu * problem.getNumExamples() / 2f;
@@ -70,13 +82,13 @@ public class Nu_SVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 			}
 
 		QMatrix<P> qMatrix =
-				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getNumExamples(), param.getCacheRows());
+				new BooleanInvertingKernelQMatrix<P>(param.kernel, problem.getNumExamples(), param.getCacheRows());
 		RegressionSolverNu<P> s =
 				new RegressionSolverNu<P>(solutionVectors, qMatrix, param.C, param.eps, param.shrinking);
 
 
 		RegressionModel<P> model = s.solve(); //new RegressionModel<P>(binaryModel);
-		model.kernel = kernel;
+		//	model.kernel = kernel;
 		model.param = param;
 		model.setSvmType(getSvmType());
 		model.laplaceParameter = laplaceParameter;
@@ -92,5 +104,18 @@ public class Nu_SVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 	public String getSvmType()
 		{
 		return "nu_svr";
+		}
+
+	public void validateParam(@NotNull ImmutableSvmParameterPoint<Float, P> param)
+		{
+		super.validateParam(param);
+		if (param.nu <= 0 || param.nu > 1)
+			{
+			throw new SvmException("nu <= 0 or nu > 1");
+			}
+		if (param.C <= 0)
+			{
+			throw new SvmException("C <= 0");
+			}
 		}
 	}

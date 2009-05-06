@@ -1,10 +1,12 @@
 package edu.berkeley.compbio.jlibsvm.legacyexec;
 
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.MutableSvmProblem;
 import edu.berkeley.compbio.jlibsvm.SVM;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
 import edu.berkeley.compbio.jlibsvm.SvmException;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationProblem;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.C_SVC;
@@ -37,6 +39,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -60,16 +63,19 @@ public class svm_train
 	static final int RBF = 2;
 	static final int SIGMOID = 3;
 	static final int PRECOMPUTED = 4;
-	KernelFunction kernel;
+	//KernelFunction kernel;
 	SVM svm;
-	private SvmParameter param;		// set by parse_command_line
+
+	ImmutableSvmParameter param;
+
 	private MutableSvmProblem problem;		// set by read_problem
 	private SolutionModel model;
 	private String input_file_name;		// set by parse_command_line
 	private String model_file_name;		// set by parse_command_line
 	//private String error_msg;
 	private int cross_validation;
-	private int nr_fold;
+	//	private int nr_fold;
+	private static final Float UNSPECIFIED_GAMMA = -1F;
 
 // --------------------------- main() method ---------------------------
 
@@ -97,17 +103,30 @@ public class svm_train
 			System.err.print("Error: " + error_msg + "\n");
 			System.exit(1);
 			}*/
+// BAD cleanup...
 
-		if (cross_validation != 0)
+		if (param instanceof ImmutableSvmParameterGrid)
 			{
-			do_cross_validation();
+			// cross-validation will happen anyway
+
+			model = svm.train(problem, param);
+			System.out.println(model.getCrossValidationResults().toString());
+			//System.err.println(svm.qMatrix.perfString());
+			model.save(model_file_name);
 			}
 		else
 			{
-			//svm.setupQMatrix(problem);
-			model = svm.train(problem);
-			//System.err.println(svm.qMatrix.perfString());
-			model.save(model_file_name);
+			if (cross_validation != 0)
+				{
+				do_cross_validation();
+				}
+			else
+				{
+				//svm.setupQMatrix(problem);
+				model = svm.train(problem, param);
+				//System.err.println(svm.qMatrix.perfString());
+				model.save(model_file_name);
+				}
 			}
 
 		long endTime = System.currentTimeMillis();
@@ -134,9 +153,9 @@ public class svm_train
 		{
 		int i;
 
-
 		//SvmParameter
-		param = new SvmParameter();
+		ImmutableSvmParameterGrid.Builder builder = ImmutableSvmParameterGrid.builder();
+		//SvmParameterVariableBuilder vparam = new SvmParameterVariableBuilder();
 
 		// default values
 		/*	param.svm_type = svm_parameter.C_SVC;
@@ -144,14 +163,13 @@ public class svm_train
 							param.degree = 3;
 							param.gamma = 0;
 							param.coef0 = 0;*/
-		param.nu = 0.5f;
-		param.cache_size = 100;
-		param.C = 1;
-		param.eps = 1e-3f;
-		param.p = 0.1f;
-		param.shrinking = true;
-		param.probability = false;
-		param.redistributeUnbalancedC = true;
+		builder.nu = 0.5f;
+		builder.cache_size = 100;
+		builder.eps = 1e-3f;
+		builder.p = 0.1f;
+		builder.shrinking = true;
+		builder.probability = false;
+		builder.redistributeUnbalancedC = true;
 		//param.nr_weight = 0;
 		//param.weightLabel = new int[0];
 		//param.weight = new float[0];
@@ -159,10 +177,14 @@ public class svm_train
 
 		ScalingModelLearner<SparseVector> scalingModelLearner = new NoopScalingModelLearner<SparseVector>();
 
+		String scalingType = null;
+		int scalingExamples = 1000;
+		boolean normalizeL2 = false;
 		int svm_type = 0;
 		int kernel_type = 2;
 		int degree = 3;
-		float gamma = 0;
+		Set<Float> gammaSet = new HashSet<Float>();
+//		float gamma = 0;
 		float coef0 = 0;
 
 		// parse options
@@ -188,74 +210,80 @@ public class svm_train
 					degree = Integer.parseInt(argv[i]);
 					break;
 				case 'g':
-					gamma = Float.parseFloat(argv[i]);
+					gammaSet = new HashSet<Float>();
+					for (String s : argv[i].split(","))
+						{
+						gammaSet.add(Float.parseFloat(s));
+						}
+					//gamma = Float.parseFloat(argv[i]);
 					break;
 				case 'r':
 					coef0 = Float.parseFloat(argv[i]);
 					break;
 				case 'n':
-					param.nu = Float.parseFloat(argv[i]);
+					builder.nu = Float.parseFloat(argv[i]);
 					break;
 				case 'm':
-					param.cache_size = Float.parseFloat(argv[i]);
+					builder.cache_size = Float.parseFloat(argv[i]);
 					break;
 				case 'c':
-					param.C = Float.parseFloat(argv[i]);
+					builder.Cset = new HashSet<Float>();
+					for (String s : argv[i].split(","))
+						{
+						builder.Cset.add(Float.parseFloat(s));
+						}
 					break;
 				case 'e':
-					param.eps = Float.parseFloat(argv[i]);
+					builder.eps = Float.parseFloat(argv[i]);
 					break;
 				case 'p':
-					param.p = Float.parseFloat(argv[i]);
+					builder.p = Float.parseFloat(argv[i]);
 					break;
 				case 'h':
-					param.shrinking = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
+					builder.shrinking = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
 					break;
 				case 'b':
-					param.probability = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
+					builder.probability = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
 					break;
 				case 'u':
-					param.redistributeUnbalancedC = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
+					builder.redistributeUnbalancedC = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
 					break;
 				case 'v':
 					cross_validation = 1;
-					nr_fold = Integer.parseInt(argv[i]);
-					if (nr_fold < 2)
+					builder.crossValidationFolds = Integer.parseInt(argv[i]);
+					if (builder.crossValidationFolds < 2)
 						{
 						System.err.print("n-fold cross validation: n must >= 2\n");
 						exit_with_help();
 						}
 					break;
 				case 'w':
-					param.putWeight(Integer.parseInt(argv[i - 1].substring(2)), Float.parseFloat(argv[i]));
+					builder.putWeight(Integer.parseInt(argv[i - 1].substring(2)), Float.parseFloat(argv[i]));
 					break;
 				case 'a':
-					param.allVsAllMode = MultiClassModel.AllVsAllMode.valueOf(argv[i]);
+					builder.allVsAllMode = MultiClassModel.AllVsAllMode.valueOf(argv[i]);
 					break;
 				case 'o':
-					param.oneVsAllMode = MultiClassModel.OneVsAllMode.valueOf(argv[i]);
+					builder.oneVsAllMode = MultiClassModel.OneVsAllMode.valueOf(argv[i]);
 					break;
 				case 'k':
-					param.oneVsAllThreshold = Double.parseDouble(argv[i]);
+					builder.oneVsAllThreshold = Double.parseDouble(argv[i]);
 					break;
 				case 'j':
-					param.minVoteProportion = Double.parseDouble(argv[i]);
+					builder.minVoteProportion = Double.parseDouble(argv[i]);
 					break;
 				case 'f':
-					if (argv[i].equals("linear"))
-						{
-						scalingModelLearner = new LinearScalingModelLearner(param);
-						}
-					else if (argv[i].equals("zscore"))
-						{
-						scalingModelLearner = new ZscoreScalingModelLearner(param);
-						}
+					scalingType = argv[i];
+
+					break;
+				case 'x':
+					scalingExamples = Integer.parseInt(argv[i]);
 					break;
 				case 'l':
 					int normalizeDim = Integer.parseInt(argv[i]);
 					if (normalizeDim == 2)
 						{
-						param.normalizeL2 = true;
+						normalizeL2 = true;
 						}
 					else
 						{
@@ -263,23 +291,31 @@ public class svm_train
 						exit_with_help();
 						}
 					break;
+				case 'y':
+					builder.gridsearchBinaryMachinesIndependently =
+							argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
+					break;
 				case 'z':
-					int scale = Integer.parseInt(argv[i]);
-					if (scale == 1)
-						{
-						param.scaleBinaryMachinesIndependently = true;
-						}
-					else
-						{
-						System.err.print("-z must == 1\n");
-						exit_with_help();
-						}
+					builder.scaleBinaryMachinesIndependently = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
 					break;
 				default:
 					System.err.print("Unknown option: " + argv[i - 1] + "\n");
 					exit_with_help();
 				}
 			}
+
+		if (scalingType == null)
+			{
+			// do nothing
+			}
+		else if (scalingType.equals("linear"))
+			{
+			scalingModelLearner = new LinearScalingModelLearner(scalingExamples, normalizeL2);
+			}
+		else if (scalingType.equals("zscore"))
+				{
+				scalingModelLearner = new ZscoreScalingModelLearner(scalingExamples, normalizeL2);
+				}
 
 		// determine filenames
 
@@ -301,44 +337,65 @@ public class svm_train
 			model_file_name = argv[i].substring(p) + ".model";
 			}
 
+		if (gammaSet.isEmpty())
+			{
+			gammaSet.add(UNSPECIFIED_GAMMA);
+			}
+
+		builder.kernelSet = new HashSet<KernelFunction>();
 
 		switch (kernel_type)
 			{
 			case svm_train.LINEAR:
-				kernel = new LinearKernel();
+				builder.kernelSet.add(new LinearKernel());
 				break;
 			case svm_train.POLY:
-				kernel = new PolynomialKernel(degree, gamma, coef0);
+				for (Float gamma : gammaSet)
+					{
+					builder.kernelSet.add(new PolynomialKernel(degree, gamma, coef0));
+					}
 				break;
 			case svm_train.RBF:
-				kernel = new GaussianRBFKernel(gamma);
+				for (Float gamma : gammaSet)
+					{
+					builder.kernelSet.add(new GaussianRBFKernel(gamma));
+					}
 				break;
 			case svm_train.SIGMOID:
-				kernel = new SigmoidKernel(gamma, coef0);
+				for (Float gamma : gammaSet)
+					{
+					builder.kernelSet.add(new SigmoidKernel(gamma, coef0));
+					}
 				break;
 			case svm_train.PRECOMPUTED:
-				kernel = new PrecomputedKernel();
+				builder.kernelSet.add(new PrecomputedKernel());
 				break;
 			default:
 				throw new SvmException("Unknown kernel type: " + kernel_type);
 			}
 
+		builder.scalingModelLearner = scalingModelLearner;
+		//param.kernel = kernel;
+
+		this.param = builder.build();
+
+		//ivparam = new SvmParameterVariable(vparam);
 		switch (svm_type)
 			{
 			case svm_train.C_SVC:
-				svm = new C_SVC(kernel, scalingModelLearner, param);
+				svm = new C_SVC();
 				break;
 			case svm_train.NU_SVC:
-				svm = new Nu_SVC(kernel, scalingModelLearner, param);
+				svm = new Nu_SVC();
 				break;
 			case svm_train.ONE_CLASS:
-				svm = new OneClassSVC(kernel, scalingModelLearner, param);
+				svm = new OneClassSVC();
 				break;
 			case svm_train.EPSILON_SVR:
-				svm = new EpsilonSVR(kernel, scalingModelLearner, param);
+				svm = new EpsilonSVR();
 				break;
 			case svm_train.NU_SVR:
-				svm = new Nu_SVR(kernel, scalingModelLearner, param);
+				svm = new Nu_SVR();
 				break;
 			default:
 				throw new SvmException("Unknown svm type: " + kernel_type);
@@ -369,7 +426,8 @@ public class svm_train
 				+ "-j minVoteProportion: the chosen class must have at least this proportion of the total votes\n"
 				+ "-o oneVsAllMode: None, Best, Veto, BreakTies, VetoAndBreakTies \n"
 				+ "-k oneVsAllProb: the chosen class must have at least this one-vs-all probability; if -b is not set, probabilities are 0 or 1\n"
-				+ "-v n: n-fold cross validation mode\n" + "-f scalingmode : m = none (default), linear, zscore\n"
+				+ "-v n: n-fold cross validation mode\n" + "-f scalingmode : none (default), linear, zscore\n"
+				+ "-x scalinglimit : maximum examples to use for scaling (default 1000)\n"
 				+ "-l 2: project to unit sphere (normalize L2 distance)\n");
 		System.exit(1);
 		}
@@ -457,32 +515,49 @@ public class svm_train
 			((BinaryClassificationProblem) problem).setupLabels();
 			}
 
-		if (kernel instanceof GammaKernel && ((GammaKernel) kernel).getGamma() == 0f)
-			{
-			((GammaKernel) kernel).setGamma(1.0f / max_index);
-			//	param.gamma = 1.0 / max_index;
-			}
 
-		if (kernel instanceof PrecomputedKernel) //param.kernel_type == svm_parameter.PRECOMPUTED)
+		if (param instanceof ImmutableSvmParameterGrid)
 			{
-			throw new NotImplementedException();
-			/*
-			for (int i = 0; i < vy.size(); i++)
+			Collection<ImmutableSvmParameterPoint> gridParams = ((ImmutableSvmParameterGrid) param).getGridParams();
+			for (ImmutableSvmParameterPoint subparam : gridParams)
 				{
-				if (problem.examples[i].indexes[0] != 0)
-					{
-					System.err.print("Wrong kernel matrix: first column must be 0:sample_serial_number\n");
-					System.exit(1);
-					}
-				if ((int) problem.examples[i].values[0] <= 0 || (int) problem.examples[i].values[0] > max_index)
-					{
-					System.err.print("Wrong input format: sample_serial_number out of range\n");
-					System.exit(1);
-					}
-				}*/
+				updateKernelWithNumExamples(subparam, max_index);
+				}
+			}
+		else
+			{
+			updateKernelWithNumExamples((ImmutableSvmParameterPoint) param, max_index);
 			}
 
 		fp.close();
+		}
+
+	private void updateKernelWithNumExamples(ImmutableSvmParameterPoint pointParam, int max_index)
+		{
+		KernelFunction kernel = pointParam.kernel;
+
+		if (kernel instanceof GammaKernel && ((GammaKernel) kernel).getGamma() == UNSPECIFIED_GAMMA)
+			{
+			((GammaKernel) kernel).setGamma(1.0f / max_index);
+			}
+		if (kernel instanceof PrecomputedKernel)
+			{
+			throw new NotImplementedException();
+			/*
+		for (int i = 0; i < vy.size(); i++)
+			{
+			if (problem.examples[i].indexes[0] != 0)
+				{
+				System.err.print("Wrong kernel matrix: first column must be 0:sample_serial_number\n");
+				System.exit(1);
+				}
+			if ((int) problem.examples[i].values[0] <= 0 || (int) problem.examples[i].values[0] > max_index)
+				{
+				System.err.print("Wrong input format: sample_serial_number out of range\n");
+				System.exit(1);
+				}
+			}*/
+			}
 		}
 
 	private void do_cross_validation()
@@ -495,10 +570,10 @@ public class svm_train
 		//double[] target = new double[problem.l];
 
 		int numExamples = problem.getNumExamples();
-		;
+
 		if (svm instanceof RegressionSVM) //param.svm_type == svm_parameter.EPSILON_SVR || param.svm_type == svm_parameter.NU_SVR)
 			{
-			Map cvResult = svm.continuousCrossValidation(problem, nr_fold);
+			Map cvResult = svm.continuousCrossValidation(problem, param);
 			//for (i = 0; i < numExamples; i++)
 			for (Object p : problem.getExamples().keySet())
 				{
@@ -518,7 +593,7 @@ public class svm_train
 			}
 		else
 			{
-			Map cvResult = svm.discreteCrossValidation(problem, nr_fold);
+			Map cvResult = svm.discreteCrossValidation(problem, param);
 			for (Object p : problem.getExamples().keySet())
 				//	for (i = 0; i < numExamples; i++)
 				{

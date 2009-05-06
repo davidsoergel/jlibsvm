@@ -29,11 +29,11 @@ public class BinarySolverNu<L extends Comparable, P> extends Solver_NU<L, P>
 
 // -------------------------- OTHER METHODS --------------------------
 
-	public BinaryModel<L, P> solve()
+	public BinaryModel<L, P> solve() //ImmutableSvmParameter<L, P> param)
 		{
 		int iter = optimize();
 
-		BinaryModel<L, P> model = new BinaryModel<L, P>(null, null);
+		BinaryModel<L, P> model = new BinaryModel<L, P>();
 
 		// calculate rho
 

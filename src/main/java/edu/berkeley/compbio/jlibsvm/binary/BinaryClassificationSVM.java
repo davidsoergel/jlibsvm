@@ -1,16 +1,12 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
-import edu.berkeley.compbio.jlibsvm.ExplicitSvmProblem;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.SVM;
-import edu.berkeley.compbio.jlibsvm.SigmoidProbabilityModel;
-import edu.berkeley.compbio.jlibsvm.SvmException;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Formatter;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -26,40 +22,179 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 	private static final Logger logger = Logger.getLogger(BinaryClassificationSVM.class);
 
 
-// --------------------------- CONSTRUCTORS ---------------------------
-
-	protected BinaryClassificationSVM(@NotNull KernelFunction<P> kernel,
-	                                  @NotNull ScalingModelLearner<P> scalingModelLearner, SvmParameter<L> param)
-		{
-		super(kernel, scalingModelLearner, param);
-		}
-
 // -------------------------- OTHER METHODS --------------------------
 
-	public BinaryModel<L, P> train(BinaryClassificationProblem<L, P> problem)
+
+	public BinaryModel<L, P> train(BinaryClassificationProblem<L, P> problem,
+	                               @NotNull ImmutableSvmParameter<L, P> param)
 		{
-		if (problem.getLabels().size() != 2)
+		validateParam(param);
+		BinaryModel<L, P> result;
+		if (param instanceof ImmutableSvmParameterGrid)  //  either the problem was binary to start with, or param.gridsearchBinaryMachinesIndependently
 			{
-			throw new SvmException("Can't do binary classification; " + problem.getLabels().size() + " classes found");
+			result = trainGrid(problem, (ImmutableSvmParameterGrid<L, P>) param);
+			}
+		else if (param.probability)
+			{
+			result = trainScaledWithCV(problem, (ImmutableSvmParameterPoint<L, P>) param);
+			}
+		else
+			{
+			result = trainScaled(problem, (ImmutableSvmParameterPoint<L, P>) param);
+			}
+		return result;
+		}
+
+	/**
+	 * Try a bunch of different parameter sets, and return the model based on the one that produces the best
+	 * class-normalized sensitivity.
+	 *
+	 * @param problem
+	 * @param param
+	 * @return
+	 */
+
+
+	private BinaryModel<L, P> trainGrid(BinaryClassificationProblem<L, P> problem,
+	                                    @NotNull ImmutableSvmParameterGrid<L, P> param)
+		{
+		// PERF should be concurrent.  Doesn't matter for multiclass since that's already multithreaded, but each binary grid-search will be single-threaded here.
+
+		ImmutableSvmParameterPoint<L, P> bestParam = null;
+		BinaryCrossValidationResults<L, P> bestCrossValidationResults = null;
+		float bestSensitivity = -1F;
+		for (ImmutableSvmParameterPoint<L, P> gridParam : param.getGridParams())
+			{
+			// note we must use the CV variant in order to know which parameter set is best
+
+			//float gridCp = Cp * gridParam.Cfactor;
+			//float gridCn = Cn * gridParam.Cfactor;
+
+			//MultiClassModel<L, P> result = trainScaledWithCV(problem, gridParam);
+			BinaryCrossValidationResults<L, P> crossValidationResults = performCrossValidation(problem, gridParam);
+			float sensitivity = crossValidationResults.classNormalizedSensitivity();
+			if (sensitivity > bestSensitivity)
+				{
+				bestParam = gridParam;
+				bestSensitivity = sensitivity;
+				bestCrossValidationResults = crossValidationResults;
+				}
 			}
 
+		logger.info("Chose grid point: " + bestParam);
+
+		// finally train once on all the data (including rescaling)
+		BinaryModel<L, P> result = trainScaled(problem, bestParam);
+		result.crossValidationResults = bestCrossValidationResults;
+		return result;
+		}
+
+	/**
+	 * Train the classifier, and also prepare the probability sigmoid thing if requested.  Note that svcProbability will
+	 * call this method in the course of cross-validation, but will first ensure that param.probability == false;
+	 *
+	 * @param problem
+	 * @return
+	 */
+	private BinaryModel<L, P> trainScaledWithCV(BinaryClassificationProblem<L, P> problem,
+	                                            @NotNull ImmutableSvmParameterPoint<L, P> param)
+		{
+		// if scaling each binary machine is enabled, then each fold will be independently scaled also; so we don't need to scale the whole dataset prior to CV
+
+		BinaryCrossValidationResults<L, P> cv = performCrossValidation(problem, param);
+
+		// finally train once on all the data (including rescaling)
+		BinaryModel<L, P> result = trainScaled(problem, param);
+		result.crossValidationResults = cv;
+
+		result.printSolutionInfo(problem);
+		return result;
+		}
+
+	/**
+	 * Cross-validation decision values for probability estimates
+	 *
+	 * @param problem
+	 * @return
+	 */
+/*	private SigmoidProbabilityModel svcProbability(BinaryClassificationProblem<L, P> problem, float Cp, float Cn,
+	                                               @NotNull ImmutableSvmParameter<L, P> param)
+		{
+		// ** Original implementation makes a point of not explicitly training if all of the examples are in one class anyway.  Does that matter?
+
+		Map<P, Float> decisionValues = performCrossValidation(problem, Cp, Cn,param);
+
+		CrossValidationResults<L,P> cv = new CrossValidationResults<L,P>(problem, decisionValues);
+
+		return new SigmoidProbabilityModel(cv.decisionValueArray, cv.labelArray);
+		}
+*/
+	private BinaryCrossValidationResults<L, P> performCrossValidation(BinaryClassificationProblem<L, P> problem,
+	                                                                  @NotNull ImmutableSvmParameter<L, P> param)
+		{
+		Map<P, Float> decisionValues = continuousCrossValidation(problem, param);
+
+		BinaryCrossValidationResults<L, P> cv =
+				new BinaryCrossValidationResults<L, P>(problem, decisionValues, param.probability);
+		return cv;
+		}
+
+	/**
+	 * Normal training on the entire problem, with no scaling and no cross-validation-based probability measure.
+	 *
+	 * @param problem
+	 * @param Cp
+	 * @param Cn
+	 * @return
+	 */
+	protected abstract BinaryModel<L, P> trainOne(BinaryClassificationProblem<L, P> problem, float Cp, float Cn,
+	                                              @NotNull ImmutableSvmParameterPoint<L, P> param);
+
+
+	private BinaryModel<L, P> trainScaled(BinaryClassificationProblem<L, P> problem,
+	                                      @NotNull ImmutableSvmParameterPoint<L, P> param)
+		{
+		if (param.scalingModelLearner != null && param.scaleBinaryMachinesIndependently)
+			{
+			// the examples are copied before scaling, not scaled in place
+			// that way we don't need to worry that the same examples are being used in another thread, or scaled differently in different contexts, etc.
+			// this may cause memory problems though
+
+			problem = problem.getScaledCopy(param.scalingModelLearner);
+			}
+
+		BinaryModel<L, P> result = trainWeighted(problem, param);
+
+		//result.printSolutionInfo(problem);
+		return result;
+		}
+
+	private BinaryModel<L, P> trainWeighted(BinaryClassificationProblem<L, P> problem,
+	                                        @NotNull ImmutableSvmParameterPoint<L, P> param)
+		{
 		// calculate weighted C
 
 		float weightedCp = param.C;
 		float weightedCn = param.C;
 
-		Float weightP = param.getWeight(problem.getTrueLabel());
-		if (weightP != null)
+		if (param.redistributeUnbalancedC)
 			{
-			weightedCp *= weightP;
+			Float weightP = param.getWeight(problem.getTrueLabel());
+			if (weightP != null)
+				{
+				weightedCp *= weightP;
+				}
+
+			Float weightN = param.getWeight(problem.getFalseLabel());
+			if (weightN != null)
+				{
+				weightedCn *= weightN;
+				}
 			}
 
-		Float weightN = param.getWeight(problem.getFalseLabel());
-		if (weightN != null)
-			{
-			weightedCn *= weightN;
-			}
-		BinaryModel<L, P> result = train(problem, weightedCp, weightedCn);
+		// train using those
+		BinaryModel<L, P> result = trainOne(problem, weightedCp, weightedCn, param);
+
 
 		// ** logging output disabled for now
 		//if (logger.isDebugEnabled())
@@ -70,139 +205,10 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		return result;
 		}
 
-	/**
-	 * Train the classifier, and also prepare the probability sigmoid thing if requested.  Note that svcProbability will
-	 * call this method in the course of cross-validation, but will first ensure that param.probability == false;
-	 *
-	 * @param problem
-	 * @param Cp
-	 * @param Cn
-	 * @return
-	 */
-	public BinaryModel<L, P> train(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
+	public Callable<BinaryModel<L, P>> trainCallable(BinaryClassificationProblem<L, P> problem,
+	                                                 @NotNull ImmutableSvmParameter<L, P> param)
 		{
-		if (scalingModelLearner != null && param.scaleBinaryMachinesIndependently)
-			{
-			// ** the examples are copied before scaling, not scaled in place
-			// that way we don't need to worry that the same examples are being used in another thread, or scaled differently in different contexts, etc.
-			// this may cause memory problems though
-
-			problem = problem.getScaledCopy(scalingModelLearner);
-			}
-		BinaryModel<L, P> result = trainOne(problem, Cp, Cn);
-		if (param.probability)
-			{
-			result.sigmoid = svcProbability(problem, Cp, Cn, result);
-			}
-		result.printSolutionInfo(problem);
-		return result;
-		}
-
-	/**
-	 * Normal training on the entire problem, with no cross-validation-based probability measure.
-	 *
-	 * @param problem
-	 * @param Cp
-	 * @param Cn
-	 * @return
-	 */
-	protected abstract BinaryModel<L, P> trainOne(BinaryClassificationProblem<L, P> problem, float Cp, float Cn);
-
-
-	/**
-	 * Cross-validation decision values for probability estimates
-	 *
-	 * @param problem
-	 * @param Cp
-	 * @param Cn
-	 * @param model
-	 * @return
-	 */
-
-	private SigmoidProbabilityModel svcProbability(BinaryClassificationProblem<L, P> problem, float Cp, float Cn,
-	                                               BinaryModel<L, P> model)
-		{
-		// ** Original implementation makes a point of not explicitly training if all of the examples are in one class anyway.  Does that matter?
-
-		SvmParameter<L> subparam = new SvmParameter<L>(param);
-		subparam.probability = false;
-		subparam.C = 1.0f;
-
-		subparam.putWeight(problem.getTrueLabel(), Cp);
-		subparam.putWeight(problem.getFalseLabel(), Cn);
-
-
-		// ugly hack to temporarily replace the parameters.  This only works because train() is ultimately a method on this very object.
-		SvmParameter origParam = param;
-		param = subparam;
-
-		Map<P, Float> decisionValues =
-				continuousCrossValidation((ExplicitSvmProblem<L, P, BinaryClassificationProblem<L, P>>) problem, 5);
-
-		param = origParam;
-
-		// convert to arrays
-
-		int i = 0;
-		float[] decisionValueArray = new float[decisionValues.size()];
-		boolean[] labelArray = new boolean[decisionValues.size()];
-		L trueLabel = problem.getTrueLabel();
-
-		for (Map.Entry<P, Float> entry : decisionValues.entrySet())
-			{
-			decisionValueArray[i] = entry.getValue();
-			labelArray[i] = problem.getTargetValue(entry.getKey()).equals(trueLabel);
-			i++;
-			}
-
-
-		// while we're at it, since we've done a cross-validation anyway, we may as well report the accuracy.
-
-		int tt = 0, ff = 0, ft = 0, tf = 0;
-		for (int j = 0; j < i; j++)
-			{
-			if (decisionValueArray[j] > 0)
-				{
-				if (labelArray[j])
-					{
-					tt++;
-					}
-				else
-					{
-					ft++;
-					}
-				}
-			else
-				{
-				if (labelArray[j])
-					{
-					tf++;
-					}
-				else
-					{
-					ff++;
-					}
-				}
-			}
-
-		BinaryModel.CrossValidationResults cv = model.newCrossValidationResults(i, tt, ft, tf, ff);
-
-		Formatter f = new Formatter();
-		f.format("Binary classifier for %s vs. %s: TP=%.2f FP=%.2f FN=%.2f TN=%.2f", trueLabel, problem.getFalseLabel(),
-		         cv.TrueTrueRate(), cv.FalseTrueRate(), cv.TrueFalseRate(), cv.FalseFalseRate());
-
-
-		//	logger.info("Binary classifier for " + trueLabel + " vs. " + problem.getFalseLabel() + ": TP="+((float)tp/i) + ": FP="
-		//			+ ((float) fp / i) + ": FN=" + ((float) fn / i) + ": TN=" + ((float) tn / i) );
-
-		logger.info(f.out().toString());
-
-		return new SigmoidProbabilityModel(decisionValueArray, labelArray);
-		}
-
-	public Callable<BinaryModel<L, P>> trainCallable(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
-		{
-		return new BinarySvmTrainCallable(problem, Cp, Cn);
+		return new BinarySvmTrainCallable(problem, param);
 		}
 
 // -------------------------- INNER CLASSES --------------------------
@@ -212,16 +218,17 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 // ------------------------------ FIELDS ------------------------------
 
 		private BinaryClassificationProblem<L, P> problem;
-		private float Cp, Cn;
+
+		private ImmutableSvmParameter<L, P> param;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-		public BinarySvmTrainCallable(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
+		public BinarySvmTrainCallable(BinaryClassificationProblem<L, P> problem,
+		                              @NotNull ImmutableSvmParameter<L, P> param)
 			{
 			this.problem = problem;
-			this.Cp = Cp;
-			this.Cn = Cn;
+			this.param = param;
 			}
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -233,7 +240,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 			{
 			try
 				{
-				return train(problem, Cp, Cn);
+				return train(problem, param);
 				}
 			catch (Exception e)
 				{

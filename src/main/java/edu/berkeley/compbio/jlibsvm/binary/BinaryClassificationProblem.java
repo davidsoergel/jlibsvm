@@ -10,7 +10,8 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface BinaryClassificationProblem<L extends Comparable, P> extends SvmProblem<L, P>
+public interface BinaryClassificationProblem<L extends Comparable, P>
+		extends SvmProblem<L, P, BinaryClassificationProblem<L, P>>
 	{
 // -------------------------- OTHER METHODS --------------------------
 

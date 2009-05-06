@@ -3,11 +3,12 @@ package edu.berkeley.compbio.jlibsvm.legacyexec;
 
 import edu.berkeley.compbio.jlibsvm.ContinuousModel;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.MutableSvmProblem;
 import edu.berkeley.compbio.jlibsvm.SVM;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
 import edu.berkeley.compbio.jlibsvm.SvmException;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.C_SVC;
 import edu.berkeley.compbio.jlibsvm.binary.MutableBinaryClassificationProblemImpl;
@@ -74,6 +75,8 @@ public class svm_toy extends Applet
 
 	Vector<point> point_list = new Vector<point>();
 	byte current_value = 1;
+
+	ImmutableSvmParameter param;
 
 
 // -------------------------- OTHER METHODS --------------------------
@@ -266,6 +269,26 @@ public class svm_toy extends Applet
 		draw_all_points();
 		}
 
+	void draw_all_points()
+		{
+		int n = point_list.size();
+		for (int i = 0; i < n; i++)
+			{
+			draw_point(point_list.elementAt(i));
+			}
+		}
+
+	void draw_point(point p)
+		{
+		Color c = colors[p.value + 3];
+
+		Graphics window_gc = getGraphics();
+		buffer_gc.setColor(c);
+		buffer_gc.fillRect((int) (p.x * XLEN), (int) (p.y * YLEN), 4, 4);
+		window_gc.setColor(c);
+		window_gc.fillRect((int) (p.x * XLEN), (int) (p.y * YLEN), 4, 4);
+		}
+
 	void button_run_clicked(String args)
 		{
 		// guard
@@ -274,7 +297,7 @@ public class svm_toy extends Applet
 			return;
 			}
 
-		SvmParameter param = new SvmParameter();
+		ImmutableSvmParameterPoint.Builder paramBuilder = new ImmutableSvmParameterPoint.Builder();
 
 		// default values
 		/*	param.svm_type = svm_parameter.C_SVC;
@@ -282,13 +305,13 @@ public class svm_toy extends Applet
 				param.degree = 3;
 				param.gamma = 0;
 				param.coef0 = 0;*/
-		param.nu = 0.5f;
-		param.cache_size = 40;
-		param.C = 1;
-		param.eps = 1e-3f;
-		param.p = 0.1f;
-		param.shrinking = true;
-		param.probability = false;
+		paramBuilder.nu = 0.5f;
+		paramBuilder.cache_size = 40;
+		paramBuilder.C = 1;
+		paramBuilder.eps = 1e-3f;
+		paramBuilder.p = 0.1f;
+		paramBuilder.shrinking = true;
+		paramBuilder.probability = false;
 		//param.nr_weight = 0;
 		//param.weightLabel = new int[0];
 		//param.weight = new float[0];
@@ -337,31 +360,31 @@ public class svm_toy extends Applet
 					coef0 = Float.parseFloat(argv[i]);
 					break;
 				case 'n':
-					param.nu = Float.parseFloat(argv[i]);
+					paramBuilder.nu = Float.parseFloat(argv[i]);
 					break;
 				case 'm':
-					param.cache_size = Float.parseFloat(argv[i]);
+					paramBuilder.cache_size = Float.parseFloat(argv[i]);
 					break;
 				case 'c':
-					param.C = Float.parseFloat(argv[i]);
+					paramBuilder.C = Float.parseFloat(argv[i]);
 					break;
 				case 'e':
-					param.eps = Float.parseFloat(argv[i]);
+					paramBuilder.eps = Float.parseFloat(argv[i]);
 					break;
 				case 'p':
-					param.p = Float.parseFloat(argv[i]);
+					paramBuilder.p = Float.parseFloat(argv[i]);
 					break;
 				case 'h':
-					param.shrinking = Boolean.parseBoolean(argv[i]);
+					paramBuilder.shrinking = Boolean.parseBoolean(argv[i]);
 					break;
 				case 'b':
-					param.probability = Boolean.parseBoolean(argv[i]);
+					paramBuilder.probability = Boolean.parseBoolean(argv[i]);
 					break;
 				case 'u':
-					param.redistributeUnbalancedC = Boolean.parseBoolean(argv[i]);
+					paramBuilder.redistributeUnbalancedC = Boolean.parseBoolean(argv[i]);
 					break;
 				case 'w':
-					param.putWeight(Integer.parseInt(argv[i - 1].substring(2)), Float.parseFloat(argv[i]));
+					paramBuilder.putWeight(Integer.parseInt(argv[i - 1].substring(2)), Float.parseFloat(argv[i]));
 					break;
 				default:
 					System.err.print("unknown option\n");
@@ -391,22 +414,23 @@ public class svm_toy extends Applet
 			}
 
 		SVM svm;
+		param = paramBuilder.build();
 		switch (svm_type)
 			{
 			case svm_train.C_SVC:
-				svm = new C_SVC(kernel, null, param);
+				svm = new C_SVC();
 				break;
 			case svm_train.NU_SVC:
-				svm = new Nu_SVC(kernel, null, param);
+				svm = new Nu_SVC();
 				break;
 			case svm_train.ONE_CLASS:
-				svm = new OneClassSVC(kernel, null, param);
+				svm = new OneClassSVC();
 				break;
 			case svm_train.EPSILON_SVR:
-				svm = new EpsilonSVR(kernel, null, param);
+				svm = new EpsilonSVR();
 				break;
 			case svm_train.NU_SVR:
-				svm = new Nu_SVR(kernel, null, param);
+				svm = new Nu_SVR();
 				break;
 			default:
 				throw new SvmException("Unknown svm type: " + kernel_type);
@@ -474,7 +498,7 @@ public class svm_toy extends Applet
 
 			// build model & classify
 			//svm.setupQMatrix(prob);
-			ContinuousModel model = (ContinuousModel) svm.train(prob);
+			ContinuousModel model = (ContinuousModel) svm.train(prob, param);
 			//System.err.println(svm.qMatrix.perfString());
 			SparseVector x = new SparseVector(1);
 			//x[0] = new svm_node();
@@ -493,7 +517,7 @@ public class svm_toy extends Applet
 			window_gc.setColor(colors[0]);
 			window_gc.drawLine(0, 0, 0, YLEN - 1);
 
-			int p = (int) (param.p * YLEN);
+			int p = (int) (paramBuilder.p * YLEN);
 			for (int i = 1; i < XLEN; i++)
 				{
 				buffer_gc.setColor(colors[0]);
@@ -548,7 +572,7 @@ public class svm_toy extends Applet
 				}
 			// build model & classify
 			//svm.setupQMatrix(prob);
-			SolutionModel model = svm.train(prob);
+			SolutionModel model = svm.train(prob, param);
 			//System.err.println(svm.qMatrix.perfString());
 			SparseVector x = new SparseVector(2);
 			//x[0] = new svm_node();
@@ -604,26 +628,6 @@ public class svm_toy extends Applet
 			}
 
 		draw_all_points();
-		}
-
-	void draw_all_points()
-		{
-		int n = point_list.size();
-		for (int i = 0; i < n; i++)
-			{
-			draw_point(point_list.elementAt(i));
-			}
-		}
-
-	void draw_point(point p)
-		{
-		Color c = colors[p.value + 3];
-
-		Graphics window_gc = getGraphics();
-		buffer_gc.setColor(c);
-		buffer_gc.fillRect((int) (p.x * XLEN), (int) (p.y * YLEN), 4, 4);
-		window_gc.setColor(c);
-		window_gc.fillRect((int) (p.x * XLEN), (int) (p.y * YLEN), 4, 4);
 		}
 
 	public void paint(Graphics g)

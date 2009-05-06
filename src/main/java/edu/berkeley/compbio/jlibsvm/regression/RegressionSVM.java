@@ -1,12 +1,9 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
-import edu.berkeley.compbio.jlibsvm.ExplicitSvmProblem;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.SVM;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.SvmProblem;
-import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
-import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -14,7 +11,7 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class RegressionSVM<P, R extends SvmProblem<Float, P>> extends SVM<Float, P, R>
+public abstract class RegressionSVM<P, R extends RegressionProblem<P, R>> extends SVM<Float, P, R>
 	{
 // ------------------------------ FIELDS ------------------------------
 
@@ -23,30 +20,17 @@ public abstract class RegressionSVM<P, R extends SvmProblem<Float, P>> extends S
 	private final float SQRT_2 = (float) Math.sqrt(2);
 
 
-// --------------------------- CONSTRUCTORS ---------------------------
-
-	protected RegressionSVM(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner,
-	                        SvmParameter<Float> param)
-		{
-		super(kernel, scalingModelLearner, param);
-		}
-
 // -------------------------- OTHER METHODS --------------------------
 
 	// Return parameter of a Laplace distribution
 
-	protected float laplaceParameter(RegressionProblem<P> problem)
+	protected float laplaceParameter(RegressionProblem<P, R> problem, @NotNull ImmutableSvmParameter<Float, P> param)
 		{
 		int i;
-		int numberOfFolds = 5;
 		float mae = 0;
 
-		boolean paramProbability = param.probability;
-		param.probability = false;
+		Map<P, Float> ymv = continuousCrossValidation(problem, param);
 
-		Map<P, Float> ymv = continuousCrossValidation((ExplicitSvmProblem<Float, P, R>) problem, numberOfFolds);
-
-		param.probability = paramProbability;
 
 		for (Map.Entry<P, Float> entry : ymv.entrySet())
 			{
@@ -79,5 +63,11 @@ public abstract class RegressionSVM<P, R extends SvmProblem<Float, P>> extends S
 		return mae;
 		}
 
-	public abstract RegressionModel<P> train(R problem);
+	public abstract RegressionModel<P> train(R problem, @NotNull ImmutableSvmParameter<Float, P> param);
+
+	@Override
+	public void validateParam(@NotNull ImmutableSvmParameter<Float, P> param)
+		{
+		super.validateParam(param);
+		}
 	}

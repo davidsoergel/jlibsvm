@@ -29,4 +29,10 @@ public abstract class GammaKernel<T> implements KernelFunction<T>
 		{
 		this.gamma = gamma;
 		}
+
+	@Override
+	public String toString()
+		{
+		return "gamma=" + gamma;
+		}
 	}

@@ -1,6 +1,5 @@
 package edu.berkeley.compbio.jlibsvm.scaler;
 
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.util.SparseVector;
 
 import java.util.HashMap;
@@ -14,9 +13,8 @@ public class ZscoreScalingModelLearner implements ScalingModelLearner<SparseVect
 	{
 // ------------------------------ FIELDS ------------------------------
 
-	SvmParameter param;
-
-	int maxExamples;
+	private final int maxExamples;
+	private final boolean normalizeL2;
 
 
 // -------------------------- STATIC METHODS --------------------------
@@ -52,10 +50,10 @@ public class ZscoreScalingModelLearner implements ScalingModelLearner<SparseVect
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public ZscoreScalingModelLearner(SvmParameter param)
+	public ZscoreScalingModelLearner(int scalingExamples, boolean normalizeL2)
 		{
-		this.param = param;
-		this.maxExamples = param.scalingExamples;
+		this.maxExamples = scalingExamples;
+		this.normalizeL2 = normalizeL2;
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -108,8 +106,8 @@ public class ZscoreScalingModelLearner implements ScalingModelLearner<SparseVect
 		{
 // ------------------------------ FIELDS ------------------------------
 
-		Map<Integer, Float> mean;
-		Map<Integer, Float> stddev;
+		private final Map<Integer, Float> mean;
+		private final Map<Integer, Float> stddev;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -137,7 +135,7 @@ public class ZscoreScalingModelLearner implements ScalingModelLearner<SparseVect
 				result.indexes[i] = index;
 				result.values[i] = (v - mean.get(index)) / stddev.get(index);
 				}
-			if (param.normalizeL2)
+			if (normalizeL2)
 				{
 				result.normalizeL2();
 				}

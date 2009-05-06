@@ -49,7 +49,6 @@ class Cache
 	// request data [0,len)
 	// return some position p where [p,len) need to be filled
 	// (p >= len if nothing needs to be filled)
-
 	// java: simulate pointer using single-element array
 
 	int get_data(int index, float[][] data, int len)

@@ -3,8 +3,6 @@ package edu.berkeley.compbio.jlibsvm.oneclass;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
 import edu.berkeley.compbio.jlibsvm.regression.RegressionModel;
 
-import java.util.Properties;
-
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
@@ -23,10 +21,11 @@ public class OneClassModel<L, P> extends RegressionModel<P> implements DiscreteM
 		super();
 		}
 
-	public OneClassModel(Properties props)
+/*	public OneClassModel(Properties props, LabelParser<Float>labelParser)
 		{
-		super(props);
+		super(props, labelParser);
 		}
+*/
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
@@ -48,7 +47,6 @@ public class OneClassModel<L, P> extends RegressionModel<P> implements DiscreteM
 		}
 
 // --------------------- Interface DiscreteModel ---------------------
-
 
 	public Boolean predictLabel(P x)
 		{

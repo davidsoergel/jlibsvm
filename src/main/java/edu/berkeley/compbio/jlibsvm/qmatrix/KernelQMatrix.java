@@ -32,20 +32,19 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 
 // --------------------- Interface QMatrix ---------------------
 
-
 	public final float evaluateDiagonal(SolutionVector<P> a)
 		{
 		return cache.getDiagonal(a);
 		}
 
-	public String perfString()
+	public void getQ(SolutionVector<P> svA, SolutionVector<P>[] active, float[] buf)
 		{
-		return cache.toString();
+		cache.get(svA, active, buf);
 		}
 
-	public void maintainCache(SolutionVector<P>[] active, SolutionVector<P>[] newlyInactive)
+	public void getQ(SolutionVector<P> svA, SolutionVector<P>[] active, SolutionVector<P>[] inactive, float[] buf)
 		{
-		cache.maintainCache(active, newlyInactive);
+		cache.get(svA, active, inactive, buf);
 		}
 
 	public void initRanks(Collection<SolutionVector<P>> allExamples)
@@ -57,14 +56,14 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 			}
 		}
 
-	public void getQ(SolutionVector<P> svA, SolutionVector<P>[] active, float[] buf)
+	public void maintainCache(SolutionVector<P>[] active, SolutionVector<P>[] newlyInactive)
 		{
-		cache.get(svA, active, buf);
+		cache.maintainCache(active, newlyInactive);
 		}
 
-	public void getQ(SolutionVector<P> svA, SolutionVector<P>[] active, SolutionVector<P>[] inactive, float[] buf)
+	public String perfString()
 		{
-		cache.get(svA, active, inactive, buf);
+		return cache.toString();
 		}
 
 // -------------------------- OTHER METHODS --------------------------

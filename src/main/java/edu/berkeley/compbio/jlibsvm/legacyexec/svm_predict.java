@@ -127,7 +127,7 @@ public class svm_predict
 			else
 				{
 				output.writeBytes("labels");
-				for (Object i : model.param.getWeights().keySet()) // in insertion order!
+				for (Object i : model.getLabels()) // in insertion order!
 					{
 					output.writeBytes(" " + i);
 					}

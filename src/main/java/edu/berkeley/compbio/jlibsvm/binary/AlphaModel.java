@@ -1,8 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
@@ -10,13 +8,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<P>
+public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<L, P>
 	{
 // ------------------------------ FIELDS ------------------------------
 
@@ -37,17 +34,18 @@ public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<
 		{
 		super();
 		}
-
-	public AlphaModel(Properties props)
+/*
+	public AlphaModel(Properties props, LabelParser<L> labelParser)
 		{
-		super(props);
+		super(props, labelParser);
 		rho = Float.parseFloat(props.getProperty("rho"));
 		}
 
-	protected AlphaModel(KernelFunction kernel, SvmParameter param)
+	protected AlphaModel(@NotNull ImmutableSvmParameterPoint<L, P> param)
 		{
-		super(kernel, param);
+		super(param);
 		}
+		*/
 
 // -------------------------- OTHER METHODS --------------------------
 

@@ -24,7 +24,6 @@ public interface QMatrix<P>
 
 //	float[] getQ(int column, int len);
 //	float[] getQD();
-
 //	void swapIndex(int i, int j);
 
 //	List<P> getVectors();

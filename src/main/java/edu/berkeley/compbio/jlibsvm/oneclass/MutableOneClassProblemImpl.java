@@ -1,7 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.oneclass;
 
 import edu.berkeley.compbio.jlibsvm.MutableSvmProblem;
-import edu.berkeley.compbio.jlibsvm.regression.RegressionProblem;
 
 import java.util.HashMap;
 
@@ -10,7 +9,7 @@ import java.util.HashMap;
  * @version $Id$
  */
 public class MutableOneClassProblemImpl<L, P> extends OneClassProblemImpl<L, P>
-		implements MutableSvmProblem<Float, P, RegressionProblem<P>>
+		implements MutableSvmProblem<Float, P, OneClassProblem<L, P>>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 

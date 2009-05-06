@@ -432,7 +432,7 @@ public abstract class Solver<L extends Comparable, P>
 					for (SolutionVector<P> svC : allExamples)
 						{
 						//		assert Q_all[svC.rank] == Q.evaluate(svA, svC);
-						svC.G_bar -= C_i * Q_all[svC.rank]; //Q.evaluate(svA, svC); //** TEST  //Q_all[svC.rank];
+						svC.G_bar -= C_i * Q_all[svC.rank]; //Q.evaluate(svA, svC);
 						//		svA.wasEvaluated = true;
 						//		svC.wasEvaluated = true;
 						}
@@ -442,7 +442,7 @@ public abstract class Solver<L extends Comparable, P>
 					for (SolutionVector<P> svC : allExamples)
 						{
 						//		assert Q_all[svC.rank] == Q.evaluate(svA, svC);
-						svC.G_bar += C_i * Q_all[svC.rank]; //Q.evaluate(svA, svC); //** TEST  //Q_all[svC.rank];
+						svC.G_bar += C_i * Q_all[svC.rank]; //Q.evaluate(svA, svC);
 						//		svA.wasEvaluated = true;
 						//		svC.wasEvaluated = true;
 						}
@@ -457,7 +457,7 @@ public abstract class Solver<L extends Comparable, P>
 					for (SolutionVector<P> svC : allExamples)
 						{
 						//		assert Q_all[svC.rank] == Q.evaluate(svB, svC);
-						svC.G_bar -= C_j * Q_all[svC.rank]; //Q.evaluate(svB, svC); //** TEST  //Q_all[svC.rank];
+						svC.G_bar -= C_j * Q_all[svC.rank]; //Q.evaluate(svB, svC);
 						//		svB.wasEvaluated = true;
 						//		svC.wasEvaluated = true;
 						}
@@ -467,7 +467,7 @@ public abstract class Solver<L extends Comparable, P>
 					for (SolutionVector<P> svC : allExamples)
 						{
 						//		assert Q_all[svC.rank] == Q.evaluate(svB, svC);
-						svC.G_bar += C_j * Q_all[svC.rank]; //Q.evaluate(svB, svC); //** TEST  //Q_all[svC.rank];
+						svC.G_bar += C_j * Q_all[svC.rank]; //Q.evaluate(svB, svC);
 						//		svB.wasEvaluated = true;
 						//		svC.wasEvaluated = true;
 						}

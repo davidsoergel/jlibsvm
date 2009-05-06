@@ -4,7 +4,7 @@ package edu.berkeley.compbio.jlibsvm;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface MutableSvmProblem<L extends Comparable, P, R extends SvmProblem<L, P>>
+public interface MutableSvmProblem<L extends Comparable, P, R extends SvmProblem<L, P, R>>
 		extends ExplicitSvmProblem<L, P, R>
 	{
 // -------------------------- OTHER METHODS --------------------------

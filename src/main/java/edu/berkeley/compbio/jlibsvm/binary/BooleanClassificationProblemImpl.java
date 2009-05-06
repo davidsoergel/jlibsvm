@@ -5,7 +5,10 @@ import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,7 +23,7 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 	private Map<P, Boolean> booleanExamples;
 	private Set<P> trueExamples;
 	private Set<P> falseExamples;
-
+	int numExamples = 0;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -41,7 +44,32 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 
 		numExamples = trueExamples.size() + falseExamples.size();
 
-		exampleCounts = new HashMultiset<L>(2);
+		exampleCounts = new HashMultiset<L>();
+		exampleCounts.add(trueLabel, trueExamples.size());
+		exampleCounts.add(falseLabel, falseExamples.size());
+		}
+
+
+	public BooleanClassificationProblemImpl(BooleanClassificationProblemImpl<L, P> backingProblem, Set<P> heldOutPoints)
+		{
+		super(backingProblem.labelClass, null, backingProblem.exampleIds, backingProblem.scalingModel,
+		      backingProblem.trueLabel, backingProblem.falseLabel);
+		this.heldOutPoints = heldOutPoints;
+
+
+		// PERF use a SubtractionSet?
+		this.trueExamples = new HashSet<P>(backingProblem.trueExamples);
+		this.falseExamples = new HashSet<P>(backingProblem.falseExamples);
+		trueExamples.removeAll(heldOutPoints);
+		falseExamples.removeAll(heldOutPoints);
+
+		labels = new ArrayList<L>(2);
+		labels.add(trueLabel);
+		labels.add(falseLabel);
+
+		numExamples = trueExamples.size() + falseExamples.size();
+
+		exampleCounts = new HashMultiset<L>();
 		exampleCounts.add(trueLabel, trueExamples.size());
 		exampleCounts.add(falseLabel, falseExamples.size());
 		}
@@ -71,7 +99,6 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 
 // --------------------- Interface BinaryClassificationProblem ---------------------
 
-
 	/**
 	 * There's no sense in scaling Boolean values, so this is a noop.  note we don't make a copy for efficiency.
 	 *
@@ -90,7 +117,6 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 
 // --------------------- Interface SvmProblem ---------------------
 
-
 	public L getTargetValue(P point)
 		{
 		if (booleanExamples.get(point))
@@ -101,5 +127,49 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 			{
 			return falseLabel;
 			}
+		}
+
+	public int getNumExamples()
+		{
+		return numExamples;
+		}
+
+	// need to override this because of the examples == null hack
+	public Set<BinaryClassificationProblem<L, P>> makeFolds(int numberOfFolds)
+		{
+		Set<BinaryClassificationProblem<L, P>> result = new HashSet<BinaryClassificationProblem<L, P>>();
+
+		List<P> points = new ArrayList<P>(getBooleanExamples().keySet());
+
+		Collections.shuffle(points);
+
+		// PERF this is maybe overwrought, but ensures the best possible balance among folds (unlike examples.size() / numberOfFolds)
+
+		List<Set<P>> heldOutPointSets = new ArrayList<Set<P>>();
+		for (int i = 0; i < numberOfFolds; i++)
+			{
+			heldOutPointSets.add(new HashSet<P>());
+			}
+
+		int f = 0;
+		for (P point : points)
+			{
+			heldOutPointSets.get(f).add(point);
+			f++;
+			f %= numberOfFolds;
+			}
+
+		for (Set<P> heldOutPoints : heldOutPointSets)
+			{
+			result.add(makeFold(heldOutPoints));
+			}
+
+		return result;
+		}
+
+
+	protected BooleanClassificationProblemImpl<L, P> makeFold(Set<P> heldOutPoints)
+		{
+		return new BooleanClassificationProblemImpl(this, heldOutPoints);
 		}
 	}

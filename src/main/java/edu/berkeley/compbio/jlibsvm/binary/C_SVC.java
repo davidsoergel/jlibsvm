@@ -1,13 +1,13 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
-import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,21 +24,11 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 	private static final Logger logger = Logger.getLogger(C_SVC.class);
 
 
-// --------------------------- CONSTRUCTORS ---------------------------
-
-	public C_SVC(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
-		{
-		super(kernel, scalingModelLearner, param);
-		if (param.C <= 0)
-			{
-			throw new SvmException("C <= 0");
-			}
-		}
-
 // -------------------------- OTHER METHODS --------------------------
 
 	@Override
-	public BinaryModel<L, P> trainOne(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
+	public BinaryModel<L, P> trainOne(BinaryClassificationProblem<L, P> problem, float Cp, float Cn,
+	                                  @NotNull ImmutableSvmParameterPoint<L, P> param)
 		{
 		float linearTerm = -1f;
 		Map<P, Boolean> examples = problem.getBooleanExamples();
@@ -53,12 +43,13 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 			}
 
 		QMatrix<P> qMatrix =
-				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getNumExamples(), param.getCacheRows());
+				new BooleanInvertingKernelQMatrix<P>(param.kernel, problem.getNumExamples(), param.getCacheRows());
 
 		BinarySolver<L, P> s = new BinarySolver<L, P>(solutionVectors, qMatrix, Cp, Cn, param.eps, param.shrinking);
 
 		BinaryModel<L, P> model = s.solve();
-		model.kernel = kernel;
+		//	model.vparam = vparam;
+		//	model.kernel = kernel;
 		model.param = param;
 		model.trueLabel = problem.getTrueLabel();
 		model.falseLabel = problem.getFalseLabel();
@@ -92,5 +83,18 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 	public String getSvmType()
 		{
 		return "c_svc";
+		}
+
+	@Override
+	public void validateParam(@NotNull ImmutableSvmParameter<L, P> param)
+		{
+		super.validateParam(param);
+		if (param instanceof ImmutableSvmParameterPoint)
+			{
+			if (((ImmutableSvmParameterPoint) param).C <= 0)
+				{
+				throw new SvmException("C <= 0");
+				}
+			}
 		}
 	}

@@ -8,8 +8,8 @@ import java.util.HashMap;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class MutableRegressionProblemImpl<P> extends RegressionProblemImpl<P>
-		implements MutableSvmProblem<Float, P, RegressionProblem<P>>
+public class MutableRegressionProblemImpl<P> extends RegressionProblemImpl<P, MutableRegressionProblemImpl<P>>
+		implements MutableSvmProblem<Float, P, MutableRegressionProblemImpl<P>>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 

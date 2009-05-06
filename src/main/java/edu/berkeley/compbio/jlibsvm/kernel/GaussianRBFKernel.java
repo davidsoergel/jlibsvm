@@ -200,15 +200,23 @@ public class GaussianRBFKernel extends GammaKernel<SparseVector>
 		super(gamma);
 		}
 
-// ------------------------ CANONICAL METHODS ------------------------
-
+	// ------------------------ CANONICAL METHODS ------------------------
+	@Override
 	public String toString()
+		{
+		return "RBF gamma=" + gamma;
+		}
+
+	// BAD file output infrastructure
+
+	public String toFileOutputString()
 		{
 		StringBuilder sb = new StringBuilder();
 		sb.append("kernel_type rbf\n");
 		sb.append("gamma " + gamma + "\n");
 		return sb.toString();
 		}
+
 
 // ------------------------ INTERFACE METHODS ------------------------
 

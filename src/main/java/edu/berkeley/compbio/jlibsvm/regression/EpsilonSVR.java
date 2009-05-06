@@ -1,12 +1,13 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
-import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,31 +17,43 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class EpsilonSVR<P> extends RegressionSVM<P, RegressionProblem<P>>
+public class EpsilonSVR<P, R extends RegressionProblem<P, R>> extends RegressionSVM<P, R>
 	{
-// --------------------------- CONSTRUCTORS ---------------------------
-
-	public EpsilonSVR(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
-		{
-		super(kernel, scalingModelLearner, param);
-		if (param.p < 0)
-			{
-			throw new SvmException("p < 0");
-			}
-		if (param.C <= 0)
-			{
-			throw new SvmException("C <= 0");
-			}
-		}
-
 // -------------------------- OTHER METHODS --------------------------
 
-	public RegressionModel<P> train(RegressionProblem<P> problem)
+
+	public RegressionModel<P> train(R problem, @NotNull ImmutableSvmParameter<Float, P> param)
 		{
+		validateParam(param);
+		RegressionModel<P> result;
+		if (param instanceof ImmutableSvmParameterGrid && param.gridsearchBinaryMachinesIndependently)
+			{
+			throw new SvmException(
+					"Can't do grid search without cross-validation, which is not implemented for regression SVMs.");
+			}
+		else
+			{
+			result = trainScaled(problem, (ImmutableSvmParameterPoint<Float, P>) param);
+			}
+		return result;
+		}
+
+
+	private RegressionModel<P> trainScaled(R problem, @NotNull ImmutableSvmParameterPoint<Float, P> param)
+		{
+		if (param.scalingModelLearner != null && param.scaleBinaryMachinesIndependently)
+			{
+			// the examples are copied before scaling, not scaled in place
+			// that way we don't need to worry that the same examples are being used in another thread, or scaled differently in different contexts, etc.
+			// this may cause memory problems though
+
+			problem = problem.getScaledCopy(param.scalingModelLearner);
+			}
+
 		float laplaceParameter = RegressionModel.NO_LAPLACE_PARAMETER;
 		if (param.probability)
 			{
-			laplaceParameter = laplaceParameter(problem);
+			laplaceParameter = laplaceParameter(problem, param);
 			}
 
 		List<SolutionVector<P>> solutionVectors = new ArrayList<SolutionVector<P>>();
@@ -61,12 +74,12 @@ public class EpsilonSVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 			}
 
 		QMatrix<P> qMatrix =
-				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getNumExamples(), param.getCacheRows());
+				new BooleanInvertingKernelQMatrix<P>(param.kernel, problem.getNumExamples(), param.getCacheRows());
 		RegressionSolver<P> s = new RegressionSolver<P>(solutionVectors, qMatrix, param.C, param.eps, param.shrinking);
 
 
 		RegressionModel<P> model = s.solve();
-		model.kernel = kernel;
+		//model.kernel = kernel;
 		model.param = param;
 		model.setSvmType(getSvmType());
 		model.laplaceParameter = laplaceParameter;
@@ -80,5 +93,22 @@ public class EpsilonSVR<P> extends RegressionSVM<P, RegressionProblem<P>>
 	public String getSvmType()
 		{
 		return "epsilon_svr";
+		}
+
+	@Override
+	public void validateParam(@NotNull ImmutableSvmParameter<Float, P> param)
+		{
+		super.validateParam(param);
+		if (param.p < 0)
+			{
+			throw new SvmException("p < 0");
+			}
+		if (param instanceof ImmutableSvmParameterPoint)
+			{
+			if (((ImmutableSvmParameterPoint) param).C <= 0)
+				{
+				throw new SvmException("C <= 0");
+				}
+			}
 		}
 	}

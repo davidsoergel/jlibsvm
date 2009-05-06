@@ -1,14 +1,14 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
 import com.google.common.collect.Multiset;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.SvmException;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
-import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.qmatrix.BooleanInvertingKernelQMatrix;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
-import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,28 +25,18 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 	private static final Logger logger = Logger.getLogger(Nu_SVC.class);
 
 
-// --------------------------- CONSTRUCTORS ---------------------------
-
-	public Nu_SVC(KernelFunction<P> kernel, ScalingModelLearner<P> scalingModelLearner, SvmParameter param)
-		{
-		super(kernel, scalingModelLearner, param);
-		if (param.nu <= 0 || param.nu > 1)
-			{
-			throw new SvmException("nu <= 0 or nu > 1");
-			}
-		}
-
 // -------------------------- OTHER METHODS --------------------------
 
 	@Override
-	public BinaryModel<L, P> trainOne(BinaryClassificationProblem<L, P> problem, float Cp, float Cn)
+	public BinaryModel<L, P> trainOne(BinaryClassificationProblem<L, P> problem, float Cp, float Cn,
+	                                  @NotNull ImmutableSvmParameterPoint<L, P> param)
 		{
 		if (Cp != 1f || Cn != 1f)
 			{
 			logger.warn("Nu_SVC ignores Cp and Cn, provided values " + Cp + " and " + Cn + " + not used");
 			}
 
-		if (!isFeasible(problem))
+		if (!isFeasible(problem, param))
 			{
 			throw new SvmException("Nu_SVM is not feasible for this problem");
 			}
@@ -85,13 +75,13 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 			}
 
 		QMatrix<P> qMatrix =
-				new BooleanInvertingKernelQMatrix<P>(kernel, problem.getNumExamples(), param.getCacheRows());
+				new BooleanInvertingKernelQMatrix<P>(param.kernel, problem.getNumExamples(), param.getCacheRows());
 		BinarySolverNu<L, P> s =
 				new BinarySolverNu<L, P>(solutionVectors, qMatrix, 1.0f, 1.0f, param.eps, param.shrinking);
 
 
 		BinaryModel<L, P> model = s.solve();
-		model.kernel = kernel;
+		//model.kernel = kernel;
 		model.param = param;
 		model.trueLabel = problem.getTrueLabel();
 		model.falseLabel = problem.getFalseLabel();
@@ -117,7 +107,7 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 		return model;
 		}
 
-	public boolean isFeasible(BinaryClassificationProblem problem)
+	public boolean isFeasible(BinaryClassificationProblem problem, @NotNull ImmutableSvmParameter<L, P> param)
 		{
 		Multiset<Boolean> counts = problem.getExampleCounts();
 
@@ -135,5 +125,14 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 	public String getSvmType()
 		{
 		return "nu_svc";
+		}
+
+	public void validateParam(@NotNull ImmutableSvmParameter<L, P> param)
+		{
+		super.validateParam(param);
+		if (param.nu <= 0 || param.nu > 1)
+			{
+			throw new SvmException("nu <= 0 or nu > 1");
+			}
 		}
 	}
