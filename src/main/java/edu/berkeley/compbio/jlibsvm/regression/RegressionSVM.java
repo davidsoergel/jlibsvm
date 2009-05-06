@@ -70,4 +70,14 @@ public abstract class RegressionSVM<P, R extends RegressionProblem<P, R>> extend
 		{
 		super.validateParam(param);
 		}
+
+
+	public RegressionCrossValidationResults<P, R> performCrossValidation(R problem,
+	                                                                     @NotNull ImmutableSvmParameter<Float, P> param)
+		{
+		Map<P, Float> decisionValues = continuousCrossValidation(problem, param);
+
+		RegressionCrossValidationResults<P, R> cv = new RegressionCrossValidationResults<P, R>(problem, decisionValues);
+		return cv;
+		}
 	}

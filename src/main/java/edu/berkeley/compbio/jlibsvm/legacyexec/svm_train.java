@@ -74,6 +74,7 @@ public class svm_train
 	private String model_file_name;		// set by parse_command_line
 	//private String error_msg;
 	//private boolean cross_validation;
+	private boolean crossValidation;
 	//	private int nr_fold;
 	private static final Float UNSPECIFIED_GAMMA = -1F;
 
@@ -107,7 +108,14 @@ public class svm_train
 
 		model = svm.train(problem, param);
 		model.save(model_file_name);
+
+		// CV might have been done already for grid search or whatever
 		CrossValidationResults cv = model.getCrossValidationResults();
+		if (cv == null && crossValidation)
+			{
+			// but if not, force it
+			cv = svm.performCrossValidation(problem, param);
+			}
 		if (cv != null)
 			{
 			System.out.println(cv.toString());
@@ -242,7 +250,8 @@ public class svm_train
 						}
 					break;
 				case 'q':
-					builder.crossValidation = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
+					// don't put this in the param; that causes a hassle with the nested learning jobs
+					crossValidation = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
 					break;
 				case 'w':
 					builder.putWeight(Integer.parseInt(argv[i - 1].substring(2)), Float.parseFloat(argv[i]));

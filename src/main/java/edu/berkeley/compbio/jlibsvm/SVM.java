@@ -92,4 +92,6 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 			throw new SvmException("eps < 0");
 			}
 		}
+
+	public abstract CrossValidationResults performCrossValidation(R problem, ImmutableSvmParameter<L, P> param);
 	}

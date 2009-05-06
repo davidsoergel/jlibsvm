@@ -56,8 +56,8 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		return "multiclass " + binarySvm.getSvmType();
 		}
 
-	private MultiClassCrossValidationResults<L, P> performCrossValidation(MultiClassProblem<L, P> problem,
-	                                                                      @NotNull ImmutableSvmParameter<L, P> param)
+	public MultiClassCrossValidationResults<L, P> performCrossValidation(MultiClassProblem<L, P> problem,
+	                                                                     @NotNull ImmutableSvmParameter<L, P> param)
 		{
 		Map<P, L> predictions = discreteCrossValidation(problem, param);
 
@@ -78,18 +78,24 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			//		}
 			//	else
 			//		{
+
+			// performs cross-validation at each grid point regardless
 			result = trainGrid(problem, (ImmutableSvmParameterGrid<L, P>) param);
+
+
 			//		}
 			}
 		else
 			{
+			// train once using all the data
 			result = trainScaled(problem, param);
 
-			if (param.crossValidation)
-				{
-				MultiClassCrossValidationResults<L, P> cv = performCrossValidation(problem, param);
-				result.crossValidationResults = cv;
-				}
+			// also perform CV if requested
+			/*	if (param.crossValidation)
+			   {
+			   MultiClassCrossValidationResults<L, P> cv = performCrossValidation(problem, param);
+			   result.crossValidationResults = cv;
+			   }*/
 			}
 		return result;
 		}

@@ -129,8 +129,8 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		return new SigmoidProbabilityModel(cv.decisionValueArray, cv.labelArray);
 		}
 */
-	private BinaryCrossValidationResults<L, P> performCrossValidation(BinaryClassificationProblem<L, P> problem,
-	                                                                  @NotNull ImmutableSvmParameter<L, P> param)
+	public BinaryCrossValidationResults<L, P> performCrossValidation(BinaryClassificationProblem<L, P> problem,
+	                                                                 @NotNull ImmutableSvmParameter<L, P> param)
 		{
 		Map<P, Float> decisionValues = continuousCrossValidation(problem, param);
 
