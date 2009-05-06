@@ -72,7 +72,14 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		MultiClassModel<L, P> result;
 		if (param instanceof ImmutableSvmParameterGrid && !param.gridsearchBinaryMachinesIndependently)
 			{
+			//	if (param.gridsearchBinaryMachinesIndependently)
+			//		{
+			//		result = trainScaledWithCV(problem, param);
+			//		}
+			//	else
+			//		{
 			result = trainGrid(problem, (ImmutableSvmParameterGrid<L, P>) param);
+			//		}
 			}
 		else
 			{
