@@ -73,7 +73,7 @@ public class svm_train
 	private String input_file_name;		// set by parse_command_line
 	private String model_file_name;		// set by parse_command_line
 	//private String error_msg;
-	//private int cross_validation;
+	//private boolean cross_validation;
 	//	private int nr_fold;
 	private static final Float UNSPECIFIED_GAMMA = -1F;
 
@@ -234,13 +234,15 @@ public class svm_train
 					builder.redistributeUnbalancedC = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
 					break;
 				case 'v':
-					//cross_validation = 1;
 					builder.crossValidationFolds = Integer.parseInt(argv[i]);
 					if (builder.crossValidationFolds < 2)
 						{
 						System.err.print("n-fold cross validation: n must >= 2\n");
 						exit_with_help();
 						}
+					break;
+				case 'q':
+					builder.crossValidation = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
 					break;
 				case 'w':
 					builder.putWeight(Integer.parseInt(argv[i - 1].substring(2)), Float.parseFloat(argv[i]));

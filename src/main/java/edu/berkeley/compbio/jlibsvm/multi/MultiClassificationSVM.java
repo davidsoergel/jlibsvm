@@ -84,6 +84,12 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		else
 			{
 			result = trainScaled(problem, param);
+
+			if (param.crossValidation)
+				{
+				MultiClassCrossValidationResults<L, P> cv = performCrossValidation(problem, param);
+				result.crossValidationResults = cv;
+				}
 			}
 		return result;
 		}
@@ -123,16 +129,16 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		}
 
 	/**
-	 * Train the classifier, and also prepare the probability sigmoid thing if requested.  Note that svcProbability will
-	 * call this method in the course of cross-validation, but will first ensure that param.probability == false;
+	 * Train the classifier, and also prepare the probability sigmoid thing if requested.
 	 *
 	 * @param problem
 	 * @return
 	 */
-	private MultiClassModel<L, P> trainScaledWithCV(MultiClassProblem<L, P> problem,
+/*	private MultiClassModel<L, P> trainScaledWithCV(MultiClassProblem<L, P> problem,
 	                                                @NotNull ImmutableSvmParameter<L, P> param)
 		{
-		// if scaling each binary machine is enabled, then each fold will be independently scaled also; so we don't need to scale the whole dataset prior to CV
+		// if scaling is enabled, then each fold will be independently scaled also; so we don't need to scale the whole dataset prior to CV
+		// in fact  we don't want to scale based on the entire dataset, only based on each fold, since that would be cheating (if very subtly so)
 
 		MultiClassCrossValidationResults<L, P> cv = performCrossValidation(problem, param);
 
@@ -143,16 +149,20 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		//	result.printSolutionInfo(problem);
 		return result;
 		}
-
+*/
 	public MultiClassModel<L, P> trainScaled(MultiClassProblem<L, P> problem,
 	                                         @NotNull ImmutableSvmParameter<L, P> param)
 		{
 		if (param.scalingModelLearner != null && !param.scaleBinaryMachinesIndependently)
 			{
-			// scale the entire problem before doing anything else
 			problem = problem.getScaledCopy(param.scalingModelLearner);
 			}
+		return trainWithoutScaling(problem, param);
+		}
 
+	private MultiClassModel<L, P> trainWithoutScaling(MultiClassProblem<L, P> problem,
+	                                                  @NotNull ImmutableSvmParameter<L, P> param)
+		{
 
 		int numLabels = problem.getLabels().size();
 

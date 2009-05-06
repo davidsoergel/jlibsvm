@@ -43,6 +43,8 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 	public final boolean normalizeL2;
 
 	public final int crossValidationFolds;
+	public final boolean crossValidation;
+			// do a performance report at the multiclass level even if grid search is at the binary level
 
 	/**
 	 * When learning scaling, only bother with this many examples, assuming they're in random order.
@@ -86,6 +88,7 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 		 scalingModelLearner = copyFrom.scalingModelLearner;
 		 }
  */
+
 	protected ImmutableSvmParameter(Builder<L, P> copyFrom)
 		{
 		cache_size = copyFrom.cache_size;
@@ -108,6 +111,7 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 
 		scalingModelLearner = copyFrom.scalingModelLearner;
 		crossValidationFolds = copyFrom.crossValidationFolds;
+		crossValidation = copyFrom.crossValidation;
 		}
 
 // -------------------------- OTHER METHODS --------------------------
@@ -194,6 +198,7 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 		// We need to maintain the labels (the key on this map) in insertion order
 		public LinkedHashMap<L, Float> weights = new LinkedHashMap<L, Float>();
 		public ScalingModelLearner<P> scalingModelLearner;
+		public boolean crossValidation;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -222,6 +227,7 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 			redistributeUnbalancedC = copyFrom.redistributeUnbalancedC;
 			gridsearchBinaryMachinesIndependently = copyFrom.gridsearchBinaryMachinesIndependently;
 			crossValidationFolds = copyFrom.crossValidationFolds;
+			crossValidation = copyFrom.crossValidation;
 			scalingModelLearner = copyFrom.scalingModelLearner;
 			}
 

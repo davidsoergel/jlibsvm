@@ -87,7 +87,9 @@ public class BinaryCrossValidationResults<L extends Comparable, P> extends Cross
 			{
 			sigmoid = new SigmoidProbabilityModel(decisionValueArray, labelArray);
 			}
-//** debug output disabled for now
+
+		//** debug output disabled for now
+
 		/*
 		Formatter f = new Formatter();
 		f.format("Binary classifier for %s vs. %s: TP=%.2f FP=%.2f FN=%.2f TN=%.2f", trueLabel, problem.getFalseLabel(),
