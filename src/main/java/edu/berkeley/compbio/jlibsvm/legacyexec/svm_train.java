@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.legacyexec;
 
+import edu.berkeley.compbio.jlibsvm.CrossValidationResults;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
@@ -41,7 +42,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -73,7 +73,7 @@ public class svm_train
 	private String input_file_name;		// set by parse_command_line
 	private String model_file_name;		// set by parse_command_line
 	//private String error_msg;
-	private int cross_validation;
+	//private int cross_validation;
 	//	private int nr_fold;
 	private static final Float UNSPECIFIED_GAMMA = -1F;
 
@@ -103,31 +103,16 @@ public class svm_train
 			System.err.print("Error: " + error_msg + "\n");
 			System.exit(1);
 			}*/
-// BAD cleanup...
 
-		if (param instanceof ImmutableSvmParameterGrid)
-			{
-			// cross-validation will happen anyway
 
-			model = svm.train(problem, param);
-			System.out.println(model.getCrossValidationResults().toString());
-			//System.err.println(svm.qMatrix.perfString());
-			model.save(model_file_name);
-			}
-		else
+		model = svm.train(problem, param);
+		model.save(model_file_name);
+		CrossValidationResults cv = model.getCrossValidationResults();
+		if (cv != null)
 			{
-			if (cross_validation != 0)
-				{
-				do_cross_validation();
-				}
-			else
-				{
-				//svm.setupQMatrix(problem);
-				model = svm.train(problem, param);
-				//System.err.println(svm.qMatrix.perfString());
-				model.save(model_file_name);
-				}
+			System.out.println(cv.toString());
 			}
+
 
 		long endTime = System.currentTimeMillis();
 
@@ -249,7 +234,7 @@ public class svm_train
 					builder.redistributeUnbalancedC = argv[i].equals("1") || Boolean.parseBoolean(argv[i]);
 					break;
 				case 'v':
-					cross_validation = 1;
+					//cross_validation = 1;
 					builder.crossValidationFolds = Integer.parseInt(argv[i]);
 					if (builder.crossValidationFolds < 2)
 						{
@@ -560,7 +545,7 @@ public class svm_train
 			}
 		}
 
-	private void do_cross_validation()
+/*	private void do_cross_validation()
 		{
 		//int i;
 		int total_correct = 0;
@@ -614,5 +599,5 @@ public class svm_train
 					+ 100.0 * total_correct / classifiedExamples + "%\n");
 			System.out.print("Cross Validation Accuracy (of total) = " + 100.0 * total_correct / numExamples + "%\n");
 			}
-		}
+		}*/
 	}

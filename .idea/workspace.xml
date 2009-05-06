@@ -2,62 +2,10 @@
 <project relativePaths="false" version="4">
     <component name="ChangeListManager">
         <list default="true" readonly="true" name="Default" comment="">
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_sector.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml"
-                    afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_segment.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_segment.xml"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java"
-                    afterPath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Test_All.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/Test_All.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml"
-                    afterPath="$PROJECT_DIR$/.idea/dataSources.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml"
-                    afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml"
-                    afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml"/>
             <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jlibsvm.iml" afterPath="$PROJECT_DIR$/jlibsvm.iml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_news20_shark.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_news20_shark.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/projectCodeStyle.xml"
-                    afterPath="$PROJECT_DIR$/.idea/projectCodeStyle.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml"/>
             <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml"/>
-            <change type="MODIFICATION"
-                    beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_google_collections_0_9.xml"
-                    afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_google_collections_0_9.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml"
-                    afterPath="$PROJECT_DIR$/.idea/modules.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml"
-                    afterPath="$PROJECT_DIR$/.idea/workspace.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml"
-                    afterPath="$PROJECT_DIR$/.idea/vcs.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml"
-                    afterPath="$PROJECT_DIR$/.idea/misc.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_letter.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_letter.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml"
-                    afterPath="$PROJECT_DIR$/.idea/compiler.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml"
-                    afterPath="$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml"
-                    afterPath="$PROJECT_DIR$/.idea/encodings.xml"/>
-            <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml"
-                    afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml"/>
+                    beforePath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/legacyexec/svm_train.java"
+                    afterPath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/legacyexec/svm_train.java"/>
         </list>
         <ignored path=".idea/workspace.xml"/>
         <ignored path="jlibsvm.iws"/>
@@ -169,20 +117,6 @@
                 <option name="CONDITION" value=""/>
                 <option name="LOG_MESSAGE" value=""/>
             </breakpoint>
-            <breakpoint url="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/SVM.java" line="-1"
-                        class="edu.berkeley.compbio.jlibsvm.SVM" package="edu.berkeley.compbio.jlibsvm">
-                <option name="ENABLED" value="true"/>
-                <option name="LOG_ENABLED" value="false"/>
-                <option name="LOG_EXPRESSION_ENABLED" value="false"/>
-                <option name="SUSPEND_POLICY" value="SuspendAll"/>
-                <option name="COUNT_FILTER_ENABLED" value="false"/>
-                <option name="COUNT_FILTER" value="0"/>
-                <option name="CONDITION_ENABLED" value="false"/>
-                <option name="CLASS_FILTERS_ENABLED" value="false"/>
-                <option name="INSTANCE_FILTERS_ENABLED" value="false"/>
-                <option name="CONDITION" value=""/>
-                <option name="LOG_MESSAGE" value=""/>
-            </breakpoint>
         </line_breakpoints>
         <breakpoint_any>
             <breakpoint>
@@ -231,8 +165,8 @@
             <property name="field_breakpoints_groupByClasses" value="true"/>
             <property name="method_breakpoints_groupByClasses" value="true"/>
             <property name="exception_breakpoints_viewId" value="TABLE"/>
-            <property name="field_breakpoints_viewId" value="TABLE"/>
             <property name="exception_breakpoints_groupByClasses" value="true"/>
+            <property name="field_breakpoints_viewId" value="TABLE"/>
             <property name="method_breakpoints_groupByMethods" value="false"/>
         </ui_properties>
     </component>
@@ -241,102 +175,41 @@
     </component>
     <component name="FileEditorManager">
         <leaf>
-            <file leaf-file-name="Legacy_mushrooms.xml" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml">
+            <file leaf-file-name="MultiClassificationSVM.java" pinned="false" current="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java">
                     <provider selected="true" editor-type-id="text-editor">
-                        <state line="0" column="0" selection-start="0" selection-end="0"
+                        <state line="33" column="13" selection-start="1261" selection-end="1261"
                                vertical-scroll-proportion="0.0">
                             <folding/>
                         </state>
                     </provider>
                 </entry>
             </file>
-            <file leaf-file-name="New_letter.xml" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_letter.xml">
+            <file leaf-file-name="svm_train.java" pinned="false" current="true" current-in-tab="true">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/legacyexec/svm_train.java">
                     <provider selected="true" editor-type-id="text-editor">
-                        <state line="0" column="0" selection-start="0" selection-end="0"
+                        <state line="114" column="13" selection-start="4250" selection-end="4250"
+                               vertical-scroll-proportion="0.24072216">
+                            <folding/>
+                        </state>
+                    </provider>
+                </entry>
+            </file>
+            <file leaf-file-name="CrossValidationResults.java" pinned="false" current="false" current-in-tab="false">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/CrossValidationResults.java">
+                    <provider selected="true" editor-type-id="text-editor">
+                        <state line="18" column="33" selection-start="487" selection-end="487"
                                vertical-scroll-proportion="0.0">
                             <folding/>
                         </state>
                     </provider>
                 </entry>
             </file>
-            <file leaf-file-name="New_letter_Shark.xml" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="0" column="0" selection-start="0" selection-end="0"
-                               vertical-scroll-proportion="0.0">
-                            <folding/>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="New_mushrooms.xml" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="0" column="0" selection-start="0" selection-end="0"
-                               vertical-scroll-proportion="0.0">
-                            <folding/>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="New_mushrooms_Shark.xml" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="0" column="0" selection-start="0" selection-end="0"
-                               vertical-scroll-proportion="0.0">
-                            <folding/>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="Maven__com_google_collections_google_collections_0_9.xml" pinned="false"
-                  current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_google_collections_0_9.xml">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="0" column="0" selection-start="0" selection-end="0"
-                               vertical-scroll-proportion="0.0">
-                            <folding/>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="pom.xml" pinned="false" current="true" current-in-tab="true">
-                <entry file="file://$PROJECT_DIR$/pom.xml">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="12" column="41" selection-start="448" selection-end="448"
-                               vertical-scroll-proportion="0.18054162">
-                            <folding/>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="Maven__org_testng_testng_jdk15_5_5.xml" pinned="false" current="false"
+            <file leaf-file-name="RegressionCrossValidationResults.java" pinned="false" current="false"
                   current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml">
+                <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/regression/RegressionCrossValidationResults.java">
                     <provider selected="true" editor-type-id="text-editor">
-                        <state line="0" column="0" selection-start="0" selection-end="0"
-                               vertical-scroll-proportion="0.0">
-                            <folding/>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="Maven__log4j_log4j_1_2_13.xml" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="0" column="0" selection-start="0" selection-end="0"
-                               vertical-scroll-proportion="0.0">
-                            <folding/>
-                        </state>
-                    </provider>
-                </entry>
-            </file>
-            <file leaf-file-name="Maven__junit_junit_3_8_1.xml" pinned="false" current="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml">
-                    <provider selected="true" editor-type-id="text-editor">
-                        <state line="0" column="0" selection-start="0" selection-end="0"
+                        <state line="39" column="51" selection-start="1284" selection-end="1284"
                                vertical-scroll-proportion="0.0">
                             <folding/>
                         </state>
@@ -355,7 +228,68 @@
         <option name="LAST_EDITED_TAB_NAME"/>
     </component>
     <component name="PackagesPane">
-        <subPane/>
+        <subPane>
+            <PATH>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="jlibsvm"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode"/>
+                </PATH_ELEMENT>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="jlibsvm"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode"/>
+                </PATH_ELEMENT>
+            </PATH>
+            <PATH>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="jlibsvm"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode"/>
+                </PATH_ELEMENT>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="jlibsvm"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode"/>
+                </PATH_ELEMENT>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="edu.berkeley.compbio.jlibsvm"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode"/>
+                </PATH_ELEMENT>
+            </PATH>
+            <PATH>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="jlibsvm"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode"/>
+                </PATH_ELEMENT>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="jlibsvm"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode"/>
+                </PATH_ELEMENT>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="edu.berkeley.compbio.jlibsvm"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode"/>
+                </PATH_ELEMENT>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="multi"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode"/>
+                </PATH_ELEMENT>
+            </PATH>
+            <PATH>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="jlibsvm"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode"/>
+                </PATH_ELEMENT>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="jlibsvm"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode"/>
+                </PATH_ELEMENT>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="edu.berkeley.compbio.jlibsvm"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode"/>
+                </PATH_ELEMENT>
+                <PATH_ELEMENT>
+                    <option name="myItemId" value="legacyexec"/>
+                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode"/>
+                </PATH_ELEMENT>
+            </PATH>
+        </subPane>
     </component>
     <component name="ProjectLevelVcsManager">
         <OptionsSetting value="true" id="Add"/>
@@ -368,56 +302,13 @@
         <ConfirmationsSetting value="0" id="Remove"/>
     </component>
     <component name="ProjectPane">
-        <subPane>
-            <PATH>
-                <PATH_ELEMENT>
-                    <option name="myItemId" value="jlibsvm"/>
-                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode"/>
-                </PATH_ELEMENT>
-                <PATH_ELEMENT>
-                    <option name="myItemId" value="jlibsvm"/>
-                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode"/>
-                </PATH_ELEMENT>
-            </PATH>
-            <PATH>
-                <PATH_ELEMENT>
-                    <option name="myItemId" value="jlibsvm"/>
-                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode"/>
-                </PATH_ELEMENT>
-                <PATH_ELEMENT>
-                    <option name="myItemId" value="jlibsvm"/>
-                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode"/>
-                </PATH_ELEMENT>
-                <PATH_ELEMENT>
-                    <option name="myItemId" value="jlibsvm"/>
-                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode"/>
-                </PATH_ELEMENT>
-            </PATH>
-            <PATH>
-                <PATH_ELEMENT>
-                    <option name="myItemId" value="jlibsvm"/>
-                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode"/>
-                </PATH_ELEMENT>
-                <PATH_ELEMENT>
-                    <option name="myItemId" value="jlibsvm"/>
-                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode"/>
-                </PATH_ELEMENT>
-                <PATH_ELEMENT>
-                    <option name="myItemId" value="jlibsvm"/>
-                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode"/>
-                </PATH_ELEMENT>
-                <PATH_ELEMENT>
-                    <option name="myItemId" value=".idea"/>
-                    <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode"/>
-                </PATH_ELEMENT>
-            </PATH>
-        </subPane>
+        <subPane/>
     </component>
     <component name="ProjectReloadState">
         <option name="STATE" value="0"/>
     </component>
     <component name="ProjectView">
-        <navigator currentView="ProjectPane" proportions="0.5" version="1" splitterProportion="0.5">
+        <navigator currentView="PackagesPane" proportions="0.5" version="1" splitterProportion="0.5">
             <flattenPackages/>
             <showMembers/>
             <showModules/>
@@ -443,124 +334,14 @@
         <property name="GoToClass.toSaveIncludeLibraries" value="false"/>
         <property name="MemberChooser.showClasses" value="true"/>
         <property name="GoToClass.includeLibraries" value="false"/>
-        <property name="options.searchVisible" value="true"/>
-        <property name="options.splitter.details.proportions" value="0.2"/>
         <property name="dynamic.classpath" value="false"/>
+        <property name="options.splitter.details.proportions" value="0.2"/>
+        <property name="options.searchVisible" value="true"/>
     </component>
     <component name="RecentsManager">
         <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
             <recent name="edu.berkeley.compbio.jlibsvm.util"/>
         </key>
-    </component>
-    <component name="RestoreUpdateTree">
-        <UpdateInfo date="5/5/09 6:30 PM" ActionInfo="_Update">
-            <UpdatedFiles>
-                <FILE-GROUP>
-                    <option name="myUpdateName" value="Updated from server"/>
-                    <option name="myStatusName" value="Changed on server"/>
-                    <option name="mySupportsDeletion" value="false"/>
-                    <option name="myCanBeAbsent" value="false"/>
-                    <option name="myId" value="CHANGED_ON_SERVER"/>
-                    <FILE-GROUP>
-                        <option name="myUpdateName" value="Updated"/>
-                        <option name="myStatusName" value="Changed"/>
-                        <option name="mySupportsDeletion" value="false"/>
-                        <option name="myCanBeAbsent" value="false"/>
-                        <option name="myId" value="UPDATED"/>
-                        <PATH vcs="svn" revision="70">$PROJECT_DIR$/pom.xml</PATH>
-                        <PATH vcs="svn" revision="70">$PROJECT_DIR$/jlibsvm.iml</PATH>
-                    </FILE-GROUP>
-                    <FILE-GROUP>
-                        <option name="myUpdateName" value="Created"/>
-                        <option name="myStatusName" value="Created"/>
-                        <option name="mySupportsDeletion" value="false"/>
-                        <option name="myCanBeAbsent" value="false"/>
-                        <option name="myId" value="CREATED"/>
-                        <PATH vcs="svn" revision="70">
-                            $PROJECT_DIR$/.idea/libraries/Maven__com_intellij_annotations_6_0_3.xml
-                        </PATH>
-                        <PATH vcs="svn" revision="70">$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml</PATH>
-                        <PATH vcs="svn" revision="70">$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_13.xml</PATH>
-                        <PATH vcs="svn" revision="70">
-                            $PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml
-                        </PATH>
-                        <PATH vcs="svn" revision="70">
-                            $PROJECT_DIR$/.idea/libraries/Maven__com_google_collections_google_collections_0_9.xml
-                        </PATH>
-                    </FILE-GROUP>
-                    <FILE-GROUP>
-                        <option name="myUpdateName" value="Deleted"/>
-                        <option name="myStatusName" value="Deleted"/>
-                        <option name="mySupportsDeletion" value="false"/>
-                        <option name="myCanBeAbsent" value="true"/>
-                        <option name="myId" value="REMOVED_FROM_REPOSITORY"/>
-                    </FILE-GROUP>
-                    <FILE-GROUP>
-                        <option name="myUpdateName" value="Restored"/>
-                        <option name="myStatusName" value="Will be restored"/>
-                        <option name="mySupportsDeletion" value="false"/>
-                        <option name="myCanBeAbsent" value="false"/>
-                        <option name="myId" value="RESTORED"/>
-                    </FILE-GROUP>
-                </FILE-GROUP>
-                <FILE-GROUP>
-                    <option name="myUpdateName" value="Modified"/>
-                    <option name="myStatusName" value="Modified"/>
-                    <option name="mySupportsDeletion" value="false"/>
-                    <option name="myCanBeAbsent" value="false"/>
-                    <option name="myId" value="MODIFIED"/>
-                </FILE-GROUP>
-                <FILE-GROUP>
-                    <option name="myUpdateName" value="Skipped"/>
-                    <option name="myStatusName" value="Skipped"/>
-                    <option name="mySupportsDeletion" value="false"/>
-                    <option name="myCanBeAbsent" value="false"/>
-                    <option name="myId" value="SKIPPED"/>
-                </FILE-GROUP>
-                <FILE-GROUP>
-                    <option name="myUpdateName" value="Merged with conflicts"/>
-                    <option name="myStatusName" value="Will be merged with conflicts"/>
-                    <option name="mySupportsDeletion" value="false"/>
-                    <option name="myCanBeAbsent" value="false"/>
-                    <option name="myId" value="MERGED_WITH_CONFLICTS"/>
-                </FILE-GROUP>
-                <FILE-GROUP>
-                    <option name="myUpdateName" value="Merged"/>
-                    <option name="myStatusName" value="Will be merged"/>
-                    <option name="mySupportsDeletion" value="false"/>
-                    <option name="myCanBeAbsent" value="false"/>
-                    <option name="myId" value="MERGED"/>
-                </FILE-GROUP>
-                <FILE-GROUP>
-                    <option name="myUpdateName" value="Not in repository"/>
-                    <option name="myStatusName" value="Not in repository"/>
-                    <option name="mySupportsDeletion" value="true"/>
-                    <option name="myCanBeAbsent" value="false"/>
-                    <option name="myId" value="UNKNOWN"/>
-                </FILE-GROUP>
-                <FILE-GROUP>
-                    <option name="myUpdateName" value="Locally added"/>
-                    <option name="myStatusName" value="Locally added"/>
-                    <option name="mySupportsDeletion" value="false"/>
-                    <option name="myCanBeAbsent" value="false"/>
-                    <option name="myId" value="LOCALLY_ADDED"/>
-                </FILE-GROUP>
-                <FILE-GROUP>
-                    <option name="myUpdateName" value="Locally removed"/>
-                    <option name="myStatusName" value="Locally removed"/>
-                    <option name="mySupportsDeletion" value="false"/>
-                    <option name="myCanBeAbsent" value="false"/>
-                    <option name="myId" value="LOCALLY_REMOVED"/>
-                </FILE-GROUP>
-                <FILE-GROUP>
-                    <option name="myUpdateName" value="Switched"/>
-                    <option name="myStatusName" value="Switched"/>
-                    <option name="mySupportsDeletion" value="false"/>
-                    <option name="myCanBeAbsent" value="false"/>
-                    <option name="myId" value="SWITCHED"/>
-                </FILE-GROUP>
-            </UpdatedFiles>
-        </UpdateInfo>
     </component>
     <component name="RunManager" selected="Application.New letter">
         <configuration default="true" type="Remote" factoryName="Remote">
@@ -645,12 +426,12 @@
             <item index="0" class="java.lang.String" itemvalue="Application.New sector"/>
             <item index="1" class="java.lang.String" itemvalue="Application.New segment"/>
             <item index="2" class="java.lang.String" itemvalue="Application.New letter"/>
-            <item index="3" class="java.lang.String" itemvalue="Application.New letter Shark"/>
-            <item index="4" class="java.lang.String" itemvalue="Application.Legacy mushrooms"/>
-            <item index="5" class="java.lang.String" itemvalue="Application.New mushrooms"/>
-            <item index="6" class="java.lang.String" itemvalue="Application.New news20 shark"/>
-            <item index="7" class="java.lang.String" itemvalue="Application.New mushrooms Shark"/>
-            <item index="8" class="java.lang.String" itemvalue="TestNG.Test All"/>
+            <item index="3" class="java.lang.String" itemvalue="TestNG.Test All"/>
+            <item index="4" class="java.lang.String" itemvalue="Application.New letter Shark"/>
+            <item index="5" class="java.lang.String" itemvalue="Application.Legacy mushrooms"/>
+            <item index="6" class="java.lang.String" itemvalue="Application.New mushrooms"/>
+            <item index="7" class="java.lang.String" itemvalue="Application.New news20 shark"/>
+            <item index="8" class="java.lang.String" itemvalue="Application.New mushrooms Shark"/>
         </list>
         <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
             <Host>localhost</Host>
@@ -697,7 +478,7 @@
     </component>
     <component name="ToolWindowManager">
         <frame x="-4" y="25" width="3209" height="1154" extended-state="0"/>
-        <editor active="false"/>
+        <editor active="true"/>
         <layout>
             <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED"
                          type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false"/>
@@ -735,8 +516,9 @@
                          type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false"/>
             <window_info id="Hudson Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
                          type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
-            <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED"
-                         visible="true" weight="0.14698413" sideWeight="0.6660156" order="0" side_tool="false"/>
+            <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED"
+                         type="DOCKED" visible="true" weight="0.14698413" sideWeight="0.6640625" order="0"
+                         side_tool="false"/>
             <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
                          type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false"/>
             <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
@@ -798,34 +580,6 @@
         <find-history/>
     </component>
     <component name="editorHistoryManager">
-        <entry file="file://$PROJECT_DIR$/.idea/modules.xml">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/.idea/excludeFromValidation.xml">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/.idea/encodings.xml">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
         <entry file="file://$PROJECT_DIR$/.idea/dataSources.xml">
             <provider selected="true" editor-type-id="text-editor">
                 <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -840,42 +594,14 @@
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+                <state line="12" column="41" selection-start="448" selection-end="448" vertical-scroll-proportion="0.0">
                     <folding/>
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_letter.xml">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml">
-            <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-                    <folding/>
-                </state>
-            </provider>
-        </entry>
-        <entry file="file://$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml">
+        <entry file="file://$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml">
             <provider selected="true" editor-type-id="text-editor">
                 <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
                     <folding/>
@@ -889,7 +615,7 @@
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml">
+        <entry file="file://$PROJECT_DIR$/.idea/libraries/Maven__org_testng_testng_jdk15_5_5.xml">
             <provider selected="true" editor-type-id="text-editor">
                 <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
                     <folding/>
@@ -903,10 +629,68 @@
                 </state>
             </provider>
         </entry>
-        <entry file="file://$PROJECT_DIR$/pom.xml">
+        <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms_Shark.xml">
             <provider selected="true" editor-type-id="text-editor">
-                <state line="12" column="41" selection-start="448" selection-end="448"
-                       vertical-scroll-proportion="0.18054162">
+                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_mushrooms.xml">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_letter_Shark.xml">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/New_letter.xml">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/.idea/runConfigurations/Legacy_mushrooms.xml">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVM.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="33" column="13" selection-start="1261" selection-end="1261"
+                       vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/regression/RegressionCrossValidationResults.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="39" column="51" selection-start="1284" selection-end="1284"
+                       vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/CrossValidationResults.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="18" column="33" selection-start="487" selection-end="487" vertical-scroll-proportion="0.0">
+                    <folding/>
+                </state>
+            </provider>
+        </entry>
+        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/legacyexec/svm_train.java">
+            <provider selected="true" editor-type-id="text-editor">
+                <state line="114" column="13" selection-start="4250" selection-end="4250"
+                       vertical-scroll-proportion="0.24072216">
                     <folding/>
                 </state>
             </provider>
