@@ -147,7 +147,6 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 
 /*	public Collection<ImmutableSvmParameter<L, P>> getGridParams()
 		{
-		// PERF
 		Set<ImmutableSvmParameter<L, P>> result= new HashSet<ImmutableSvmParameter<L, P>>(1);
 		result.add(this);
 		return result;

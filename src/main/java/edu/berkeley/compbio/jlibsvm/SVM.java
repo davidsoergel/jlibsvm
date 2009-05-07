@@ -37,6 +37,8 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 			{
 			// this will throw ClassCastException if you try cross-validation on a discrete-only model (e.g. MultiClassModel)
 			ContinuousModel<P> model = (ContinuousModel<P>) train(f, param);
+
+			// PERF multithread
 			for (P p : f.getHeldOutPoints())
 				{
 				predictions.put(p, model.predictValue(p));
@@ -62,6 +64,9 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 			{
 			// this will throw ClassCastException if you try cross-validation on a continuous-only model (e.g. RegressionModel)
 			DiscreteModel<L, P> model = (DiscreteModel<L, P>) train(f, param); //, qMatrix);
+
+
+			// PERF multithread
 			for (P p : f.getHeldOutPoints())
 				{
 				predictions.put(p, model.predictLabel(p));
