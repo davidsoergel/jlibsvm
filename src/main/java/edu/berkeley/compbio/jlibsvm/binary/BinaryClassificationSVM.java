@@ -90,8 +90,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		}
 
 	/**
-	 * Train the classifier, and also prepare the probability sigmoid thing if requested.  Note that svcProbability will
-	 * call this method in the course of cross-validation, but will first ensure that param.probability == false;
+	 * Train the classifier, and also prepare the probability sigmoid thing if requested.
 	 *
 	 * @param problem
 	 * @return
@@ -165,7 +164,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 
 		BinaryModel<L, P> result = trainWeighted(problem, param);
 
-		//result.printSolutionInfo(problem);
+		result.printSolutionInfo(problem);
 		return result;
 		}
 

@@ -57,6 +57,8 @@ public class MultiClassProblemImpl<L extends Comparable, P> //, R extends MultiC
 		{
 		super(new SubtractionMap(backingProblem.examples, heldOutPoints), backingProblem.exampleIds,
 		      backingProblem.scalingModel, heldOutPoints);
+		this.labelClass = backingProblem.labelClass;
+		this.labelInverter = backingProblem.labelInverter;
 		}
 
 // --------------------- GETTER / SETTER METHODS ---------------------

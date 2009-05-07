@@ -133,7 +133,13 @@ public class ZscoreScalingModelLearner implements ScalingModelLearner<SparseVect
 				float v = example.values[i];
 
 				result.indexes[i] = index;
-				result.values[i] = (v - mean.get(index)) / stddev.get(index);
+				Float theMean = mean.get(index);
+
+				// if this dimension was never seen in the training set, then we can't scale it
+				if (theMean != null)
+					{
+					result.values[i] = (v - theMean) / stddev.get(index);
+					}
 				}
 			if (normalizeL2)
 				{

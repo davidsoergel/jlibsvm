@@ -107,7 +107,9 @@ public class svm_train
 
 
 		model = svm.train(problem, param);
-		model.save(model_file_name);
+
+// BAD not implemented
+//		model.save(model_file_name);
 
 		// CV might have been done already for grid search or whatever
 		CrossValidationResults cv = model.getCrossValidationResults();

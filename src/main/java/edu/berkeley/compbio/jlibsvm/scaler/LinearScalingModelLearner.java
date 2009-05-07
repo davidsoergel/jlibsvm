@@ -107,7 +107,13 @@ public class LinearScalingModelLearner implements ScalingModelLearner<SparseVect
 				float v = example.values[i];
 
 				result.indexes[i] = index;
-				result.values[i] = (2F * (v - minima.get(index)) / sizes.get(index)) - 1F;
+				Float min = minima.get(index);
+
+				// if this dimension was never seen in the training set, then we can't scale it
+				if (min != null)
+					{
+					result.values[i] = (2F * (v - min) / sizes.get(index)) - 1F;
+					}
 				}
 
 			if (normalizeL2)
