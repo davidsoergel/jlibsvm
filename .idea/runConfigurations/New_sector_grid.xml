@@ -1,0 +1,43 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="New sector grid" type="Application" factoryName="Application" enabled="true"
+                   merge="false" sample_coverage="true" runner="emma">
+        <pattern>
+            <option name="PATTERN" value="com.davidsoergel.jlibsvm.*"/>
+            <option name="ENABLED" value="true"/>
+        </pattern>
+        <pattern>
+            <option name="PATTERN" value="libsvm.*"/>
+            <option name="ENABLED" value="true"/>
+        </pattern>
+        <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train"/>
+        <option name="VM_PARAMETERS" value=""/>
+        <option name="PROGRAM_PARAMETERS"
+                value="-s 0 -t 2 -c 1,10,25,50,100,200 -g .01,.1,.25,.5,.75 -y 1 -z 0 -q 1 -v 5 sector.scale"/>
+        <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources"/>
+        <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
+        <option name="ALTERNATIVE_JRE_PATH" value=""/>
+        <option name="ENABLE_SWING_INSPECTOR" value="false"/>
+        <option name="ENV_VARIABLES"/>
+        <option name="PASS_PARENT_ENVS" value="true"/>
+        <module name="jlibsvm"/>
+        <envs/>
+        <RunnerSettings RunnerId="Profile CPU">
+            <option name="startFromMode" value="MAIN_CLASS"/>
+            <option name="otherClassesToStartFrom" value=""/>
+            <option name="profileNewRunnables" value="true"/>
+            <option name="filteringMode" value="EXCLUDE"/>
+            <option name="filterIncludeClasses" value=""/>
+            <option name="filterExcludeClasses" value="java.*, javax.*,&#10;sun.*, sunw.*, com.sun.*"/>
+        </RunnerSettings>
+        <RunnerSettings RunnerId="Profile Memory">
+            <option name="profileAllocMode" value="ALLOC_AND_GC"/>
+            <option name="profileAllocInterval" value="10"/>
+            <option name="recordAllocTraces" value="false"/>
+        </RunnerSettings>
+        <RunnerSettings RunnerId="Run"/>
+        <ConfigurationWrapper RunnerId="Run"/>
+        <method>
+            <option name="Make" value="true"/>
+        </method>
+    </configuration>
+</component>
