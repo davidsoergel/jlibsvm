@@ -158,7 +158,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		}
 
 	@NotNull
-	public VotingResult<L> predictLabelWithQuality(P x)
+	public VotingResult<L> predictLabelWithQuality(P x, @NotNull Set<L> disallowedLabels)
 		{
 		final P scaledX = scalingModel.scaledCopy(x);
 
@@ -188,6 +188,12 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 					return kvalues;
 					}
 				});
+
+		// we don't want to consider any models that mention a disallowed label
+		// (i.e., not only should such a prediction be rejected after the fact, but
+		//  the binary machines involving disallowed labels shouldn't ever contribute to the voting in the first place
+		gaa
+
 
 /*
 		Map<KernelFunction<P>, float[]> kValuesPerKernel = new HashMap<KernelFunction<P>, float[]>();
