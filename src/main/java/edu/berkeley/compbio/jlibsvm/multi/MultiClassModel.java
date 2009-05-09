@@ -20,6 +20,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,38 +38,58 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 
 	private static final Logger logger = Logger.getLogger(MultiClassModel.class);
 
-	public ScalingModel<P> scalingModel = new NoopScalingModel<P>();
+	private ScalingModel<P> scalingModel = new NoopScalingModel<P>();
 
 	//** add back one-class filter?
 	//	private HashMap<L, OneClassModel<L, P>> oneClassModels;
 
 
-	// generics are a hassle here  (T[] label; makes a mess)
-	// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight
-	//** proscribed 1-D order for 2-D decision_values is error-prone
-	List<L> labels;
+	private final OneVsAllMode oneVsAllMode;
+	private final double oneVsAllThreshold;
 
+	private final AllVsAllMode allVsAllMode;
+	private final double minVoteProportion;
 
-	OneVsAllMode oneVsAllMode;
-	double oneVsAllThreshold;
+	private final Map<BinaryModel<L, P>, int[]> svIndexMaps = new HashMap<BinaryModel<L, P>, int[]>();
 
-	AllVsAllMode allVsAllMode;
-	double minVoteProportion;
+	private final int numberOfClasses;
 
-	Map<BinaryModel<L, P>, int[]> svIndexMaps = new HashMap<BinaryModel<L, P>, int[]>();
-
-	private int numberOfClasses;
-
-
-	private SymmetricHashMap2d<L, BinaryModel<L, P>> oneVsOneModels;
-	private HashMap<L, BinaryModel<L, P>> oneVsAllModels;
+	private final SymmetricHashMap2d<L, BinaryModel<L, P>> oneVsOneModels;
+	private final HashMap<L, BinaryModel<L, P>> oneVsAllModels;
 
 	private P[] allSVs;
-	public MultiClassCrossValidationResults<L, P> crossValidationResults;
+	MultiClassCrossValidationResults<L, P> crossValidationResults;
 
 	public CrossValidationResults getCrossValidationResults()
 		{
 		return crossValidationResults;
+		}
+
+	/**
+	 * Make a derived copy for leave-one-out testing
+	 *
+	 * @param copyFrom
+	 * @param excludeLabels
+	 */
+	public MultiClassModel(MultiClassModel<L, P> copyFrom, Collection<L> excludeLabels)
+		{
+		//labels = copyFrom.labels;  // note we leave the complete model list intact...
+		allSVs = copyFrom.allSVs;  // the labels list provides the indexes for this array, which we also don't change
+
+		oneVsAllMode = copyFrom.oneVsAllMode;
+		oneVsAllThreshold = copyFrom.oneVsAllThreshold;
+		allVsAllMode = copyFrom.allVsAllMode;
+		minVoteProportion = copyFrom.minVoteProportion;
+		numberOfClasses = copyFrom.numberOfClasses;
+
+		// the only thing that does change is that some binary models are excluded
+
+		oneVsOneModels = new SymmetricHashMap2d<L, BinaryModel<L, P>>(copyFrom.oneVsOneModels, excludeLabels);
+		oneVsAllModels = new HashMap<L, BinaryModel<L, P>>(copyFrom.oneVsAllModels);
+		for (L disallowedLabel : excludeLabels)
+			{
+			oneVsAllModels.remove(disallowedLabel);
+			}
 		}
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -158,7 +179,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		}
 
 	@NotNull
-	public VotingResult<L> predictLabelWithQuality(P x, @NotNull Set<L> disallowedLabels)
+	public VotingResult<L> predictLabelWithQuality(P x) //, Set<L> disallowedLabels)
 		{
 		final P scaledX = scalingModel.scaledCopy(x);
 
@@ -192,7 +213,6 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		// we don't want to consider any models that mention a disallowed label
 		// (i.e., not only should such a prediction be rejected after the fact, but
 		//  the binary machines involving disallowed labels shouldn't ever contribute to the voting in the first place
-		gaa
 
 
 /*
@@ -459,6 +479,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		}
 */
 
+
 	public Map<L, Float> predictProbability(P x)
 		{
 		if (!supportsOneVsOneProbability())
@@ -476,6 +497,12 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 
 		// this is kind of a lame way to do it, but whatever.
 
+		// label of each class, just to maintain a known order for the sake of keeping the decision_values etc. straight
+		//** proscribed 1-D order for 2-D decision_values is error-prone
+
+		List<L> labels = new ArrayList<L>(oneVsOneModels.keySet());
+
+
 		for (int i = 0; i < numberOfClasses; i++)
 			{
 			L label1 = labels.get(i);
@@ -485,11 +512,20 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 
 				BinaryModel<L, P> binaryModel = oneVsOneModels.get(label1, label2);
 
-				float prob = binaryModel.crossValidationResults.getSigmoid().predict(binaryModel.predictValue(
-						x));				//MathSupport.sigmoidPredict(decisionValues[k], probA[k], probB[k])
+				if (binaryModel == null)
+					{
+					// leave-one-out forbids use of this model, so probability = 0
+					pairwiseProbabilities[i][j] = 0;
+					pairwiseProbabilities[j][i] = 0;
+					}
+				else
+					{
+					float prob = binaryModel.crossValidationResults.getSigmoid().predict(binaryModel.predictValue(
+							x));				//MathSupport.sigmoidPredict(decisionValues[k], probA[k], probB[k])
 
-				pairwiseProbabilities[i][j] = Math.min(Math.max(prob, minimumProbability), 1 - minimumProbability);
-				pairwiseProbabilities[j][i] = 1 - pairwiseProbabilities[i][j];				//k++;
+					pairwiseProbabilities[i][j] = Math.min(Math.max(prob, minimumProbability), 1 - minimumProbability);
+					pairwiseProbabilities[j][i] = 1 - pairwiseProbabilities[i][j];				//k++;
+					}
 				}
 			}
 		float[] probabilityEstimates = multiclassProbability(numberOfClasses, pairwiseProbabilities);
@@ -732,7 +768,32 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 			return l1Map.isEmpty();
 			}
 
-// --------------------------- CONSTRUCTORS ---------------------------
+		// --------------------------- CONSTRUCTORS ---------------------------
+		public SymmetricHashMap2d(SymmetricHashMap2d<K, V> copyFrom, Collection<K> excludeKeys)
+			{
+			//sizePerDimension = copyFrom.sizePerDimension;  // overkill since we're removing some
+			//l1Map = new HashMap<K, Map<K, V>>(sizePerDimension);
+			this(copyFrom.sizePerDimension);// overkill since we're removing some
+
+			for (Map.Entry<K, Map<K, V>> entry : copyFrom.l1Map.entrySet())
+				{
+				K k1 = entry.getKey();
+				if (!excludeKeys.contains(k1))
+					{
+					Map<K, V> l2Map = new HashMap<K, V>(sizePerDimension); // overkill since we're removing some
+					for (Map.Entry<K, V> entry2 : entry.getValue().entrySet())
+						{
+						K k2 = entry2.getKey();
+						if (!excludeKeys.contains(k2))
+							{
+							l2Map.put(k2, entry2.getValue());
+							}
+						}
+
+					l1Map.put(k1, l2Map);
+					}
+				}
+			}
 
 		public SymmetricHashMap2d(int sizePerDimension)
 			{
