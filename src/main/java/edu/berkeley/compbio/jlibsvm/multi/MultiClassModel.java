@@ -296,7 +296,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 
 		// stage 3: voting
 
-		int numLabels = oneVsAllModels.size();
+		int numLabels = oneVsOneModels.keySet().size();
 
 		Multiset<L> votes = new HashMultiset<L>();
 
