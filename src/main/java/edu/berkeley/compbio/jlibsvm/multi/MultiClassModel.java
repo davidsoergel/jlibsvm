@@ -50,7 +50,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 	private final AllVsAllMode allVsAllMode;
 	private final double minVoteProportion;
 
-	private final Map<BinaryModel<L, P>, int[]> svIndexMaps = new HashMap<BinaryModel<L, P>, int[]>();
+	private final Map<BinaryModel<L, P>, int[]> svIndexMaps; // = new HashMap<BinaryModel<L, P>, int[]>();
 
 	private final int numberOfClasses;
 
@@ -81,6 +81,10 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		allVsAllMode = copyFrom.allVsAllMode;
 		minVoteProportion = copyFrom.minVoteProportion;
 		numberOfClasses = copyFrom.numberOfClasses;
+		svIndexMaps = copyFrom.svIndexMaps;
+
+		scalingModel = copyFrom.scalingModel;
+
 
 		// the only thing that does change is that some binary models are excluded
 
@@ -123,6 +127,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		{
 		//super(param);
 		super();
+		svIndexMaps = new HashMap<BinaryModel<L, P>, int[]>();
 		this.numberOfClasses = numberOfClasses;
 		oneVsOneModels = new SymmetricHashMap2d<L, BinaryModel<L, P>>(numberOfClasses);
 		oneVsAllModels = new HashMap<L, BinaryModel<L, P>>(numberOfClasses);

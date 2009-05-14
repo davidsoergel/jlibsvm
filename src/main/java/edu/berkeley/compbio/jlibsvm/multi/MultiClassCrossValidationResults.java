@@ -23,6 +23,9 @@ public class MultiClassCrossValidationResults<L extends Comparable, P> extends C
 
 	private int numExamples;
 	private final Map<L, Multiset<L>> confusionMatrix;
+	//public ImmutableSvmParameterPoint<L,P> param;
+
+
 	//private final Multiset<L> unknowns = new HashMultiset<L>();
 
 // --------------------------- CONSTRUCTORS ---------------------------
