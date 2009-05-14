@@ -108,7 +108,10 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		ImmutableSvmParameterPoint<L, P> bestParam = null;
 		MultiClassCrossValidationResults<L, P> bestCrossValidationResults = null;
 		float bestSensitivity = -1F;
-		for (ImmutableSvmParameterPoint<L, P> gridParam : param.getGridParams())
+		Collection<ImmutableSvmParameterPoint<L, P>> parameterPoints = param.getGridParams();
+		int numGridPoints = parameterPoints.size();
+		int i = 0;
+		for (ImmutableSvmParameterPoint<L, P> gridParam : parameterPoints)
 			{
 			// note we must use the CV variant in order to know which parameter set is best
 
@@ -124,6 +127,8 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				bestSensitivity = sensitivity;
 				bestCrossValidationResults = crossValidationResults;
 				}
+			i++;
+			logger.info("Evaluated " + i + " of " + numGridPoints + " grid points");
 			}
 
 		logger.info("Chose grid point: " + bestParam);
