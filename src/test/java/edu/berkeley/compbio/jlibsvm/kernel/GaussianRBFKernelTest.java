@@ -29,14 +29,14 @@ public class GaussianRBFKernelTest
 
 		// need a lot of iterations to use enough time for profiling (e.g. 1000)
 
-		for (int i = 0; i < 1000; i++)
+		for (int i = 0; i < 100; i++)
 			{
 			SparseVector sv1 = new SparseVector(100, .5f, 1);
 			SparseVector sv2 = new SparseVector(100, .5f, 1);
 
 			// those vectors are likely far apart, and the RBF is always near zero for those.  Interpolate to test closer distances.
 
-			for (int j = 0; j < 1000; j++)
+			for (int j = 0; j < 100; j++)
 				{
 				SparseVector sv3 = new SparseVector(100, sv1, 1f - (j / 1000f), sv2, (j / 1000f));
 				final double compositeResult = composite.evaluate(sv1, sv3);
