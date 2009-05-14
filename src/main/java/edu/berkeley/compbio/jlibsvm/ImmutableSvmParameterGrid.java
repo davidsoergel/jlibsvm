@@ -59,6 +59,7 @@ public class ImmutableSvmParameterGrid<L extends Comparable, P> extends Immutabl
 					{
 					builder.C = gridC;
 					builder.kernel = gridKernel;
+					builder.gridsearchBinaryMachinesIndependently = false;
 
 					// this copies all the params so we can safely continue modifying the builder
 					gridParams.add(builder.build());
