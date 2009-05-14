@@ -52,6 +52,13 @@ public class ImmutableSvmParameterPoint<L extends Comparable, P> extends Immutab
 	@Override
 	public String toString()
 		{
-		return "C=" + C + ", kernel=" + kernel;
+		if (gridsearchBinaryMachinesIndependently)
+			{
+			return "C, gamma variable";
+			}
+		else
+			{
+			return "C=" + C + ", kernel=" + kernel;
+			}
 		}
 	}

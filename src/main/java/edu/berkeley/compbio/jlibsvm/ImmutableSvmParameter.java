@@ -49,7 +49,7 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 	/**
 	 * When learning scaling, only bother with this many examples, assuming they're in random order.
 	 */
-	public final int scalingExamples;
+	//public final int scalingExamples;
 
 
 	public final ScalingModelLearner<P> scalingModelLearner;
@@ -105,7 +105,7 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 		falseClassSVlimit = copyFrom.falseClassSVlimit;
 		scaleBinaryMachinesIndependently = copyFrom.scaleBinaryMachinesIndependently;
 		normalizeL2 = copyFrom.normalizeL2;
-		scalingExamples = copyFrom.scalingExamples;
+		//scalingExamples = copyFrom.scalingExamples;
 		redistributeUnbalancedC = copyFrom.redistributeUnbalancedC;
 		gridsearchBinaryMachinesIndependently = copyFrom.gridsearchBinaryMachinesIndependently;
 
@@ -186,7 +186,7 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 		/**
 		 * When learning scaling, only bother with this many examples, assuming they're in random order.
 		 */
-		public int scalingExamples = Integer.MAX_VALUE;
+		//	public int scalingExamples = Integer.MAX_VALUE;
 
 
 		public int crossValidationFolds = 5;
@@ -222,7 +222,7 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 			falseClassSVlimit = copyFrom.falseClassSVlimit;
 			scaleBinaryMachinesIndependently = copyFrom.scaleBinaryMachinesIndependently;
 			normalizeL2 = copyFrom.normalizeL2;
-			scalingExamples = copyFrom.scalingExamples;
+			//scalingExamples = copyFrom.scalingExamples;
 			redistributeUnbalancedC = copyFrom.redistributeUnbalancedC;
 			gridsearchBinaryMachinesIndependently = copyFrom.gridsearchBinaryMachinesIndependently;
 			crossValidationFolds = copyFrom.crossValidationFolds;

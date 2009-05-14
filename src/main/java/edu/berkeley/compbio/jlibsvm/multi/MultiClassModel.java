@@ -4,7 +4,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Multiset;
-import edu.berkeley.compbio.jlibsvm.CrossValidationResults;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
@@ -60,7 +59,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 	private P[] allSVs;
 	MultiClassCrossValidationResults<L, P> crossValidationResults;
 
-	public CrossValidationResults getCrossValidationResults()
+	public MultiClassCrossValidationResults getCrossValidationResults()
 		{
 		return crossValidationResults;
 		}

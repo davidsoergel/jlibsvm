@@ -1,10 +1,16 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -12,6 +18,7 @@ import java.util.Set;
  */
 public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>> extends SvmContext
 	{
+	private static final Logger logger = Logger.getLogger(SVM.class);
 // ------------------------------ FIELDS ------------------------------
 
 	public static final int LIBSVM_VERSION = 288;
@@ -51,7 +58,7 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 
 	public Map<P, L> discreteCrossValidation(SvmProblem<L, P, R> problem, ImmutableSvmParameter<L, P> param)
 		{
-		Map<P, L> predictions = new HashMap<P, L>();
+		final Map<P, L> predictions = new HashMap<P, L>();
 
 		if (param.crossValidationFolds >= problem.getNumExamples())
 			{
@@ -60,16 +67,51 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 
 		Set<R> folds = problem.makeFolds(param.crossValidationFolds);
 
-		for (R f : folds)
+		for (final R f : folds)
 			{
-			// this will throw ClassCastException if you try cross-validation on a continuous-only model (e.g. RegressionModel)
-			DiscreteModel<L, P> model = (DiscreteModel<L, P>) train(f, param); //, qMatrix);
-
-
 			// PERF multithread
-			for (P p : f.getHeldOutPoints())
+
+			// ** make number of threads adjustable?
+			ExecutorService execService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+			Map<P, Future<L>> futureMap = new HashMap<P, Future<L>>();
+
+
+			// this will throw ClassCastException if you try cross-validation on a continuous-only model (e.g. RegressionModel)
+			final DiscreteModel<L, P> model = (DiscreteModel<L, P>) train(f, param); //, qMatrix);
+
+			//PERF memory issues?
+
+			for (final P p : f.getHeldOutPoints())
 				{
-				predictions.put(p, model.predictLabel(p));
+				Future<L> fut = execService.submit(new Callable()
+				{
+				public L call()
+					{
+					return model.predictLabel(p);
+					}
+				});
+				futureMap.put(p, fut);
+				}
+
+			try
+				{
+				// this will ask for the results in random order, blocking until each respective job is done, but we don't care
+				for (Map.Entry<P, Future<L>> entry : futureMap.entrySet())
+					{
+					predictions.put(entry.getKey(), entry.getValue().get());
+					}
+
+				//execService.awaitTermination(365, TimeUnit.DAYS);
+				}
+			catch (InterruptedException e)
+				{
+				logger.error("Error", e);
+				throw new SvmException(e);
+				}
+			catch (ExecutionException e)
+				{
+				logger.error("Error", e);
+				throw new SvmException(e);
 				}
 			}
 		// now predictions contains the prediction for each point based on training with e.g. 80% of the other points (for 5-fold).

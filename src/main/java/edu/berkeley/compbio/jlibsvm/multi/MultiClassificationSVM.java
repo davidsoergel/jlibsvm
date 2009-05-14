@@ -132,7 +132,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			}
 
 		logger.info("Chose grid point: " + bestParam);
-		//	bestCrossValidationResults.param = bestParam;
+		bestCrossValidationResults.param = bestParam;
 
 		// finally train once on all the data (including rescaling)
 		MultiClassModel<L, P> result = trainScaled(problem, bestParam);
