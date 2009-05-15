@@ -69,8 +69,6 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 
 		for (final R f : folds)
 			{
-			// PERF multithread
-
 			// ** make number of threads adjustable?
 			ExecutorService execService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			Map<P, Future<L>> futureMap = new HashMap<P, Future<L>>();
