@@ -25,6 +25,7 @@ public class MultiClassCrossValidationResults<L extends Comparable, P> extends C
 	private int numExamples;
 	private final Map<L, Multiset<L>> confusionMatrix;
 	public ImmutableSvmParameterPoint<L, P> param;
+			// if we did a grid search, keep track of which parameter set was used for these results
 
 
 	//private final Multiset<L> unknowns = new HashMultiset<L>();
@@ -193,5 +194,14 @@ public class MultiClassCrossValidationResults<L extends Comparable, P> extends C
 			sum += precision(label);
 			}
 		return sum / (float) confusionMatrix.size();
+		}
+
+	public String getInfo()
+		{
+		if (param != null)
+			{
+			return param.toString();
+			}
+		return "";
 		}
 	}

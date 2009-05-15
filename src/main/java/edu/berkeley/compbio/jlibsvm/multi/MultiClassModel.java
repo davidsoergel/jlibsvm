@@ -740,6 +740,15 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		fp.close();*/
 		}
 
+	public String getInfo()
+		{
+		if (crossValidationResults != null)
+			{
+			return crossValidationResults.getInfo();
+			}
+		return "";
+		}
+
 // -------------------------- ENUMERATIONS --------------------------
 
 	public enum OneVsAllMode
