@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
+import com.davidsoergel.dsutils.concurrent.TreeExecutorService;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
@@ -27,7 +28,8 @@ public class Nu_SVR<P, R extends RegressionProblem<P, R>> extends RegressionSVM<
 
 // -------------------------- OTHER METHODS --------------------------
 
-	public RegressionModel<P> train(R problem, @NotNull ImmutableSvmParameter<Float, P> param)
+	public RegressionModel<P> train(R problem, @NotNull ImmutableSvmParameter<Float, P> param,
+	                                final TreeExecutorService execService)
 		{
 		validateParam(param);
 		RegressionModel<P> result;
@@ -38,13 +40,14 @@ public class Nu_SVR<P, R extends RegressionProblem<P, R>> extends RegressionSVM<
 			}
 		else
 			{
-			result = trainScaled(problem, (ImmutableSvmParameterPoint<Float, P>) param);
+			result = trainScaled(problem, (ImmutableSvmParameterPoint<Float, P>) param, execService);
 			}
 		return result;
 		}
 
 
-	private RegressionModel<P> trainScaled(R problem, @NotNull ImmutableSvmParameterPoint<Float, P> param)
+	private RegressionModel<P> trainScaled(R problem, @NotNull ImmutableSvmParameterPoint<Float, P> param,
+	                                       final TreeExecutorService execService)
 		{
 		if (param.scalingModelLearner != null && param.scaleBinaryMachinesIndependently)
 			{
@@ -58,7 +61,7 @@ public class Nu_SVR<P, R extends RegressionProblem<P, R>> extends RegressionSVM<
 		float laplaceParameter = RegressionModel.NO_LAPLACE_PARAMETER;
 		if (param.probability)
 			{
-			laplaceParameter = laplaceParameter(problem, param);
+			laplaceParameter = laplaceParameter(problem, param, execService);
 			}
 
 		float sum = param.C * param.nu * problem.getNumExamples() / 2f;

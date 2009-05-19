@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="New mushrooms" type="Application" factoryName="Application" enabled="true"
+    <configuration default="false" name="New mushrooms" type="Application" factoryName="Application" enabled="false"
                    merge="false" sample_coverage="true" runner="emma">
         <pattern>
             <option name="PATTERN" value="com.davidsoergel.jlibsvm.*"/>
@@ -11,7 +11,7 @@
         </pattern>
         <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train"/>
         <option name="VM_PARAMETERS" value="-ea -Xmx1024m"/>
-        <option name="PROGRAM_PARAMETERS" value="-s 0 -t 0 -c 100 -v 10 -m 1000 mushrooms"/>
+        <option name="PROGRAM_PARAMETERS" value="-s 0 -t 0 -c 100 -v 10 -q 1 -m 1000 mushrooms"/>
         <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources"/>
         <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
         <option name="ALTERNATIVE_JRE_PATH" value=""/>

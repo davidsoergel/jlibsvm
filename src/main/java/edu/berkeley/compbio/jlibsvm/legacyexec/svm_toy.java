@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.jlibsvm.legacyexec;
 
 
+import com.davidsoergel.dsutils.concurrent.DepthFirstThreadPoolExecutor;
 import edu.berkeley.compbio.jlibsvm.ContinuousModel;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
@@ -56,15 +57,9 @@ public class svm_toy extends Applet
 
 	// pre-allocated colors
 
-	final static Color colors[] = {
-			new Color(0, 0, 0),
-			new Color(0, 120, 120),
-			new Color(120, 120, 0),
-			new Color(120, 0, 120),
-			new Color(0, 200, 200),
-			new Color(200, 200, 0),
-			new Color(200, 0, 200)
-	};
+	final static Color colors[] =
+			{new Color(0, 0, 0), new Color(0, 120, 120), new Color(120, 120, 0), new Color(120, 0, 120),
+			 new Color(0, 200, 200), new Color(200, 200, 0), new Color(200, 0, 200)};
 	int XLEN;
 	int YLEN;
 
@@ -498,7 +493,7 @@ public class svm_toy extends Applet
 
 			// build model & classify
 			//svm.setupQMatrix(prob);
-			ContinuousModel model = (ContinuousModel) svm.train(prob, param);
+			ContinuousModel model = (ContinuousModel) svm.train(prob, param, new DepthFirstThreadPoolExecutor());
 			//System.err.println(svm.qMatrix.perfString());
 			SparseVector x = new SparseVector(1);
 			//x[0] = new svm_node();
@@ -572,7 +567,7 @@ public class svm_toy extends Applet
 				}
 			// build model & classify
 			//svm.setupQMatrix(prob);
-			SolutionModel model = svm.train(prob, param);
+			SolutionModel model = svm.train(prob, param, new DepthFirstThreadPoolExecutor());
 			//System.err.println(svm.qMatrix.perfString());
 			SparseVector x = new SparseVector(2);
 			//x[0] = new svm_node();

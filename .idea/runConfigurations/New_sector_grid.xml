@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="New sector grid" type="Application" factoryName="Application" enabled="true"
+    <configuration default="false" name="New sector grid" type="Application" factoryName="Application" enabled="false"
                    merge="false" sample_coverage="true" runner="emma">
         <pattern>
             <option name="PATTERN" value="com.davidsoergel.jlibsvm.*"/>
@@ -21,6 +21,11 @@
         <option name="PASS_PARENT_ENVS" value="true"/>
         <module name="jlibsvm"/>
         <envs/>
+        <RunnerSettings RunnerId="Debug">
+            <option name="DEBUG_PORT" value="52188"/>
+            <option name="TRANSPORT" value="0"/>
+            <option name="LOCAL" value="true"/>
+        </RunnerSettings>
         <RunnerSettings RunnerId="Profile CPU">
             <option name="startFromMode" value="MAIN_CLASS"/>
             <option name="otherClassesToStartFrom" value=""/>
@@ -35,6 +40,7 @@
             <option name="recordAllocTraces" value="false"/>
         </RunnerSettings>
         <RunnerSettings RunnerId="Run"/>
+        <ConfigurationWrapper RunnerId="Debug"/>
         <ConfigurationWrapper RunnerId="Run"/>
         <method>
             <option name="Make" value="true"/>

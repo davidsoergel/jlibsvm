@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
+import com.davidsoergel.dsutils.collections.MappingIterator;
 import com.google.common.collect.HashMultiset;
 import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import org.jetbrains.annotations.NotNull;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +58,6 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 		      backingProblem.trueLabel, backingProblem.falseLabel);
 		this.heldOutPoints = heldOutPoints;
 
-
 		// PERF use a SubtractionSet?
 		this.trueExamples = new HashSet<P>(backingProblem.trueExamples);
 		this.falseExamples = new HashSet<P>(backingProblem.falseExamples);
@@ -76,7 +77,7 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
-	public Map<P, Boolean> getBooleanExamples()
+	public synchronized Map<P, Boolean> getBooleanExamples()
 		{
 		if (booleanExamples == null)
 			{
@@ -135,7 +136,7 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 		}
 
 	// need to override this because of the examples == null hack
-	public Set<BinaryClassificationProblem<L, P>> makeFolds(int numberOfFolds)
+	public Iterator<BinaryClassificationProblem<L, P>> makeFolds(int numberOfFolds)
 		{
 		Set<BinaryClassificationProblem<L, P>> result = new HashSet<BinaryClassificationProblem<L, P>>();
 
@@ -159,12 +160,23 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 			f %= numberOfFolds;
 			}
 
-		for (Set<P> heldOutPoints : heldOutPointSets)
-			{
-			result.add(makeFold(heldOutPoints));
-			}
+		Iterator<BinaryClassificationProblem<L, P>> foldIterator =
+				new MappingIterator<Set<P>, BinaryClassificationProblem<L, P>>(heldOutPointSets.iterator())
+				{
+				public BinaryClassificationProblem<L, P> function(Set<P> p)
+					{
+					return makeFold(p);
+					}
+				};
+		return foldIterator;
 
-		return result;
+		/*
+				for (Set<P> heldOutPoints : heldOutPointSets)
+					{
+					result.add(makeFold(heldOutPoints));
+					}
+
+				return result;*/
 		}
 
 

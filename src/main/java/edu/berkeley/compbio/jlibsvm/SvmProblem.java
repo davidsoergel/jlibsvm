@@ -3,6 +3,7 @@ package edu.berkeley.compbio.jlibsvm;
 import com.google.common.collect.Multiset;
 import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +32,7 @@ public interface SvmProblem<L extends Comparable, P, R>
 
 	L getTargetValue(P point);
 
-	Set<R> makeFolds(int numberOfFolds);
+	Iterator<R> makeFolds(int numberOfFolds);
 
 
 //	R asR();

@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import com.davidsoergel.dsutils.collections.MappingIterator;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
 import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
 import org.jetbrains.annotations.NotNull;
@@ -7,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -99,7 +101,7 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 
 // --------------------- Interface ExplicitSvmProblem ---------------------
 
-	public Set<R> makeFolds(int numberOfFolds)
+	public Iterator<R> makeFolds(int numberOfFolds)
 		{
 		Set<R> result = new HashSet<R>();
 
@@ -123,12 +125,23 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 			f %= numberOfFolds;
 			}
 
+
+		Iterator<R> foldIterator = new MappingIterator<Set<P>, R>(heldOutPointSets.iterator())
+		{
+		public R function(Set<P> p)
+			{
+			return makeFold(p);
+			}
+		};
+		return foldIterator;
+
+/*
 		for (Set<P> heldOutPoints : heldOutPointSets)
 			{
 			result.add(makeFold(heldOutPoints));
 			}
 
-		return result;
+		return result;*/
 		}
 
 // --------------------- Interface SvmProblem ---------------------

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="New letter" type="Application" factoryName="Application" enabled="true"
+    <configuration default="false" name="New letter" type="Application" factoryName="Application" enabled="false"
                    merge="false" sample_coverage="true" runner="emma">
         <pattern>
             <option name="PATTERN" value="com.davidsoergel.jlibsvm.*"/>

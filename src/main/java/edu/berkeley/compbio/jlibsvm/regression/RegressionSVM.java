@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
+import com.davidsoergel.dsutils.concurrent.TreeExecutorService;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.SVM;
 import org.apache.log4j.Logger;
@@ -24,12 +25,13 @@ public abstract class RegressionSVM<P, R extends RegressionProblem<P, R>> extend
 
 	// Return parameter of a Laplace distribution
 
-	protected float laplaceParameter(RegressionProblem<P, R> problem, @NotNull ImmutableSvmParameter<Float, P> param)
+	protected float laplaceParameter(RegressionProblem<P, R> problem, @NotNull ImmutableSvmParameter<Float, P> param,
+	                                 final TreeExecutorService execService)
 		{
 		int i;
 		float mae = 0;
 
-		Map<P, Float> ymv = continuousCrossValidation(problem, param);
+		Map<P, Float> ymv = continuousCrossValidation(problem, param, execService);
 
 
 		for (Map.Entry<P, Float> entry : ymv.entrySet())
@@ -63,7 +65,8 @@ public abstract class RegressionSVM<P, R extends RegressionProblem<P, R>> extend
 		return mae;
 		}
 
-	public abstract RegressionModel<P> train(R problem, @NotNull ImmutableSvmParameter<Float, P> param);
+	public abstract RegressionModel<P> train(R problem, @NotNull ImmutableSvmParameter<Float, P> param,
+	                                         final TreeExecutorService execService);
 
 	@Override
 	public void validateParam(@NotNull ImmutableSvmParameter<Float, P> param)
@@ -73,9 +76,10 @@ public abstract class RegressionSVM<P, R extends RegressionProblem<P, R>> extend
 
 
 	public RegressionCrossValidationResults<P, R> performCrossValidation(R problem,
-	                                                                     @NotNull ImmutableSvmParameter<Float, P> param)
+	                                                                     @NotNull ImmutableSvmParameter<Float, P> param,
+	                                                                     final TreeExecutorService execService)
 		{
-		Map<P, Float> decisionValues = continuousCrossValidation(problem, param);
+		Map<P, Float> decisionValues = continuousCrossValidation(problem, param, execService);
 
 		RegressionCrossValidationResults<P, R> cv = new RegressionCrossValidationResults<P, R>(problem, decisionValues);
 		return cv;

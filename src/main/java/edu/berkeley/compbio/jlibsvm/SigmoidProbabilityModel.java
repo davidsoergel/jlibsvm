@@ -16,6 +16,7 @@ public class SigmoidProbabilityModel
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
+
 	// Platt's binary SVM Probablistic Output: an improvement from Lin et al.
 	// protected void sigmoidTrain(float[] decisionValues, boolean[] labels)
 

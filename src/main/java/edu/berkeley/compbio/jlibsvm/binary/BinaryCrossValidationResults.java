@@ -33,16 +33,18 @@ public class BinaryCrossValidationResults<L extends Comparable, P> extends Cross
 		}
 */
 
-	public BinaryCrossValidationResults(BinaryClassificationProblem<L, P> problem, Map<P, Float> decisionValues,
+	public BinaryCrossValidationResults(BinaryClassificationProblem<L, P> problem, final Map<P, Float> decisionValues,
 	                                    boolean probability)
 		{
-		final float[] decisionValueArray;
-		final boolean[] labelArray;
-
 		// convert to arrays
 
-		decisionValueArray = new float[decisionValues.size()];
-		labelArray = new boolean[decisionValues.size()];
+		int totalExamples = decisionValues.size();
+
+		final float[] decisionValueArray = new float[totalExamples];
+		final boolean[] labelArray = new boolean[totalExamples];
+
+		logger.debug("Collecting binary cross-validation results for " + totalExamples + " points");
+
 		L trueLabel = problem.getTrueLabel();
 
 		for (Map.Entry<P, Float> entry : decisionValues.entrySet())
@@ -50,6 +52,13 @@ public class BinaryCrossValidationResults<L extends Comparable, P> extends Cross
 			decisionValueArray[numExamples] = entry.getValue();
 			labelArray[numExamples] = problem.getTargetValue(entry.getKey()).equals(trueLabel);
 			numExamples++;
+			}
+
+		// do this here so that we can forget the arrays
+		if (probability)
+			{
+			//sigmoid = new SigmoidProbabilityModel(decisionValues, trueLabel);
+			sigmoid = new SigmoidProbabilityModel(decisionValueArray, labelArray);
 			}
 
 
@@ -82,11 +91,6 @@ public class BinaryCrossValidationResults<L extends Comparable, P> extends Cross
 				}
 			}
 
-		// do this here so that we can forget the arrays
-		if (probability)
-			{
-			sigmoid = new SigmoidProbabilityModel(decisionValueArray, labelArray);
-			}
 
 		//** debug output disabled for now
 

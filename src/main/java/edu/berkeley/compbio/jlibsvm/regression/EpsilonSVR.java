@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
+import com.davidsoergel.dsutils.concurrent.TreeExecutorService;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
@@ -22,7 +23,8 @@ public class EpsilonSVR<P, R extends RegressionProblem<P, R>> extends Regression
 // -------------------------- OTHER METHODS --------------------------
 
 
-	public RegressionModel<P> train(R problem, @NotNull ImmutableSvmParameter<Float, P> param)
+	public RegressionModel<P> train(R problem, @NotNull ImmutableSvmParameter<Float, P> param,
+	                                final TreeExecutorService execService)
 		{
 		validateParam(param);
 		RegressionModel<P> result;
@@ -33,13 +35,14 @@ public class EpsilonSVR<P, R extends RegressionProblem<P, R>> extends Regression
 			}
 		else
 			{
-			result = trainScaled(problem, (ImmutableSvmParameterPoint<Float, P>) param);
+			result = trainScaled(problem, (ImmutableSvmParameterPoint<Float, P>) param, execService);
 			}
 		return result;
 		}
 
 
-	private RegressionModel<P> trainScaled(R problem, @NotNull ImmutableSvmParameterPoint<Float, P> param)
+	private RegressionModel<P> trainScaled(R problem, @NotNull ImmutableSvmParameterPoint<Float, P> param,
+	                                       final TreeExecutorService execService)
 		{
 		if (param.scalingModelLearner != null && param.scaleBinaryMachinesIndependently)
 			{
@@ -53,7 +56,7 @@ public class EpsilonSVR<P, R extends RegressionProblem<P, R>> extends Regression
 		float laplaceParameter = RegressionModel.NO_LAPLACE_PARAMETER;
 		if (param.probability)
 			{
-			laplaceParameter = laplaceParameter(problem, param);
+			laplaceParameter = laplaceParameter(problem, param, execService);
 			}
 
 		List<SolutionVector<P>> solutionVectors = new ArrayList<SolutionVector<P>>();

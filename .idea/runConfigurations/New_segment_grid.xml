@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="New segment grid" type="Application" factoryName="Application" enabled="true"
+    <configuration default="false" name="New segment grid" type="Application" factoryName="Application" enabled="false"
                    merge="false" sample_coverage="true" runner="emma">
         <pattern>
             <option name="PATTERN" value="com.davidsoergel.jlibsvm.*"/>
@@ -12,7 +12,7 @@
         <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train"/>
         <option name="VM_PARAMETERS" value="-ea -Xmx1024m"/>
         <option name="PROGRAM_PARAMETERS"
-                value="-s 0 -t 2 -c 1,10,25,50,100,200 -g .01,.1,.25,.5,.75 -e .001 -v 5 -m 1000 -y 1 -z 0 -q 1 -o None -a AllVsAll segment.scale"/>
+                value="-s 0 -t 2 -c 1,10,25,50,100,200 -g .01,.1,.25,.5,.75 -e .001 -v 5 -m 1000 -y 0 -z 0 -q 1 -o None -a AllVsAll segment.scale"/>
         <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/src/test/resources"/>
         <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
         <option name="ALTERNATIVE_JRE_PATH" value=""/>

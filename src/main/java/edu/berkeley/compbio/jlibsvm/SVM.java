@@ -1,16 +1,13 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import com.davidsoergel.dsutils.collections.MappingIterator;
+import com.davidsoergel.dsutils.concurrent.TreeExecutorService;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -26,109 +23,152 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 
 // -------------------------- OTHER METHODS --------------------------
 
-	public Map<P, Float> continuousCrossValidation(SvmProblem<L, P, R> problem, ImmutableSvmParameter<L, P> param)
+	public Map<P, Float> continuousCrossValidation(SvmProblem<L, P, R> problem, final ImmutableSvmParameter<L, P> param,
+	                                               final TreeExecutorService execService)
 		{
-
-		Map<P, Float> predictions = new HashMap<P, Float>();
+		final Map<P, Float> predictions = new ConcurrentHashMap<P, Float>();
 
 		if (param.crossValidationFolds >= problem.getNumExamples())
 			{
 			throw new SvmException("Can't have more cross-validation folds than there are examples");
 			}
 
-		Set<R> folds = problem.makeFolds(param.crossValidationFolds);
+		Iterator<R> foldIterator = problem.makeFolds(param.crossValidationFolds);
 
 		//subparam.probability = false;
 
-		for (R f : folds)
+		Iterator<Runnable> foldTaskIterator = new MappingIterator<R, Runnable>(foldIterator)
+		{
+		public Runnable function(final R f)
 			{
-			// this will throw ClassCastException if you try cross-validation on a discrete-only model (e.g. MultiClassModel)
-			ContinuousModel<P> model = (ContinuousModel<P>) train(f, param);
-
-			// PERF multithread
-			for (P p : f.getHeldOutPoints())
+			return new Runnable()
+			{
+			public void run()
 				{
-				predictions.put(p, model.predictValue(p));
+				// this will throw ClassCastException if you try cross-validation on a discrete-only model (e.g. MultiClassModel)
+				final ContinuousModel<P> model = (ContinuousModel<P>) train(f, param, execService);
+
+				for (final P p : f.getHeldOutPoints())
+					{
+					predictions.put(p, model.predictValue(p));
+					}
+
+				// multithreaded version: avoids problem that cpus % folds != 0, but at the cost of lots of fine-grained tasks
+				// usually there's a higher level of multithreading anyway
+
+				/*
+				Set<Runnable> pointTasks = new HashSet<Runnable>();
+
+				for (final P p : f.getHeldOutPoints())
+					{
+					pointTasks.add(new Runnable()
+					{
+					public void run()
+						{
+						//return model.predictLabel(p);
+						predictions.put(p, model.predictValue(p));
+						}
+					});
+					}
+
+				execService.submitAndWaitForAll(pointTasks);
+				*/
 				}
+			};
 			}
+		};
+
+		execService.submitAndWaitForAll(foldTaskIterator);
+		/*	execService.submitTaskGroup(new TaskGroup(foldTaskIterator)
+		  {
+		  public void done()
+			  {
+			  gah
+			  }
+		  });
+  */
+		// now predictions contains the prediction for each point based on training with e.g. 80% of the other points (for 5-fold).
 		return predictions;
 		}
 
-	public abstract SolutionModel<L, P> train(R problem, ImmutableSvmParameter<L, P> param);
+	public abstract SolutionModel<L, P> train(R problem, ImmutableSvmParameter<L, P> param,
+	                                          final TreeExecutorService execService);
 
-	public Map<P, L> discreteCrossValidation(SvmProblem<L, P, R> problem, ImmutableSvmParameter<L, P> param)
+	public Map<P, L> discreteCrossValidation(SvmProblem<L, P, R> problem, final ImmutableSvmParameter<L, P> param,
+	                                         final TreeExecutorService execService)
 		{
-		final Map<P, L> predictions = new HashMap<P, L>();
+		final Map<P, L> predictions = new ConcurrentHashMap<P, L>();
 
 		if (param.crossValidationFolds >= problem.getNumExamples())
 			{
 			throw new SvmException("Can't have more cross-validation folds than there are examples");
 			}
 
-		Set<R> folds = problem.makeFolds(param.crossValidationFolds);
+		Iterator<R> foldIterator = problem.makeFolds(param.crossValidationFolds);
 
-		for (final R f : folds)
+		//Set<Runnable> foldTasks = new HashSet<Runnable>();
+
+		Iterator<Runnable> foldTaskIterator = new MappingIterator<R, Runnable>(foldIterator)
+		{
+		public Runnable function(final R f)
 			{
-			// ** make number of threads adjustable?
-			ExecutorService execService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-			Map<P, Future<L>> futureMap = new HashMap<P, Future<L>>();
-
-
-			// this will throw ClassCastException if you try cross-validation on a continuous-only model (e.g. RegressionModel)
-			final DiscreteModel<L, P> model = (DiscreteModel<L, P>) train(f, param); //, qMatrix);
-
-			//PERF memory issues?
-
-			for (final P p : f.getHeldOutPoints())
+			return new Runnable()
+			{
+			public void run()
 				{
-				Future<L> fut = execService.submit(new Callable()
-				{
-				public L call()
+				// this will throw ClassCastException if you try cross-validation on a continuous-only model (e.g. RegressionModel)
+				final DiscreteModel<L, P> model = (DiscreteModel<L, P>) train(f, param, execService); //, qMatrix);
+
+				for (final P p : f.getHeldOutPoints())
 					{
-					return model.predictLabel(p);
-					}
-				});
-				futureMap.put(p, fut);
-				}
-
-			try
-				{
-				// this will ask for the results in random order, blocking until each respective job is done, but we don't care
-				for (Map.Entry<P, Future<L>> entry : futureMap.entrySet())
-					{
-					predictions.put(entry.getKey(), entry.getValue().get());
+					predictions.put(p, model.predictLabel(p));
 					}
 
-				//execService.awaitTermination(365, TimeUnit.DAYS);
+				// multithreaded version: avoids problem that cpus % folds != 0, but at the cost of lots of fine-grained tasks
+				// usually there's a higher level of multithreading anyway
+
+				/*
+				Set<Runnable> pointTasks = new HashSet<Runnable>();
+
+				for (final P p : f.getHeldOutPoints())
+					{
+					pointTasks.add(new Runnable()
+					{
+					public void run()
+						{
+						//return model.predictLabel(p);
+						predictions.put(p, model.predictLabel(p));
+						}
+					});
+					}
+
+				execService.submitAndWaitForAll(pointTasks);
+				*/
 				}
-			catch (InterruptedException e)
-				{
-				logger.error("Error", e);
-				throw new SvmException(e);
-				}
-			catch (ExecutionException e)
-				{
-				logger.error("Error", e);
-				throw new SvmException(e);
-				}
+			};
 			}
+		};
+
+		execService.submitAndWaitForAll(foldTaskIterator);
+
+
 		// now predictions contains the prediction for each point based on training with e.g. 80% of the other points (for 5-fold).
 		return predictions;
 		}
 
 	public abstract String getSvmType();
-	//public ScalingModelLearner<P> scalingModelLearner;
-	/*
-	protected SVM(ImmutableSvmParameter param)
-		{
-		//super(param);
-		//this.scalingModelLearner = scalingModelLearner;
-		if (param.eps < 0)
-			{
-			throw new SvmException("eps < 0");
-			}
-		}
-		*/
+//public ScalingModelLearner<P> scalingModelLearner;
+/*
+  protected SVM(ImmutableSvmParameter param)
+	  {
+	  //super(param);
+	  //this.scalingModelLearner = scalingModelLearner;
+	  if (param.eps < 0)
+		  {
+		  throw new SvmException("eps < 0");
+		  }
+	  }
+	  */
 
 	public void validateParam(@NotNull ImmutableSvmParameter<L, P> param)
 		{
@@ -138,5 +178,6 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 			}
 		}
 
-	public abstract CrossValidationResults performCrossValidation(R problem, ImmutableSvmParameter<L, P> param);
+	public abstract CrossValidationResults performCrossValidation(R problem, ImmutableSvmParameter<L, P> param,
+	                                                              final TreeExecutorService execService);
 	}

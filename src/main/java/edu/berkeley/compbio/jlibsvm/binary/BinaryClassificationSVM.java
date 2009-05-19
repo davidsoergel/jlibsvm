@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
+import com.davidsoergel.dsutils.concurrent.TreeExecutorService;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
@@ -7,8 +8,9 @@ import edu.berkeley.compbio.jlibsvm.SVM;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.Callable;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -25,18 +27,19 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 // -------------------------- OTHER METHODS --------------------------
 
 
-	public BinaryModel<L, P> train(BinaryClassificationProblem<L, P> problem,
-	                               @NotNull ImmutableSvmParameter<L, P> param)
+	public BinaryModel<L, P> train(@NotNull BinaryClassificationProblem<L, P> problem,
+	                               @NotNull ImmutableSvmParameter<L, P> param,
+	                               @NotNull final TreeExecutorService execService)
 		{
 		validateParam(param);
 		BinaryModel<L, P> result;
 		if (param instanceof ImmutableSvmParameterGrid)  //  either the problem was binary to start with, or param.gridsearchBinaryMachinesIndependently
 			{
-			result = trainGrid(problem, (ImmutableSvmParameterGrid<L, P>) param);
+			result = trainGrid(problem, (ImmutableSvmParameterGrid<L, P>) param, execService);
 			}
-		else if (param.probability)
+		else if (param.probability)  // this may already be a fold, but we have to sub-fold it to get probabilities
 			{
-			result = trainScaledWithCV(problem, (ImmutableSvmParameterPoint<L, P>) param);
+			result = trainScaledWithCV(problem, (ImmutableSvmParameterPoint<L, P>) param, execService);
 			}
 		else
 			{
@@ -55,23 +58,49 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 	 */
 
 
-	private BinaryModel<L, P> trainGrid(BinaryClassificationProblem<L, P> problem,
-	                                    @NotNull ImmutableSvmParameterGrid<L, P> param)
+	private BinaryModel<L, P> trainGrid(@NotNull final BinaryClassificationProblem<L, P> problem,
+	                                    @NotNull ImmutableSvmParameterGrid<L, P> param,
+	                                    @NotNull final TreeExecutorService execService)
 		{
-		// PERF should be concurrent.  Doesn't matter for multiclass since that's already multithreaded, but each binary grid-search will be single-threaded here.
+		final GridTrainingResult gtresult = new GridTrainingResult();
 
+		Set<Runnable> gridTasks = new HashSet<Runnable>();
+
+		// no need for the iterator version here; the set of params doesn't require too much memory
+
+		for (final ImmutableSvmParameterPoint<L, P> gridParam : param.getGridParams())
+			{
+			gridTasks.add(new Runnable()
+			{
+			public void run()
+				{
+				// note we must use the CV variant in order to know which parameter set is best
+				BinaryCrossValidationResults<L, P> crossValidationResults =
+						performCrossValidation(problem, gridParam, execService);
+				gtresult.update(gridParam, crossValidationResults);
+				}
+			});
+			}
+
+		execService.submitAndWaitForAll(gridTasks);
+
+		logger.info("Chose grid point: " + gtresult.bestParam);
+
+		// finally train once on all the data (including rescaling)
+		BinaryModel<L, P> result = trainScaled(problem, gtresult.bestParam);
+		result.crossValidationResults = gtresult.bestCrossValidationResults;
+		return result;
+		}
+
+	private class GridTrainingResult
+		{
 		ImmutableSvmParameterPoint<L, P> bestParam = null;
 		BinaryCrossValidationResults<L, P> bestCrossValidationResults = null;
 		float bestSensitivity = -1F;
-		for (ImmutableSvmParameterPoint<L, P> gridParam : param.getGridParams())
+
+		synchronized void update(ImmutableSvmParameterPoint<L, P> gridParam,
+		                         BinaryCrossValidationResults<L, P> crossValidationResults)
 			{
-			// note we must use the CV variant in order to know which parameter set is best
-
-			//float gridCp = Cp * gridParam.Cfactor;
-			//float gridCn = Cn * gridParam.Cfactor;
-
-			//MultiClassModel<L, P> result = trainScaledWithCV(problem, gridParam);
-			BinaryCrossValidationResults<L, P> crossValidationResults = performCrossValidation(problem, gridParam);
 			float sensitivity = crossValidationResults.classNormalizedSensitivity();
 			if (sensitivity > bestSensitivity)
 				{
@@ -80,13 +109,6 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 				bestCrossValidationResults = crossValidationResults;
 				}
 			}
-
-		logger.info("Chose grid point: " + bestParam);
-
-		// finally train once on all the data (including rescaling)
-		BinaryModel<L, P> result = trainScaled(problem, bestParam);
-		result.crossValidationResults = bestCrossValidationResults;
-		return result;
 		}
 
 	/**
@@ -95,12 +117,13 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 	 * @param problem
 	 * @return
 	 */
-	private BinaryModel<L, P> trainScaledWithCV(BinaryClassificationProblem<L, P> problem,
-	                                            @NotNull ImmutableSvmParameterPoint<L, P> param)
+	private BinaryModel<L, P> trainScaledWithCV(@NotNull BinaryClassificationProblem<L, P> problem,
+	                                            @NotNull ImmutableSvmParameterPoint<L, P> param,
+	                                            @NotNull final TreeExecutorService execService)
 		{
 		// if scaling each binary machine is enabled, then each fold will be independently scaled also; so we don't need to scale the whole dataset prior to CV
 
-		BinaryCrossValidationResults<L, P> cv = performCrossValidation(problem, param);
+		BinaryCrossValidationResults<L, P> cv = performCrossValidation(problem, param, execService);
 
 		// finally train once on all the data (including rescaling)
 		BinaryModel<L, P> result = trainScaled(problem, param);
@@ -128,10 +151,11 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		return new SigmoidProbabilityModel(cv.decisionValueArray, cv.labelArray);
 		}
 */
-	public BinaryCrossValidationResults<L, P> performCrossValidation(BinaryClassificationProblem<L, P> problem,
-	                                                                 @NotNull ImmutableSvmParameter<L, P> param)
+	public BinaryCrossValidationResults<L, P> performCrossValidation(@NotNull BinaryClassificationProblem<L, P> problem,
+	                                                                 @NotNull ImmutableSvmParameter<L, P> param,
+	                                                                 @NotNull final TreeExecutorService execService)
 		{
-		Map<P, Float> decisionValues = continuousCrossValidation(problem, param);
+		final Map<P, Float> decisionValues = continuousCrossValidation(problem, param, execService);
 
 		BinaryCrossValidationResults<L, P> cv =
 				new BinaryCrossValidationResults<L, P>(problem, decisionValues, param.probability);
@@ -146,11 +170,11 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 	 * @param Cn
 	 * @return
 	 */
-	protected abstract BinaryModel<L, P> trainOne(BinaryClassificationProblem<L, P> problem, float Cp, float Cn,
-	                                              @NotNull ImmutableSvmParameterPoint<L, P> param);
+	protected abstract BinaryModel<L, P> trainOne(@NotNull BinaryClassificationProblem<L, P> problem, float Cp,
+	                                              float Cn, @NotNull ImmutableSvmParameterPoint<L, P> param);
 
 
-	private BinaryModel<L, P> trainScaled(BinaryClassificationProblem<L, P> problem,
+	private BinaryModel<L, P> trainScaled(@NotNull BinaryClassificationProblem<L, P> problem,
 	                                      @NotNull ImmutableSvmParameterPoint<L, P> param)
 		{
 		if (param.scalingModelLearner != null && param.scaleBinaryMachinesIndependently)
@@ -168,7 +192,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		return result;
 		}
 
-	private BinaryModel<L, P> trainWeighted(BinaryClassificationProblem<L, P> problem,
+	private BinaryModel<L, P> trainWeighted(@NotNull BinaryClassificationProblem<L, P> problem,
 	                                        @NotNull ImmutableSvmParameterPoint<L, P> param)
 		{
 		// calculate weighted C
@@ -204,14 +228,14 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		return result;
 		}
 
-	public Callable<BinaryModel<L, P>> trainCallable(BinaryClassificationProblem<L, P> problem,
+/*	public Callable<BinaryModel<L, P>> trainCallable(BinaryClassificationProblem<L, P> problem,
 	                                                 @NotNull ImmutableSvmParameter<L, P> param)
 		{
 		return new BinarySvmTrainCallable(problem, param);
 		}
-
+*/
 // -------------------------- INNER CLASSES --------------------------
-
+/*
 	private class BinarySvmTrainCallable implements Callable<BinaryModel<L, P>>
 		{
 // ------------------------------ FIELDS ------------------------------
@@ -247,5 +271,5 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 				throw e;
 				}
 			}
-		}
+		}*/
 	}

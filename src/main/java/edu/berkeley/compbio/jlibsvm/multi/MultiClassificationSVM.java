@@ -1,5 +1,7 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
+import com.davidsoergel.dsutils.collections.MappingIterator;
+import com.davidsoergel.dsutils.concurrent.TreeExecutorService;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
@@ -16,16 +18,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -56,16 +53,19 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		return "multiclass " + binarySvm.getSvmType();
 		}
 
-	public MultiClassCrossValidationResults<L, P> performCrossValidation(MultiClassProblem<L, P> problem,
-	                                                                     @NotNull ImmutableSvmParameter<L, P> param)
+	public MultiClassCrossValidationResults<L, P> performCrossValidation(@NotNull MultiClassProblem<L, P> problem,
+	                                                                     @NotNull ImmutableSvmParameter<L, P> param,
+	                                                                     @NotNull final TreeExecutorService execService)
 		{
-		Map<P, L> predictions = discreteCrossValidation(problem, param);
+		Map<P, L> predictions = discreteCrossValidation(problem, param, execService);
 
 		MultiClassCrossValidationResults<L, P> cv = new MultiClassCrossValidationResults<L, P>(problem, predictions);
 		return cv;
 		}
 
-	public MultiClassModel<L, P> train(MultiClassProblem<L, P> problem, @NotNull ImmutableSvmParameter<L, P> param)
+	public MultiClassModel<L, P> train(@NotNull MultiClassProblem<L, P> problem,
+	                                   @NotNull ImmutableSvmParameter<L, P> param,
+	                                   @NotNull final TreeExecutorService execService)
 		{
 		validateParam(param);
 
@@ -80,7 +80,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			//		{
 
 			// performs cross-validation at each grid point regardless
-			result = trainGrid(problem, (ImmutableSvmParameterGrid<L, P>) param);
+			result = trainGrid(problem, (ImmutableSvmParameterGrid<L, P>) param, execService);
 
 
 			//		}
@@ -88,7 +88,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		else
 			{
 			// train once using all the data
-			result = trainScaled(problem, param);
+			result = trainScaled(problem, param, execService);
 
 			// also perform CV if requested
 			/*	if (param.crossValidation)
@@ -100,26 +100,54 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		return result;
 		}
 
-	public MultiClassModel<L, P> trainGrid(MultiClassProblem<L, P> problem,
-	                                       @NotNull ImmutableSvmParameterGrid<L, P> param)
+	public MultiClassModel<L, P> trainGrid(@NotNull final MultiClassProblem<L, P> problem,
+	                                       @NotNull final ImmutableSvmParameterGrid<L, P> param,
+	                                       @NotNull final TreeExecutorService execService)
 		{
-		// PERF should be concurrent.  Doesn't matter for multiclass since that's already multithreaded, but each binary grid-search will be single-threaded here.
+		final GridTrainingResult gtresult = new GridTrainingResult();
 
+		Set<Runnable> gridTasks = new HashSet<Runnable>();
+
+		Collection<ImmutableSvmParameterPoint<L, P>> parameterPoints = param.getGridParams();
+
+		int numGridPoints = parameterPoints.size();
+
+		// no need for the iterator version here; the set of params doesn't require too much memory
+
+		for (final ImmutableSvmParameterPoint<L, P> gridParam : parameterPoints)
+			{
+			gridTasks.add(new Runnable()
+			{
+			public void run()
+				{
+				// note we must use the CV variant in order to know which parameter set is best
+				MultiClassCrossValidationResults<L, P> crossValidationResults =
+						performCrossValidation(problem, gridParam, execService);
+				gtresult.update(gridParam, crossValidationResults);
+				}
+			});
+			}
+
+		execService.submitAndWaitForAll(gridTasks); //, "Evaluated %d of " + numGridPoints + " grid points",30);
+
+		logger.info("Chose grid point: " + gtresult.bestParam);
+
+		// finally train once on all the data (including rescaling)
+		MultiClassModel<L, P> result = trainScaled(problem, gtresult.bestParam, execService);
+		result.crossValidationResults = gtresult.bestCrossValidationResults;
+		return result;
+		}
+
+
+	private class GridTrainingResult
+		{
 		ImmutableSvmParameterPoint<L, P> bestParam = null;
 		MultiClassCrossValidationResults<L, P> bestCrossValidationResults = null;
 		float bestSensitivity = -1F;
-		Collection<ImmutableSvmParameterPoint<L, P>> parameterPoints = param.getGridParams();
-		int numGridPoints = parameterPoints.size();
-		int i = 0;
-		for (ImmutableSvmParameterPoint<L, P> gridParam : parameterPoints)
+
+		synchronized void update(ImmutableSvmParameterPoint<L, P> gridParam,
+		                         MultiClassCrossValidationResults<L, P> crossValidationResults)
 			{
-			// note we must use the CV variant in order to know which parameter set is best
-
-			//float gridCp = Cp * gridParam.Cfactor;
-			//float gridCn = Cn * gridParam.Cfactor;
-
-			//MultiClassModel<L, P> result = trainScaledWithCV(problem, gridParam);
-			MultiClassCrossValidationResults<L, P> crossValidationResults = performCrossValidation(problem, gridParam);
 			float sensitivity = crossValidationResults.classNormalizedSensitivity();
 			if (sensitivity > bestSensitivity)
 				{
@@ -127,18 +155,9 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 				bestSensitivity = sensitivity;
 				bestCrossValidationResults = crossValidationResults;
 				}
-			i++;
-			logger.info("Evaluated " + i + " of " + numGridPoints + " grid points");
 			}
-
-		logger.info("Chose grid point: " + bestParam);
-		bestCrossValidationResults.param = bestParam;
-
-		// finally train once on all the data (including rescaling)
-		MultiClassModel<L, P> result = trainScaled(problem, bestParam);
-		result.crossValidationResults = bestCrossValidationResults;
-		return result;
 		}
+
 
 	/**
 	 * Train the classifier, and also prepare the probability sigmoid thing if requested.
@@ -162,23 +181,27 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		return result;
 		}
 */
-	public MultiClassModel<L, P> trainScaled(MultiClassProblem<L, P> problem,
-	                                         @NotNull ImmutableSvmParameter<L, P> param)
+	public MultiClassModel<L, P> trainScaled(@NotNull final MultiClassProblem<L, P> problem,
+	                                         @NotNull final ImmutableSvmParameter<L, P> param,
+	                                         @NotNull final TreeExecutorService execService)
 		{
 		if (param.scalingModelLearner != null && !param.scaleBinaryMachinesIndependently)
 			{
-			problem = problem.getScaledCopy(param.scalingModelLearner);
+			return trainWithoutScaling(problem.getScaledCopy(param.scalingModelLearner), param, execService);
 			}
-		return trainWithoutScaling(problem, param);
+		else
+			{
+			return trainWithoutScaling(problem, param, execService);
+			}
 		}
 
-	private MultiClassModel<L, P> trainWithoutScaling(MultiClassProblem<L, P> problem,
-	                                                  @NotNull ImmutableSvmParameter<L, P> param)
+	private MultiClassModel<L, P> trainWithoutScaling(@NotNull final MultiClassProblem<L, P> problem,
+	                                                  @NotNull final ImmutableSvmParameter<L, P> param,
+	                                                  @NotNull final TreeExecutorService execService)
 		{
-
 		int numLabels = problem.getLabels().size();
 
-		MultiClassModel<L, P> model = new MultiClassModel<L, P>(param, numLabels);
+		final MultiClassModel<L, P> model = new MultiClassModel<L, P>(param, numLabels);
 
 		model.setScalingModel(problem.getScalingModel());
 
@@ -189,9 +212,6 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		 * Now the approach is: just recompute them from scratch within each binary machine
 		 */
 		//final Map<L, Float> weights = prepareWeights(problem, param);
-
-		// ** make number of threads adjustable?
-		ExecutorService execService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		/*
 		if (param.multiclassMode != MultiClassModel.MulticlassMode.OneVsAllOnly)
@@ -217,108 +237,77 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			}
 */
 
-		Map<L, Set<P>> examplesByLabel = problem.getExamplesByLabel();
+		final Map<L, Set<P>> examplesByLabel = problem.getExamplesByLabel();
 
 		if (param.oneVsAllMode != MultiClassModel.OneVsAllMode.None)
 			{
-			Map<L, Future<BinaryModel<L, P>>> futureMap = new HashMap<L, Future<BinaryModel<L, P>>>();
-
 			// create and train one vs all classifiers.
 
 			// first queue up all the training tasks and submit them to the thread pool
 
 			logger.info("Training one-vs-all classifiers for " + numLabels + " labels");
-			int c = 0;
-			LabelInverter<L> labelInverter = problem.getLabelInverter();
-			for (final L label : problem.getLabels())
+
+			final LabelInverter<L> labelInverter = problem.getLabelInverter();
+
+			Iterator<Runnable> oneVsAllTaskIterator = new MappingIterator<L, Runnable>(problem.getLabels())
+			{
+			public Runnable function(final L label)
 				{
-				final L notLabel = labelInverter.invert(label);
-
-				final Set<P> labelExamples = examplesByLabel.get(label);
-
-				Collection<Map.Entry<P, L>> entries = problem.getExamples().entrySet();
-				if (param.falseClassSVlimit != Integer.MAX_VALUE)
-					{
-					// guarantee entries in random order if limiting the number of false examples
-					List<Map.Entry<P, L>> entryList = new ArrayList<Map.Entry<P, L>>(entries);
-					Collections.shuffle(entryList);
-					entries = entryList.subList(0, param.falseClassSVlimit + labelExamples.size());
-					}
-
-				final Set<P> notlabelExamples =
-						new SubtractionMap<P, L>(entries, labelExamples, param.falseClassSVlimit).keySet();
-
-				final BinaryClassificationProblem<L, P> subProblem =
-						new BooleanClassificationProblemImpl<L, P>(problem.getLabelClass(), label, labelExamples,
-						                                           notLabel, notlabelExamples, problem.getExampleIds());
-				// Unbalanced data: see prepareWeights
-				// since these will be extremely unbalanced, this should nearly guarantee that no positive examples are misclassified.
-
-				Future<BinaryModel<L, P>> fut = execService.submit(binarySvm.trainCallable(subProblem, param));
-
-				futureMap.put(label, fut);
-				}
-
-			execService.shutdown();
-			// then collect the results every 30 seconds, reporting progress
-
-			while (!futureMap.isEmpty())
+				return new Runnable()
 				{
-				try
+				public void run()
 					{
-					execService.awaitTermination(30, TimeUnit.SECONDS);
-					}
-				catch (InterruptedException e)
-					{
-					// no problem, just cycle
-					}
+					final L notLabel = labelInverter.invert(label);
 
-				for (Iterator<Map.Entry<L, Future<BinaryModel<L, P>>>> iter = futureMap.entrySet().iterator();
-				     iter.hasNext();)
-					{
-					Map.Entry<L, Future<BinaryModel<L, P>>> entry = iter.next();
-					final Future<BinaryModel<L, P>> fut = entry.getValue();
-					if (fut.isDone())
+					final Set<P> labelExamples = examplesByLabel.get(label);
+
+					Collection<Map.Entry<P, L>> entries = problem.getExamples().entrySet();
+					if (param.falseClassSVlimit != Integer.MAX_VALUE)
 						{
-						try
-							{
-							c++;
-							iter.remove();
-							model.putOneVsAllModel(entry.getKey(), fut.get());
-							}
-						catch (InterruptedException e)
-							{
-							logger.error("Error", e);
-							}
-						catch (ExecutionException e)
-							{
-							logger.error("Error", e);
-							//logger.error("Error",e.getCause());
-							}
+						// guarantee entries in random order if limiting the number of false examples
+						List<Map.Entry<P, L>> entryList = new ArrayList<Map.Entry<P, L>>(entries);
+						Collections.shuffle(entryList);
+						entries = entryList.subList(0, param.falseClassSVlimit + labelExamples.size());
 						}
+
+					final Set<P> notlabelExamples =
+							new SubtractionMap<P, L>(entries, labelExamples, param.falseClassSVlimit).keySet();
+
+					final BinaryClassificationProblem<L, P> subProblem =
+							new BooleanClassificationProblemImpl<L, P>(problem.getLabelClass(), label, labelExamples,
+							                                           notLabel, notlabelExamples,
+							                                           problem.getExampleIds());
+					// Unbalanced data: see prepareWeights
+					// since these will be extremely unbalanced, this should nearly guarantee that no positive examples are misclassified.
+
+					//Future<BinaryModel<L, P>> fut = execService.submit(binarySvm.trainCallable(subProblem, param));
+
+					BinaryModel<L, P> result = binarySvm.train(subProblem, param, execService);
+					model.putOneVsAllModel(label, result);
 					}
-
-				logger.info("Trained " + c + " one-vs-all models");
+				};
 				}
+			};
+
+			execService.submitAndWaitForAll(oneVsAllTaskIterator); //,"Trained %d one-vs-all models", 30);
 			}
-
-
-		// ** apparently it takes a while for the pool to terminate... but we don't care since we already got our results
-		//assert execService.isTerminated();
-
-
-		execService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 
 		if (param.allVsAllMode != MultiClassModel.AllVsAllMode.None)
 			{
 			final int numClassifiers = (numLabels * (numLabels - 1)) / 2;
 
-			Map<LabelPair<L>, Future<BinaryModel<L, P>>> futureMap2d =
-					new HashMap<LabelPair<L>, Future<BinaryModel<L, P>>>(numClassifiers);
+
+			// Iterator version would be a hassle here, never mind
+			//Iterator<Runnable> allVsAllTaskIterator = new MappingIterator<Pair<L>, Runnable>(problem.getLabelPairs()){};
+
+
+			Set<Runnable> allVsAllTasks = new HashSet<Runnable>(numClassifiers);
+
 			// create and train all vs all classifiers
 
 			// first queue up all the training tasks and submit them to the thread pool
+
 
 			logger.info("Training " + numClassifiers + " one-vs-one classifiers for " + numLabels + " labels");
 			int c = 0;
@@ -328,75 +317,28 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 					{
 					if (label1.compareTo(label2) < 0)// avoid redundant pairs
 						{
-						final Set<P> label1Examples = examplesByLabel.get(label1);
-						final Set<P> label2Examples = examplesByLabel.get(label2);
-
-						final BinaryClassificationProblem<L, P> subProblem =
-								new BooleanClassificationProblemImpl<L, P>(problem.getLabelClass(), label1,
-								                                           label1Examples, label2, label2Examples,
-								                                           problem.getExampleIds());
-
-
-						Future<BinaryModel<L, P>> fut = execService.submit(binarySvm.trainCallable(subProblem, param));
-
-
-						futureMap2d.put(new LabelPair(label1, label2), fut);
-
-						c++;
-						if (c % 1000 == 0)
-							{
-							logger.debug("Enqueued " + c + " one-vs-one training tasks");
-							}
-						}
-					}
-				}
-			logger.info("Enqueued " + c + " one-vs-one training tasks");
-			c = 0;
-			// then collect the results every 30 seconds, reporting progress
-			execService.shutdown();
-			while (!futureMap2d.isEmpty())
-				{
-				try
-					{
-					execService.awaitTermination(30, TimeUnit.SECONDS);
-					}
-				catch (InterruptedException e)
-					{
-					// no problem, just cycle
-					}
-
-				for (Iterator<Map.Entry<LabelPair<L>, Future<BinaryModel<L, P>>>> iter =
-						futureMap2d.entrySet().iterator(); iter.hasNext();)
-					{
-					Map.Entry<LabelPair<L>, Future<BinaryModel<L, P>>> entry = iter.next();
-					final Future<BinaryModel<L, P>> fut = entry.getValue();
-
-					if (fut.isDone())
+						allVsAllTasks.add(new Runnable()
 						{
-						try
+						public void run()
 							{
-							c++;
-							iter.remove();
-							LabelPair<L> labels = entry.getKey();
-							model.putOneVsOneModel(labels.getOne(), labels.getTwo(), fut.get());
+							final Set<P> label1Examples = examplesByLabel.get(label1);
+							final Set<P> label2Examples = examplesByLabel.get(label2);
+
+							final BinaryClassificationProblem<L, P> subProblem =
+									new BooleanClassificationProblemImpl<L, P>(problem.getLabelClass(), label1,
+									                                           label1Examples, label2, label2Examples,
+									                                           problem.getExampleIds());
+
+							BinaryModel<L, P> result = binarySvm.train(subProblem, param, execService);
+							model.putOneVsOneModel(label1, label2, result);
 							}
-						catch (InterruptedException e)
-							{
-							logger.error("Error", e);
-							}
-						catch (ExecutionException e)
-							{
-							logger.error("Error", e);
-							}
+						});
 						}
 					}
-
-				logger.info("Trained " + c + " one-vs-one models");
 				}
-			}
 
-		// ** apparently it takes a while for the pool to terminate... but we don't care since we already got our results
-		//assert execService.isTerminated();
+			execService.submitAndWaitForAll(allVsAllTasks); //,"Trained %d one-vs-one models", 30);
+			}
 
 		model.prepareModelSvMaps();
 		return model;
