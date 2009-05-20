@@ -276,7 +276,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 
 		// if all classes were vetoed, return
 		if ((oneVsAllMode == OneVsAllMode.Veto || oneVsAllMode == OneVsAllMode.VetoAndBreakTies
-		     || oneVsAllMode == OneVsAllMode.Best) && oneVsAllProbabilities.isEmpty())
+				|| oneVsAllMode == OneVsAllMode.Best) && oneVsAllProbabilities.isEmpty())
 			{
 			return new VotingResult<L>();
 			}
@@ -309,7 +309,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 			// vote using all models
 
 			logger.debug("Sample voting using all pairs of " + numLabels + " labels ("
-			             + ((numLabels * (numLabels - 1)) / 2. - numLabels) + " models)");
+					+ ((numLabels * (numLabels - 1)) / 2. - numLabels) + " models)");
 
 			// How AllVsAll with Veto differs from FilteredVsAll, etc.:
 			// In the AllVsAll with Veto case, we may compute votes between two "inactive" (vetoed) classes;
@@ -338,12 +338,12 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 			if (requiredActive == 1)
 				{
 				logger.debug("Sample voting with all " + numLabels + " vs. " + numActive + " active labels ("
-				             + ((numLabels * (numActive - 1)) / 2. - numActive) + " models)");
+						+ ((numLabels * (numActive - 1)) / 2. - numActive) + " models)");
 				}
 			else
 				{
 				logger.debug("Sample voting using pairs of only " + numActive + " active labels ("
-				             + ((numActive * (numActive - 1)) / 2. - numActive) + " models)");
+						+ ((numActive * (numActive - 1)) / 2. - numActive) + " models)");
 				}
 
 			// assert requiredActive == 2 ? voteMode = VoteMode.FilteredVsFiltered
@@ -415,7 +415,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 			}
 
 		if ((oneVsAllMode == OneVsAllMode.VetoAndBreakTies || oneVsAllMode == OneVsAllMode.Veto)
-		    && bestOneVsAllProbability < oneVsAllThreshold)
+				&& bestOneVsAllProbability < oneVsAllThreshold)
 			{
 			return new VotingResult<L>();
 			}
@@ -455,7 +455,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 
 			// if probability info isn't available, just substitute 1 and 0.
 			final float probability = prob ? binaryModel.getTrueProbability(kvalues, svIndexMaps.get(binaryModel)) :
-			                          (binaryModel.predictValue(kvalues, svIndexMaps.get(binaryModel)) > 0. ? 1f : 0f);
+					(binaryModel.predictValue(kvalues, svIndexMaps.get(binaryModel)) > 0. ? 1f : 0f);
 			if (probability >= oneVsAllThreshold)
 				{
 				oneVsAllProbabilities.put(binaryModel.getTrueLabel(), probability);
@@ -551,7 +551,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		{
 		// just check the first model and assume the rest are the same
 		return oneVsOneModels.valueIterator().next().crossValidationResults
-		       != null;//		return probA != null && probB != null;
+				!= null;//		return probA != null && probB != null;
 		}
 
 	// Method 2 from the multiclass_prob paper by Wu, Lin, and Weng
@@ -746,7 +746,34 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 			{
 			return crossValidationResults.getInfo();
 			}
-		return "";
+		else
+			{
+			StringBuffer result = new StringBuffer();
+			if (oneVsAllMode != OneVsAllMode.None)
+				{
+				Multiset<Float> cs = new HashMultiset<Float>();
+				Multiset<KernelFunction> kernels = new HashMultiset<KernelFunction>();
+				for (BinaryModel<L, P> binaryModel : oneVsAllModels.values())
+					{
+					cs.add(binaryModel.param.C);
+					kernels.add(binaryModel.param.kernel);
+					}
+				result.append("OneVsAll:C=" + cs + "; gamma=" + kernels + "   ");
+				}
+			if (allVsAllMode != AllVsAllMode.None)
+				{
+				Multiset<Float> cs = new HashMultiset<Float>();
+				Multiset<KernelFunction> kernels = new HashMultiset<KernelFunction>();
+				for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
+					{
+					cs.add(binaryModel.param.C);
+					kernels.add(binaryModel.param.kernel);
+					}
+				result.append("AllVsAll:C=" + cs + "; gamma=" + kernels + "   ");
+				}
+			return result.toString();
+			}
+		//return "";
 		}
 
 // -------------------------- ENUMERATIONS --------------------------

@@ -5,7 +5,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Multiset;
 import edu.berkeley.compbio.jlibsvm.CrossValidationResults;
-import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryCrossValidationResults;
 import org.apache.log4j.Logger;
 
@@ -24,8 +24,11 @@ public class MultiClassCrossValidationResults<L extends Comparable, P> extends C
 
 	private int numExamples;
 	private final Map<L, Multiset<L>> confusionMatrix;
-	public ImmutableSvmParameterPoint<L, P> param;
-			// if we did a grid search, keep track of which parameter set was used for these results
+
+	/**
+	 * if we did a grid search, keep track of which parameter set was used for these results
+	 */
+	public ImmutableSvmParameter<L, P> param;
 
 
 	//private final Multiset<L> unknowns = new HashMultiset<L>();
