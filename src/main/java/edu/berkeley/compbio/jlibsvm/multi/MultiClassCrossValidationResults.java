@@ -169,7 +169,7 @@ public class MultiClassCrossValidationResults<L extends Comparable, P> extends C
 		return totalWithPredictedLabel;
 		}
 
-	float classNormalizedSpecificity()
+	public float classNormalizedSpecificity()
 		{
 		float sum = 0;
 		for (L label : confusionMatrix.keySet())
@@ -179,7 +179,7 @@ public class MultiClassCrossValidationResults<L extends Comparable, P> extends C
 		return sum / (float) confusionMatrix.size();
 		}
 
-	float classNormalizedSensitivity()
+	public float classNormalizedSensitivity()
 		{
 		float sum = 0;
 		for (L label : confusionMatrix.keySet())
@@ -189,7 +189,7 @@ public class MultiClassCrossValidationResults<L extends Comparable, P> extends C
 		return sum / (float) confusionMatrix.size();
 		}
 
-	float classNormalizedPrecision()
+	public float classNormalizedPrecision()
 		{
 		float sum = 0;
 		for (L label : confusionMatrix.keySet())
