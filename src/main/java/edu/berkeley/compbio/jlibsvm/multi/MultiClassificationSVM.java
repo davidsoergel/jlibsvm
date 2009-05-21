@@ -270,7 +270,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 						List<Map.Entry<P, L>> entryList = new ArrayList<Map.Entry<P, L>>(entries);
 						Collections.shuffle(entryList);
 						int toIndex = param.falseClassSVlimit + labelExamples.size();
-						toIndex = Math.max(toIndex, entryList.size());
+						toIndex = Math.min(toIndex, entryList.size());
 						entries = entryList.subList(0, toIndex);
 						}
 
