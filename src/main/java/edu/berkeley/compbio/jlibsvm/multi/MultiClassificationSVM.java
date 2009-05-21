@@ -269,7 +269,9 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 						// guarantee entries in random order if limiting the number of false examples
 						List<Map.Entry<P, L>> entryList = new ArrayList<Map.Entry<P, L>>(entries);
 						Collections.shuffle(entryList);
-						entries = entryList.subList(0, param.falseClassSVlimit + labelExamples.size());
+						int toIndex = param.falseClassSVlimit + labelExamples.size();
+						toIndex = Math.max(toIndex, entryList.size());
+						entries = entryList.subList(0, toIndex);
 						}
 
 					final Set<P> notlabelExamples =
