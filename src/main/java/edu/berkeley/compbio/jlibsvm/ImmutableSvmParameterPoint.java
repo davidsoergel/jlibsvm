@@ -18,6 +18,7 @@ public class ImmutableSvmParameterPoint<L extends Comparable, P> extends Immutab
 		kernel = copyFrom.kernel;
 		}
 
+
 	public static <L extends Comparable, P> Builder<L, P> builder()
 		{
 		return new Builder<L, P>();
@@ -36,6 +37,13 @@ public class ImmutableSvmParameterPoint<L extends Comparable, P> extends Immutab
 		public Builder(ImmutableSvmParameter.Builder copyFrom)
 			{
 			super(copyFrom);
+			}
+
+		public Builder(ImmutableSvmParameterPoint copyFrom)
+			{
+			super(copyFrom);
+			C = copyFrom.C;
+			kernel = copyFrom.kernel;
 			}
 
 		public Builder()
@@ -59,6 +67,20 @@ public class ImmutableSvmParameterPoint<L extends Comparable, P> extends Immutab
 		else
 			{
 			return "C=" + C + ", kernel=" + kernel;
+			}
+		}
+
+	public ImmutableSvmParameterPoint<L, P> noProbabilityCopy()
+		{
+		if (!probability)
+			{
+			return this;
+			}
+		else
+			{
+			ImmutableSvmParameterPoint.Builder<L, P> builder = new Builder(this);
+			builder.probability = false;
+			return builder.build();
 			}
 		}
 	}

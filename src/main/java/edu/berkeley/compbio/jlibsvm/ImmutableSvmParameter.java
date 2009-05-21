@@ -114,6 +114,7 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 		//	crossValidation = copyFrom.crossValidation;
 		}
 
+
 // -------------------------- OTHER METHODS --------------------------
 
 	public int getCacheRows()
@@ -144,6 +145,7 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 		{
 		return weights.isEmpty();
 		}
+
 
 /*	public Collection<ImmutableSvmParameter<L, P>> getGridParams()
 		{
@@ -204,6 +206,30 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 
 		public Builder()
 			{
+			}
+
+		protected Builder(ImmutableSvmParameter<L, P> copyFrom)
+			{
+			cache_size = copyFrom.cache_size;
+			eps = copyFrom.eps;
+			weights = new LinkedHashMap<L, Float>(copyFrom.weights); //.clone();
+			nu = copyFrom.nu;
+			p = copyFrom.p;
+			shrinking = copyFrom.shrinking;
+			probability = copyFrom.probability;
+			oneVsAllThreshold = copyFrom.oneVsAllThreshold;
+			oneVsAllMode = copyFrom.oneVsAllMode;
+			allVsAllMode = copyFrom.allVsAllMode;
+			minVoteProportion = copyFrom.minVoteProportion;
+			falseClassSVlimit = copyFrom.falseClassSVlimit;
+			scaleBinaryMachinesIndependently = copyFrom.scaleBinaryMachinesIndependently;
+			normalizeL2 = copyFrom.normalizeL2;
+			//scalingExamples = copyFrom.scalingExamples;
+			redistributeUnbalancedC = copyFrom.redistributeUnbalancedC;
+			gridsearchBinaryMachinesIndependently = copyFrom.gridsearchBinaryMachinesIndependently;
+			crossValidationFolds = copyFrom.crossValidationFolds;
+			//	crossValidation = copyFrom.crossValidation;
+			scalingModelLearner = copyFrom.scalingModelLearner;
 			}
 
 		protected Builder(Builder<L, P> copyFrom)

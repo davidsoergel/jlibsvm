@@ -39,7 +39,9 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 			}
 		else if (param.probability)  // this may already be a fold, but we have to sub-fold it to get probabilities
 			{
-			result = trainScaledWithCV(problem, (ImmutableSvmParameterPoint<L, P>) param, execService);
+			ImmutableSvmParameterPoint<L, P> noProbParam =
+					((ImmutableSvmParameterPoint<L, P>) param).noProbabilityCopy();
+			result = trainScaledWithCV(problem, noProbParam, execService);
 			}
 		else
 			{

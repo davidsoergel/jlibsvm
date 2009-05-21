@@ -38,6 +38,24 @@ public class ImmutableSvmParameterGrid<L extends Comparable, P> extends Immutabl
 		public Collection<KernelFunction<P>> kernelSet;
 		private Set<ImmutableSvmParameterPoint<L, P>> gridParams;
 
+		/*	public Builder(ImmutableSvmParameter.Builder copyFrom)
+			  {
+			  super(copyFrom);
+			  }
+
+		  public Builder(ImmutableSvmParameterGrid<L,P> copyFrom)
+			  {
+			  super(copyFrom);
+			  //Cset = copyFrom.Cset;
+			  //kernelSet = copyFrom.kernelSet;
+			  gridParams = copyFrom.gridParams;
+			  }
+
+		  public Builder()
+			  {
+			  super();
+			  }
+  */
 		public ImmutableSvmParameter<L, P> build()
 			{
 			ImmutableSvmParameterPoint.Builder<L, P> builder = ImmutableSvmParameterPoint.builder(this);

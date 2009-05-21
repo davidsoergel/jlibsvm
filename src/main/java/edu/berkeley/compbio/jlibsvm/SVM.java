@@ -26,12 +26,14 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 	public Map<P, Float> continuousCrossValidation(SvmProblem<L, P, R> problem, final ImmutableSvmParameter<L, P> param,
 	                                               final TreeExecutorService execService)
 		{
+
 		final Map<P, Float> predictions = new ConcurrentHashMap<P, Float>();
 
 		if (param.crossValidationFolds >= problem.getNumExamples())
 			{
 			throw new SvmException("Can't have more cross-validation folds than there are examples");
 			}
+
 
 		Iterator<R> foldIterator = problem.makeFolds(param.crossValidationFolds);
 
