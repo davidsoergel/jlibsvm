@@ -194,7 +194,16 @@ public class MultiClassCrossValidationResults<L extends Comparable, P> extends C
 		float sum = 0;
 		for (L label : confusionMatrix.keySet())
 			{
-			sum += precision(label);
+			float v = precision(label);
+			if (!Double.isNaN(v))
+				{
+				sum += v;
+				}
+			else
+				{
+				logger.warn("Label " + label + " did not contribute to precision; " + getTotalPredicted(label)
+						+ " predictions");
+				}
 			}
 		return sum / (float) confusionMatrix.size();
 		}
