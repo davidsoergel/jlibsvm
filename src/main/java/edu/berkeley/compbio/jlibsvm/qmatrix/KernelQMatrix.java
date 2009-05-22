@@ -417,7 +417,11 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 			diagonal[rankA] = diagonal[rankB];
 			diagonal[rankB] = tmp;
 
-			if (rankA < maxCachedRank && rankB < maxCachedRank)
+			if (rankA >= maxCachedRank && rankB >= maxCachedRank)
+				{
+				// do nothing
+				}
+			else if (rankA < maxCachedRank && rankB < maxCachedRank)
 				{
 				float[] dtmp = data[rankA];
 				data[rankA] = data[rankB];
@@ -431,13 +435,13 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 					}
 				}
 			else if (rankA < maxCachedRank)  // && rankB > maxCachedRank
-				{
-				Arrays.fill(data[rankA], NOTCACHED);
-				}
-			else //if (rankB < maxCachedRank && rankA > maxCachedRank
-				{
-				Arrays.fill(data[rankB], NOTCACHED);
-				}
+					{
+					Arrays.fill(data[rankA], NOTCACHED);
+					}
+				else //if (rankB < maxCachedRank && rankA > maxCachedRank
+					{
+					Arrays.fill(data[rankB], NOTCACHED);
+					}
 			}
 		}
 	}
