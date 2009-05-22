@@ -267,33 +267,47 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 			// first fill the active portion.  Here the requested order must match the rank order anyway
 			get(a, active, buf);
 
-			float[] row = data[a.rank];
-
 			// then fill the inactive portion one element at a time in the requested order, not the rank order
-			int i = active.length;
-			for (SolutionVector<P> b : inactive)
+
+			if (a.rank >= maxCachedRank)
 				{
-				if (b.rank >= maxCachedRank)
+				int i = active.length;
+				for (SolutionVector<P> b : inactive)
 					{
 					buf[i] = computeQ(a, b);
 					widemisses++;
+					i++;
 					}
-				else
+				}
+			else
+				{
+				float[] row = data[a.rank];
+
+				int i = active.length;
+				for (SolutionVector<P> b : inactive)
 					{
-					if (row[b.rank] == NOTCACHED)
+					if (b.rank >= maxCachedRank)
 						{
-						row[b.rank] = computeQ(a, b);
-						data[b.rank][a.rank] = row[b.rank];
-						misses++;
+						buf[i] = computeQ(a, b);
+						widemisses++;
 						}
 					else
 						{
-						//assert result == computeQ(a, b);
-						hits++;
+						if (row[b.rank] == NOTCACHED)
+							{
+							row[b.rank] = computeQ(a, b);
+							data[b.rank][a.rank] = row[b.rank];
+							misses++;
+							}
+						else
+							{
+							//assert result == computeQ(a, b);
+							hits++;
+							}
+						buf[i] = row[b.rank];
 						}
-					buf[i] = row[b.rank];
+					i++;
 					}
-				i++;
 				}
 			}
 
