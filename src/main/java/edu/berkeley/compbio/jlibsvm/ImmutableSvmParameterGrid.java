@@ -4,7 +4,6 @@ import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * For now this supports sweeping over C and different kernels (which may have e.g. different gamma).
@@ -36,29 +35,29 @@ public class ImmutableSvmParameterGrid<L extends Comparable, P> extends Immutabl
 		{
 		public Collection<Float> Cset;
 		public Collection<KernelFunction<P>> kernelSet;
-		private Set<ImmutableSvmParameterPoint<L, P>> gridParams;
+		private Collection<ImmutableSvmParameterPoint<L, P>> gridParams;
 
-		/*	public Builder(ImmutableSvmParameter.Builder copyFrom)
-			  {
-			  super(copyFrom);
-			  }
+		public Builder(ImmutableSvmParameter.Builder copyFrom)
+			{
+			super(copyFrom);
+			}
 
-		  public Builder(ImmutableSvmParameterGrid<L,P> copyFrom)
-			  {
-			  super(copyFrom);
-			  //Cset = copyFrom.Cset;
-			  //kernelSet = copyFrom.kernelSet;
-			  gridParams = copyFrom.gridParams;
-			  }
+		public Builder(ImmutableSvmParameterGrid<L, P> copyFrom)
+			{
+			super(copyFrom);
+			//Cset = copyFrom.Cset;
+			//kernelSet = copyFrom.kernelSet;
+			gridParams = copyFrom.gridParams;
+			}
 
-		  public Builder()
-			  {
-			  super();
-			  }
-  */
+		public Builder()
+			{
+			super();
+			}
+
 		public ImmutableSvmParameter<L, P> build()
 			{
-			ImmutableSvmParameterPoint.Builder<L, P> builder = ImmutableSvmParameterPoint.builder(this);
+			ImmutableSvmParameterPoint.Builder<L, P> builder = ImmutableSvmParameterPoint.asBuilder(this);
 
 			if (Cset.size() == 1 && kernelSet.size() == 1)
 				{
@@ -86,5 +85,10 @@ public class ImmutableSvmParameterGrid<L extends Comparable, P> extends Immutabl
 
 			return new ImmutableSvmParameterGrid<L, P>(this);
 			}
+		}
+
+	public Builder<L, P> asBuilder()
+		{
+		return new Builder<L, P>(this);
 		}
 	}

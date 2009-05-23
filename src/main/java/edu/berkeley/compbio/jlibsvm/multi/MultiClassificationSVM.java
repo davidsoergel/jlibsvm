@@ -111,7 +111,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 		Collection<ImmutableSvmParameterPoint<L, P>> parameterPoints = param.getGridParams();
 
-		int numGridPoints = parameterPoints.size();
+		//int numGridPoints = parameterPoints.size();
 
 		// no need for the iterator version here; the set of params doesn't require too much memory
 
@@ -245,6 +245,11 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			{
 			// create and train one vs all classifiers.
 
+
+			// oneVsAll models always need a probability sigmoid
+
+			final ImmutableSvmParameter<L, P> probParam = param.withProbabilityCopy();
+
 			// first queue up all the training tasks and submit them to the thread pool
 
 			logger.info("Training one-vs-all classifiers for " + numLabels + " labels");
@@ -286,7 +291,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 
 					//Future<BinaryModel<L, P>> fut = execService.submit(binarySvm.trainCallable(subProblem, param));
 
-					BinaryModel<L, P> result = binarySvm.train(subProblem, param, execService);
+					BinaryModel<L, P> result = binarySvm.train(subProblem, probParam, execService);
 					model.putOneVsAllModel(label, result);
 					}
 				};

@@ -188,7 +188,21 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 
 	public float getTrueProbability(float[] kvalues, int[] svIndexMap)
 		{
-		return crossValidationResults.sigmoid.predict(predictValue(kvalues, svIndexMap));  // NPE if no sigmoid
+		float pv = predictValue(kvalues, svIndexMap);
+		if (crossValidationResults == null)
+			{
+			logger.error("Can't compute probability in binary model without crossvalidationresults");
+			return pv > 0. ? 1f : 0f;
+			}
+		else if (crossValidationResults.sigmoid == null)
+			{
+			logger.error("Can't compute probability in binary model without sigmoid");
+			return pv > 0. ? 1f : 0f;
+			}
+		else
+			{
+			return crossValidationResults.sigmoid.predict(pv);  // NPE if no sigmoid
+			}
 		}
 
 	public Float predictValue(float[] kvalues, int[] svIndexMap)

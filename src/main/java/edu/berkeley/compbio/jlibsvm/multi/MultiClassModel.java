@@ -447,15 +447,15 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		{
 		Map<L, Float> oneVsAllProbabilities = new HashMap<L, Float>();
 
-		boolean prob = supportsOneVsAllProbability();
+		//	boolean prob = supportsOneVsAllProbability();
 
 		for (BinaryModel<L, P> binaryModel : oneVsAllModels.values())
 			{
 			float[] kvalues = kValuesPerKernel.get(binaryModel.param.kernel);
 
 			// if probability info isn't available, just substitute 1 and 0.
-			final float probability = prob ? binaryModel.getTrueProbability(kvalues, svIndexMaps.get(binaryModel)) :
-					(binaryModel.predictValue(kvalues, svIndexMaps.get(binaryModel)) > 0. ? 1f : 0f);
+			final float probability = binaryModel.getTrueProbability(kvalues, svIndexMaps.get(binaryModel));
+
 			if (probability >= oneVsAllThreshold)
 				{
 				oneVsAllProbabilities.put(binaryModel.getTrueLabel(), probability);
@@ -464,7 +464,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		return oneVsAllProbabilities;
 		}
 
-	public boolean supportsOneVsAllProbability()
+/*	public boolean supportsOneVsAllProbability()
 		{
 		if (oneVsAllModels.isEmpty())
 			{
@@ -474,7 +474,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		// just check the first model and assume the rest are the same
 		return oneVsAllModels.values().iterator().next().crossValidationResults != null;  //.getSigmoid()
 		}
-
+*/
 	/*
 	public boolean supportsOneClassProbability()
 		{
@@ -780,6 +780,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 
 	public enum OneVsAllMode
 		{
+		// note all of these modes except None require probability=true
 			None, Best, Veto, BreakTies, VetoAndBreakTies
 		}
 

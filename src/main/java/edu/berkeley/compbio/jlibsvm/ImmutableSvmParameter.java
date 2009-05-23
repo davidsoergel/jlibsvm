@@ -281,4 +281,35 @@ public abstract class ImmutableSvmParameter<L extends Comparable, P>
 
 		public abstract ImmutableSvmParameter<L, P> build();
 		}
+
+
+	public ImmutableSvmParameter<L, P> noProbabilityCopy()
+		{
+		if (!probability)
+			{
+			return this;
+			}
+		else
+			{
+			ImmutableSvmParameter.Builder<L, P> builder = asBuilder(); //new Builder(this);
+			builder.probability = false;
+			return builder.build();
+			}
+		}
+
+	public ImmutableSvmParameter<L, P> withProbabilityCopy()
+		{
+		if (probability)
+			{
+			return this;
+			}
+		else
+			{
+			ImmutableSvmParameter.Builder<L, P> builder = asBuilder(); //new Builder(this);
+			builder.probability = true;
+			return builder.build();
+			}
+		}
+
+	public abstract Builder<L, P> asBuilder();
 	}

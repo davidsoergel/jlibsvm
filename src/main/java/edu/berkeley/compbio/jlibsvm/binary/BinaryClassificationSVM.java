@@ -5,6 +5,7 @@ import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.SVM;
+import edu.berkeley.compbio.jlibsvm.SvmException;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,9 +40,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 			}
 		else if (param.probability)  // this may already be a fold, but we have to sub-fold it to get probabilities
 			{
-			ImmutableSvmParameterPoint<L, P> noProbParam =
-					((ImmutableSvmParameterPoint<L, P>) param).noProbabilityCopy();
-			result = trainScaledWithCV(problem, noProbParam, execService);
+			result = trainScaledWithCV(problem, (ImmutableSvmParameterPoint<L, P>) param, execService);
 			}
 		else
 			{
@@ -125,11 +124,20 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		{
 		// if scaling each binary machine is enabled, then each fold will be independently scaled also; so we don't need to scale the whole dataset prior to CV
 
-		BinaryCrossValidationResults<L, P> cv = performCrossValidation(problem, param, execService);
+		BinaryCrossValidationResults<L, P> cv = null;
+		try
+			{
+			cv = performCrossValidation(problem, param, execService);
+			}
+		catch (SvmException e)
+			{
+			//ignore, probably there weren't enough points to make folds
+			logger.debug("Could not perform cross-validation", e);
+			}
 
 		// finally train once on all the data (including rescaling)
 		BinaryModel<L, P> result = trainScaled(problem, param);
-		result.crossValidationResults = cv;
+		result.crossValidationResults = cv;  // careful later: this might be null
 
 		result.printSolutionInfo(problem);
 		return result;
@@ -157,8 +165,12 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 	                                                                 @NotNull ImmutableSvmParameter<L, P> param,
 	                                                                 @NotNull final TreeExecutorService execService)
 		{
-		final Map<P, Float> decisionValues = continuousCrossValidation(problem, param, execService);
+		//there is no point in computing probabilities on these submodels (and that produces infinite recursion)
+		ImmutableSvmParameterPoint<L, P> noProbParam = (ImmutableSvmParameterPoint<L, P>) param.noProbabilityCopy();
 
+		final Map<P, Float> decisionValues = continuousCrossValidation(problem, noProbParam, execService);
+
+		// but the CV may be used to compute probabilities at this level, if requested
 		BinaryCrossValidationResults<L, P> cv =
 				new BinaryCrossValidationResults<L, P>(problem, decisionValues, param.probability);
 		return cv;

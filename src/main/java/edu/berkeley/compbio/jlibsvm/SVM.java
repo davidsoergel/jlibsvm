@@ -31,6 +31,7 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 
 		if (param.crossValidationFolds >= problem.getNumExamples())
 			{
+			// this can happen when the points chosen from a multiclass CV don't include enough points from a given pair of classes
 			throw new SvmException("Can't have more cross-validation folds than there are examples");
 			}
 
@@ -120,6 +121,10 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 				{
 				// this will throw ClassCastException if you try cross-validation on a continuous-only model (e.g. RegressionModel)
 				final DiscreteModel<L, P> model = (DiscreteModel<L, P>) train(f, param, execService); //, qMatrix);
+
+				// note the param has not changed here, so if the method includes oneVsAll models with a
+				// probability threshold, those will be independently computed for each fold and so play
+				// into the predictLabel
 
 				for (final P p : f.getHeldOutPoints())
 					{
