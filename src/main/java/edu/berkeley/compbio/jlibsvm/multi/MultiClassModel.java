@@ -12,6 +12,7 @@ import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
 import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
+import edu.berkeley.compbio.ml.MultiClassCrossValidationResults;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -57,9 +58,9 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 	private final HashMap<L, BinaryModel<L, P>> oneVsAllModels;
 
 	private P[] allSVs;
-	MultiClassCrossValidationResults<L, P> crossValidationResults;
+	SvmMultiClassCrossValidationResults<L, P> crossValidationResults;
 
-	public MultiClassCrossValidationResults getCrossValidationResults()
+	public MultiClassCrossValidationResults<L> getCrossValidationResults()
 		{
 		return crossValidationResults;
 		}
@@ -276,7 +277,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 
 		// if all classes were vetoed, return
 		if ((oneVsAllMode == OneVsAllMode.Veto || oneVsAllMode == OneVsAllMode.VetoAndBreakTies
-				|| oneVsAllMode == OneVsAllMode.Best) && oneVsAllProbabilities.isEmpty())
+		     || oneVsAllMode == OneVsAllMode.Best) && oneVsAllProbabilities.isEmpty())
 			{
 			return new VotingResult<L>();
 			}
@@ -309,7 +310,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 			// vote using all models
 
 			logger.debug("Sample voting using all pairs of " + numLabels + " labels ("
-					+ ((numLabels * (numLabels - 1)) / 2. - numLabels) + " models)");
+			             + ((numLabels * (numLabels - 1)) / 2. - numLabels) + " models)");
 
 			// How AllVsAll with Veto differs from FilteredVsAll, etc.:
 			// In the AllVsAll with Veto case, we may compute votes between two "inactive" (vetoed) classes;
@@ -338,12 +339,12 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 			if (requiredActive == 1)
 				{
 				logger.debug("Sample voting with all " + numLabels + " vs. " + numActive + " active labels ("
-						+ ((numLabels * (numActive - 1)) / 2. - numActive) + " models)");
+				             + ((numLabels * (numActive - 1)) / 2. - numActive) + " models)");
 				}
 			else
 				{
 				logger.debug("Sample voting using pairs of only " + numActive + " active labels ("
-						+ ((numActive * (numActive - 1)) / 2. - numActive) + " models)");
+				             + ((numActive * (numActive - 1)) / 2. - numActive) + " models)");
 				}
 
 			// assert requiredActive == 2 ? voteMode = VoteMode.FilteredVsFiltered
@@ -415,7 +416,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 			}
 
 		if ((oneVsAllMode == OneVsAllMode.VetoAndBreakTies || oneVsAllMode == OneVsAllMode.Veto)
-				&& bestOneVsAllProbability < oneVsAllThreshold)
+		    && bestOneVsAllProbability < oneVsAllThreshold)
 			{
 			return new VotingResult<L>();
 			}
@@ -551,7 +552,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		{
 		// just check the first model and assume the rest are the same
 		return oneVsOneModels.valueIterator().next().crossValidationResults
-				!= null;//		return probA != null && probB != null;
+		       != null;//		return probA != null && probB != null;
 		}
 
 	// Method 2 from the multiclass_prob paper by Wu, Lin, and Weng

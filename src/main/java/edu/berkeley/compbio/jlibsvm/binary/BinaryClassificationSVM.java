@@ -76,7 +76,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 			public void run()
 				{
 				// note we must use the CV variant in order to know which parameter set is best
-				BinaryCrossValidationResults<L, P> crossValidationResults =
+				SvmBinaryCrossValidationResults<L, P> crossValidationResults =
 						performCrossValidation(problem, gridParam, execService);
 				gtresult.update(gridParam, crossValidationResults);
 				}
@@ -96,11 +96,11 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 	private class GridTrainingResult
 		{
 		ImmutableSvmParameterPoint<L, P> bestParam = null;
-		BinaryCrossValidationResults<L, P> bestCrossValidationResults = null;
+		SvmBinaryCrossValidationResults<L, P> bestCrossValidationResults = null;
 		float bestSensitivity = -1F;
 
 		synchronized void update(ImmutableSvmParameterPoint<L, P> gridParam,
-		                         BinaryCrossValidationResults<L, P> crossValidationResults)
+		                         SvmBinaryCrossValidationResults<L, P> crossValidationResults)
 			{
 			float sensitivity = crossValidationResults.classNormalizedSensitivity();
 			if (sensitivity > bestSensitivity)
@@ -124,7 +124,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		{
 		// if scaling each binary machine is enabled, then each fold will be independently scaled also; so we don't need to scale the whole dataset prior to CV
 
-		BinaryCrossValidationResults<L, P> cv = null;
+		SvmBinaryCrossValidationResults<L, P> cv = null;
 		try
 			{
 			cv = performCrossValidation(problem, param, execService);
@@ -161,9 +161,9 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		return new SigmoidProbabilityModel(cv.decisionValueArray, cv.labelArray);
 		}
 */
-	public BinaryCrossValidationResults<L, P> performCrossValidation(@NotNull BinaryClassificationProblem<L, P> problem,
-	                                                                 @NotNull ImmutableSvmParameter<L, P> param,
-	                                                                 @NotNull final TreeExecutorService execService)
+	public SvmBinaryCrossValidationResults<L, P> performCrossValidation(
+			@NotNull BinaryClassificationProblem<L, P> problem, @NotNull ImmutableSvmParameter<L, P> param,
+			@NotNull final TreeExecutorService execService)
 		{
 		//there is no point in computing probabilities on these submodels (and that produces infinite recursion)
 		ImmutableSvmParameterPoint<L, P> noProbParam = (ImmutableSvmParameterPoint<L, P>) param.noProbabilityCopy();
@@ -171,8 +171,8 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		final Map<P, Float> decisionValues = continuousCrossValidation(problem, noProbParam, execService);
 
 		// but the CV may be used to compute probabilities at this level, if requested
-		BinaryCrossValidationResults<L, P> cv =
-				new BinaryCrossValidationResults<L, P>(problem, decisionValues, param.probability);
+		SvmBinaryCrossValidationResults<L, P> cv =
+				new SvmBinaryCrossValidationResults<L, P>(problem, decisionValues, param.probability);
 		return cv;
 		}
 

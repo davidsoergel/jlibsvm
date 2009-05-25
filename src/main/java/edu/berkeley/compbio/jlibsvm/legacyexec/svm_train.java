@@ -2,7 +2,6 @@ package edu.berkeley.compbio.jlibsvm.legacyexec;
 
 import com.davidsoergel.dsutils.concurrent.DepthFirstThreadPoolExecutor;
 import com.davidsoergel.dsutils.concurrent.TreeExecutorService;
-import edu.berkeley.compbio.jlibsvm.CrossValidationResults;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
@@ -37,6 +36,7 @@ import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModelLearner;
 import edu.berkeley.compbio.jlibsvm.scaler.ScalingModelLearner;
 import edu.berkeley.compbio.jlibsvm.scaler.ZscoreScalingModelLearner;
 import edu.berkeley.compbio.jlibsvm.util.SparseVector;
+import edu.berkeley.compbio.ml.CrossValidationResults;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;

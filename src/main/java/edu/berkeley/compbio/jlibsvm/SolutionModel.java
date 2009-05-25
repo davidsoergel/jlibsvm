@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import edu.berkeley.compbio.ml.CrossValidationResults;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.BufferedReader;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.StringBufferInputStream;
 import java.util.Collection;
 import java.util.Properties;
+
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>

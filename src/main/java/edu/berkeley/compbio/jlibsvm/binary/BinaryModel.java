@@ -1,7 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
 import edu.berkeley.compbio.jlibsvm.ContinuousModel;
-import edu.berkeley.compbio.jlibsvm.CrossValidationResults;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.LabelParser;
@@ -9,6 +8,7 @@ import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
 import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
+import edu.berkeley.compbio.ml.CrossValidationResults;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,7 +48,7 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 	public ScalingModel<P> scalingModel = new NoopScalingModel<P>();
 
 	public float r;// for Solver_NU.  I wanted to factor this out as SolutionInfoNu, but that was too much hassle
-	public BinaryCrossValidationResults<L, P> crossValidationResults;
+	public SvmBinaryCrossValidationResults<L, P> crossValidationResults;
 
 	public CrossValidationResults getCrossValidationResults()
 		{

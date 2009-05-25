@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
-import edu.berkeley.compbio.jlibsvm.CrossValidationResults;
 import edu.berkeley.compbio.jlibsvm.SigmoidProbabilityModel;
+import edu.berkeley.compbio.ml.BinaryCrossValidationResults;
 import org.apache.log4j.Logger;
 
 import java.util.Map;
@@ -10,15 +10,13 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class BinaryCrossValidationResults<L extends Comparable, P> extends CrossValidationResults
+public class SvmBinaryCrossValidationResults<L extends Comparable, P> extends BinaryCrossValidationResults
 	{
 // ------------------------------ FIELDS ------------------------------
 
-	private static final Logger logger = Logger.getLogger(BinaryCrossValidationResults.class);
+	private static final Logger logger = Logger.getLogger(SvmBinaryCrossValidationResults.class);
 
 	SigmoidProbabilityModel sigmoid;
-	private int numExamples;
-	private int tt, tf, ft, ff;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -33,8 +31,8 @@ public class BinaryCrossValidationResults<L extends Comparable, P> extends Cross
 		}
 */
 
-	public BinaryCrossValidationResults(BinaryClassificationProblem<L, P> problem, final Map<P, Float> decisionValues,
-	                                    boolean probability)
+	public SvmBinaryCrossValidationResults(BinaryClassificationProblem<L, P> problem,
+	                                       final Map<P, Float> decisionValues, boolean probability)
 		{
 		// convert to arrays
 
@@ -106,27 +104,7 @@ public class BinaryCrossValidationResults<L extends Comparable, P> extends Cross
 		logger.info(f.out().toString());*/
 		}
 
-	float trueTrueRate()
-		{
-		return (float) tt / (float) numExamples;
-		}
-
-	float falseTrueRate()
-		{
-		return (float) ft / (float) numExamples;
-		}
-
-	float trueFalseRate()
-		{
-		return (float) tf / (float) numExamples;
-		}
-
-	float falseFalseRate()
-		{
-		return (float) ff / (float) numExamples;
-		}
-
-// --------------------- GETTER / SETTER METHODS ---------------------
+	// --------------------- GETTER / SETTER METHODS ---------------------
 
 	public SigmoidProbabilityModel getSigmoid()
 		{
@@ -134,26 +112,4 @@ public class BinaryCrossValidationResults<L extends Comparable, P> extends Cross
 		}
 
 // -------------------------- OTHER METHODS --------------------------
-
-	public float accuracy()
-		{
-		return (float) (tt + ff) / (float) numExamples;
-		}
-
-	public float accuracyGivenClassified()
-		{
-		// ** for now everything was classified
-		return accuracy();
-		}
-
-	public float unknown()
-		{
-		// ** for now everything was classified
-		return 0F;
-		}
-
-	float classNormalizedSensitivity()
-		{
-		return ((float) tt / (float) (tt + tf) + (float) ff / (float) (ff + ft)) / 2f;
-		}
 	}

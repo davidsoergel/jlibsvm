@@ -1,10 +1,10 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
 import edu.berkeley.compbio.jlibsvm.ContinuousModel;
-import edu.berkeley.compbio.jlibsvm.CrossValidationResults;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.binary.AlphaModel;
+import edu.berkeley.compbio.ml.CrossValidationResults;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

@@ -1,6 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.regression;
 
-import edu.berkeley.compbio.jlibsvm.CrossValidationResults;
+import edu.berkeley.compbio.ml.CrossValidationResults;
 
 import java.util.Map;
 

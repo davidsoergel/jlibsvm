@@ -114,9 +114,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.davidsoergel</groupId>
-            <artifactId>dsutils</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>edu.berkeley.compbio</groupId>
+            <artifactId>ml</artifactId>
+            <version>0.9-SNAPSHOT</version>
         </dependency>
         <!--<dependency>
             <groupId>org.javolution</groupId>

@@ -2,6 +2,7 @@ package edu.berkeley.compbio.jlibsvm;
 
 import com.davidsoergel.dsutils.collections.MappingIterator;
 import com.davidsoergel.dsutils.concurrent.TreeExecutorService;
+import edu.berkeley.compbio.ml.CrossValidationResults;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 

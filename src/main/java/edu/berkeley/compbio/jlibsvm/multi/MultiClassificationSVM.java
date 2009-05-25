@@ -53,13 +53,14 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		return "multiclass " + binarySvm.getSvmType();
 		}
 
-	public MultiClassCrossValidationResults<L, P> performCrossValidation(@NotNull MultiClassProblem<L, P> problem,
-	                                                                     @NotNull ImmutableSvmParameter<L, P> param,
-	                                                                     @NotNull final TreeExecutorService execService)
+	public SvmMultiClassCrossValidationResults<L, P> performCrossValidation(@NotNull MultiClassProblem<L, P> problem,
+	                                                                        @NotNull ImmutableSvmParameter<L, P> param,
+	                                                                        @NotNull final TreeExecutorService execService)
 		{
 		Map<P, L> predictions = discreteCrossValidation(problem, param, execService);
 
-		MultiClassCrossValidationResults<L, P> cv = new MultiClassCrossValidationResults<L, P>(problem, predictions);
+		SvmMultiClassCrossValidationResults<L, P> cv =
+				new SvmMultiClassCrossValidationResults<L, P>(problem, predictions);
 		cv.param = param;
 		return cv;
 		}
@@ -122,7 +123,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			public void run()
 				{
 				// note we must use the CV variant in order to know which parameter set is best
-				MultiClassCrossValidationResults<L, P> crossValidationResults =
+				SvmMultiClassCrossValidationResults<L, P> crossValidationResults =
 						performCrossValidation(problem, gridParam, execService);
 				gtresult.update(crossValidationResults); //
 				// if we did a grid search, keep track of which parameter set was used for these results
@@ -144,11 +145,11 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 	private class GridTrainingResult
 		{
 		//ImmutableSvmParameterPoint<L, P> bestParam = null;
-		MultiClassCrossValidationResults<L, P> bestCrossValidationResults = null;
+		SvmMultiClassCrossValidationResults<L, P> bestCrossValidationResults = null;
 		float bestSensitivity = -1F;
 
 		synchronized void update( //ImmutableSvmParameterPoint<L, P> gridParam,
-		                          MultiClassCrossValidationResults<L, P> crossValidationResults)
+		                          SvmMultiClassCrossValidationResults<L, P> crossValidationResults)
 			{
 			float sensitivity = crossValidationResults.classNormalizedSensitivity();
 			if (sensitivity > bestSensitivity)
