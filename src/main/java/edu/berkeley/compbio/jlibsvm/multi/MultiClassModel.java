@@ -189,12 +189,14 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		final P scaledX = scalingModel.scaledCopy(x);
 
 		L bestLabel = null;
-		float bestOneClassProbability = 0;
-		float secondBestOneClassProbability = 0;
-		float bestOneVsAllProbability = 0;
 		// L secondBestLabel = null;
 
+		float bestOneClassProbability = 0;
+		float secondBestOneClassProbability = 0;
+
+		float bestOneVsAllProbability = 0;
 		float secondBestOneVsAllProbability = 0;
+
 
 		// stage 0: we're going to need the kernel value for x against each of the SVs, for each of the kernels that was used in a subsidary binary machine
 

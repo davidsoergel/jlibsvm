@@ -11,8 +11,8 @@ public class VotingResult<L>
 	private L bestLabel = null;
 	private float bestVoteProportion = 0;
 	private float secondBestVoteProportion = 0;
-	private float bestProbability = 0;
-	private float secondBestProbability = 0;
+	private float bestOneClassProbability = 0;
+	private float secondBestOneClassProbability = 0;
 	private float bestOneVsAllProbability = 0;
 	private float secondBestOneVsAllProbability = 0;
 
@@ -23,14 +23,15 @@ public class VotingResult<L>
 		{
 		}
 
-	public VotingResult(L bestLabel, float bestVoteProportion, float secondBestVoteProportion, float bestProbability,
-	                    float secondBestProbability, float bestOneVsAllProbability, float secondBestOneVsAllProbability)
+	public VotingResult(L bestLabel, float bestVoteProportion, float secondBestVoteProportion,
+	                    float bestOneClassProbability, float secondBestOneClassProbability,
+	                    float bestOneVsAllProbability, float secondBestOneVsAllProbability)
 		{
 		this.bestLabel = bestLabel;
 		this.bestVoteProportion = bestVoteProportion;
 		this.secondBestVoteProportion = secondBestVoteProportion;
-		this.bestProbability = bestProbability;
-		this.secondBestProbability = secondBestProbability;
+		this.bestOneClassProbability = bestOneClassProbability;
+		this.secondBestOneClassProbability = secondBestOneClassProbability;
 		this.bestOneVsAllProbability = bestOneVsAllProbability;
 		this.secondBestOneVsAllProbability = secondBestOneVsAllProbability;
 		}
@@ -47,9 +48,9 @@ public class VotingResult<L>
 		return bestOneVsAllProbability;
 		}
 
-	public float getBestProbability()
+	public float getBestOneClassProbability()
 		{
-		return bestProbability;
+		return bestOneClassProbability;
 		}
 
 	public float getBestVoteProportion()
@@ -62,9 +63,9 @@ public class VotingResult<L>
 		return secondBestOneVsAllProbability;
 		}
 
-	public float getSecondBestProbability()
+	public float getSecondBestOneClassProbability()
 		{
-		return secondBestProbability;
+		return secondBestOneClassProbability;
 		}
 
 	public float getSecondBestVoteProportion()
