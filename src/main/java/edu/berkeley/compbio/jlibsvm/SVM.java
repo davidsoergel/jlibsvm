@@ -6,9 +6,12 @@ import edu.berkeley.compbio.ml.CrossValidationResults;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -102,6 +105,8 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 	                                         final TreeExecutorService execService)
 		{
 		final Map<P, L> predictions = new ConcurrentHashMap<P, L>();
+		final Set<P> nullPredictionPoints =
+				new ConcurrentSkipListSet<P>(); // necessary because ConcurrentHashMap doesn't support null values
 
 		if (param.crossValidationFolds >= problem.getNumExamples())
 			{
@@ -129,7 +134,15 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 
 				for (final P p : f.getHeldOutPoints())
 					{
-					predictions.put(p, model.predictLabel(p));
+					L prediction = model.predictLabel(p);
+					if (prediction == null)
+						{
+						nullPredictionPoints.add(p);
+						}
+					else
+						{
+						predictions.put(p, prediction);
+						}
 					}
 
 				// multithreaded version: avoids problem that cpus % folds != 0, but at the cost of lots of fine-grained tasks
@@ -159,9 +172,14 @@ public abstract class SVM<L extends Comparable, P, R extends SvmProblem<L, P, R>
 
 		execService.submitAndWaitForAll(foldTaskIterator);
 
-
+		// collapse into non-concurrent map that supports null values
+		Map<P, L> result = new HashMap<P, L>(predictions);
+		for (P nullPredictionPoint : nullPredictionPoints)
+			{
+			result.put(nullPredictionPoint, null);
+			}
 		// now predictions contains the prediction for each point based on training with e.g. 80% of the other points (for 5-fold).
-		return predictions;
+		return result;
 		}
 
 	public abstract String getSvmType();

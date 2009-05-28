@@ -38,6 +38,7 @@ public class VotingResult<L>
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
+
 	public L getBestLabel()
 		{
 		return bestLabel;
