@@ -94,6 +94,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 			{
 			oneVsAllModels.remove(disallowedLabel);
 			}
+
+		//BAD remove oneVsOne models also
 		}
 
 // --------------------------- CONSTRUCTORS ---------------------------
