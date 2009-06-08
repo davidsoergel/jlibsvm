@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project relativePaths="false" version="4">
-    <component name="ProjectModuleManager">
-        <modules>
-            <module fileurl="file://$PROJECT_DIR$/../dsutils/dsutils.iml"
-                    filepath="$PROJECT_DIR$/../dsutils/dsutils.iml"/>
-            <module fileurl="file://$PROJECT_DIR$/jlibsvm.iml" filepath="$PROJECT_DIR$/jlibsvm.iml"/>
-        </modules>
-    </component>
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../dsutils/dsutils.iml" filepath="$PROJECT_DIR$/../dsutils/dsutils.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jlibsvm.iml" filepath="$PROJECT_DIR$/jlibsvm.iml" />
+    </modules>
+  </component>
 </project>
 
