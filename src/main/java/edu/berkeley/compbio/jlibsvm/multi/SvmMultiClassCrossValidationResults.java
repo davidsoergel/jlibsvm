@@ -37,9 +37,11 @@ public class SvmMultiClassCrossValidationResults<L extends Comparable, P> extend
 		}
 */
 
-	public SvmMultiClassCrossValidationResults(MultiClassProblem<L, P> problem, Map<P, L> predictions)
+	public SvmMultiClassCrossValidationResults(MultiClassProblem<L, P> problem,
+	                                           Map<P, L> predictions)//, Map<L, String> friendlyLabelMap)
 		{
 		super();
+		//super(friendlyLabelMap);
 		//numExamples = problem.getNumExamples();
 
 
