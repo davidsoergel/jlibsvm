@@ -46,7 +46,7 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 
 		numExamples = trueExamples.size() + falseExamples.size();
 
-		exampleCounts = new HashMultiset<L>();
+		exampleCounts = HashMultiset.create();
 		exampleCounts.add(trueLabel, trueExamples.size());
 		exampleCounts.add(falseLabel, falseExamples.size());
 		}
@@ -70,7 +70,7 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 
 		numExamples = trueExamples.size() + falseExamples.size();
 
-		exampleCounts = new HashMultiset<L>();
+		exampleCounts = HashMultiset.create();
 		exampleCounts.add(trueLabel, trueExamples.size());
 		exampleCounts.add(falseLabel, falseExamples.size());
 		}

@@ -26,7 +26,7 @@ public abstract class AbstractSvmProblem<L extends Comparable, P, R extends SvmP
 		{
 		if (exampleCounts == null)
 			{
-			exampleCounts = new HashMultiset<L>();
+			exampleCounts = HashMultiset.create();
 			exampleCounts.addAll(getExamples().values());
 			}
 		return exampleCounts;

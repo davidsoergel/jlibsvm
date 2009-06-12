@@ -35,7 +35,7 @@
     <orderEntry type="library" name="Maven: junit:junit:3.8.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: log4j:log4j:1.2.13" level="project" />
     <orderEntry type="library" exported="" name="Maven: com.intellij:annotations:6.0.3" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.google.collections:google-collections:0.9" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.google.collections:google-collections:1.0-rc2" level="project" />
     <orderEntry type="module" module-name="ml" exported="" />
     <orderEntry type="module" module-name="dsutils" exported="" />
     <orderEntry type="library" exported="" name="Maven: commons-lang:commons-lang:2.1" level="project" />

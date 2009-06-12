@@ -305,7 +305,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 
 		int numLabels = oneVsOneModels.keySet().size();
 
-		Multiset<L> votes = new HashMultiset<L>();
+		Multiset<L> votes = HashMultiset.create();
 
 		if (allVsAllMode == AllVsAllMode.AllVsAll)
 			{
@@ -754,8 +754,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 			StringBuffer result = new StringBuffer();
 			if (oneVsAllMode != OneVsAllMode.None)
 				{
-				Multiset<Float> cs = new HashMultiset<Float>();
-				Multiset<KernelFunction> kernels = new HashMultiset<KernelFunction>();
+				Multiset<Float> cs = HashMultiset.create();
+				Multiset<KernelFunction> kernels = HashMultiset.create();
 				for (BinaryModel<L, P> binaryModel : oneVsAllModels.values())
 					{
 					cs.add(binaryModel.param.C);
@@ -765,8 +765,8 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 				}
 			if (allVsAllMode != AllVsAllMode.None)
 				{
-				Multiset<Float> cs = new HashMultiset<Float>();
-				Multiset<KernelFunction> kernels = new HashMultiset<KernelFunction>();
+				Multiset<Float> cs = HashMultiset.create();
+				Multiset<KernelFunction> kernels = HashMultiset.create();
 				for (BinaryModel<L, P> binaryModel : oneVsOneModels.values())
 					{
 					cs.add(binaryModel.param.C);

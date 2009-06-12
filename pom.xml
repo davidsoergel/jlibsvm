@@ -33,95 +33,95 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>edu.berkeley.compbio</groupId>
-    <artifactId>jlibsvm</artifactId>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>edu.berkeley.compbio</groupId>
+	<artifactId>jlibsvm</artifactId>
 
-    <name>jlibsvm</name>
-    <version>0.9-SNAPSHOT</version>
-    <url>http://dev.davidsoergel.com/jlibsvm</url>
-    <description>Java port of the libsvm library for Support Vector Machines.
-    </description>
+	<name>jlibsvm</name>
+	<version>0.9-SNAPSHOT</version>
+	<url>http://dev.davidsoergel.com/jlibsvm</url>
+	<description>Java port of the libsvm library for Support Vector Machines.
+	</description>
 
-    <parent>
-        <groupId>edu.berkeley.compbio</groupId>
-        <artifactId>basepom</artifactId>
-        <version>0.92</version>
-    </parent>
+	<parent>
+		<groupId>edu.berkeley.compbio</groupId>
+		<artifactId>basepom</artifactId>
+		<version>0.92</version>
+	</parent>
 
-    <inceptionYear>2008</inceptionYear>
+	<inceptionYear>2008</inceptionYear>
 
-    <packaging>jar</packaging>
+	<packaging>jar</packaging>
 
-    <issueManagement>
-        <system>Trac</system>
-        <url>http://dev.davidsoergel.com/jlibsvm/</url>
-    </issueManagement>
-
-
-    <scm>
-        <connection>scm:svn:http://svn.davidsoergel.com/repos/jlibsvm</connection>
-        <developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-ds/jlibsvm</developerConnection>
-    </scm>
+	<issueManagement>
+		<system>Trac</system>
+		<url>http://dev.davidsoergel.com/jlibsvm/</url>
+	</issueManagement>
 
 
-    <distributionManagement>
-        <site>
-            <id>website</id>
-            <url>scpexe://dev.davidsoergel.com/home/build/mavensites/jlibsvm</url>
-        </site>
-    </distributionManagement>
+	<scm>
+		<connection>scm:svn:http://svn.davidsoergel.com/repos/jlibsvm</connection>
+		<developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-ds/jlibsvm</developerConnection>
+	</scm>
 
 
-    <developers>
-        <developer>
-            <id>lorax</id>
-            <name>David Soergel</name>
-            <email>dev@davidsoergel.com</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-            <organization>University of California, Berkeley</organization>
-            <timezone>-7</timezone>
-        </developer>
-    </developers>
+	<distributionManagement>
+		<site>
+			<id>website</id>
+			<url>scpexe://dev.davidsoergel.com/home/build/mavensites/jlibsvm</url>
+		</site>
+	</distributionManagement>
 
 
-    <repositories>
-        <repository>
-            <id>central</id>
-            <url>http://dev.davidsoergel.com/artifactory/repo</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>snapshots</id>
-            <url>http://dev.davidsoergel.com/artifactory/repo</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
+	<developers>
+		<developer>
+			<id>lorax</id>
+			<name>David Soergel</name>
+			<email>dev@davidsoergel.com</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<organization>University of California, Berkeley</organization>
+			<timezone>-7</timezone>
+		</developer>
+	</developers>
 
 
-    <dependencies>
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>http://dev.davidsoergel.com/artifactory/repo</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>snapshots</id>
+			<url>http://dev.davidsoergel.com/artifactory/repo</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+	</repositories>
 
-        <dependency>
-            <groupId>com.google.collections</groupId>
-            <artifactId>google-collections</artifactId>
-            <version>0.9</version>
-        </dependency>
 
-        <dependency>
-            <groupId>edu.berkeley.compbio</groupId>
-            <artifactId>ml</artifactId>
-            <version>0.9-SNAPSHOT</version>
-        </dependency>
-        <!--<dependency>
-            <groupId>org.javolution</groupId>
-            <artifactId>javolution</artifactId>
-            <version>5.2.6</version>
-        </dependency>-->
-    </dependencies>
+	<dependencies>
+
+		<dependency>
+			<groupId>com.google.collections</groupId>
+			<artifactId>google-collections</artifactId>
+			<version>1.0-rc2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>edu.berkeley.compbio</groupId>
+			<artifactId>ml</artifactId>
+			<version>0.9-SNAPSHOT</version>
+		</dependency>
+		<!--<dependency>
+					<groupId>org.javolution</groupId>
+					<artifactId>javolution</artifactId>
+					<version>5.2.6</version>
+				</dependency>-->
+	</dependencies>
 </project>
