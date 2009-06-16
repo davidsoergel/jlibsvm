@@ -1,6 +1,5 @@
 package edu.berkeley.compbio.jlibsvm.oneclass;
 
-import com.davidsoergel.dsutils.concurrent.TreeExecutorService;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
@@ -31,8 +30,8 @@ public class OneClassSVC<L extends Comparable, P> extends RegressionSVM<P, OneCl
 // -------------------------- OTHER METHODS --------------------------
 
 
-	public RegressionModel<P> train(OneClassProblem<L, P> problem, @NotNull ImmutableSvmParameter<Float, P> param,
-	                                final TreeExecutorService execService)
+	public RegressionModel<P> train(OneClassProblem<L, P> problem, @NotNull ImmutableSvmParameter<Float, P> param)
+		//, final TreeExecutorService execService)
 		{
 		validateParam(param);
 		RegressionModel<P> result;
@@ -43,15 +42,15 @@ public class OneClassSVC<L extends Comparable, P> extends RegressionSVM<P, OneCl
 			}
 		else
 			{
-			result = trainScaled(problem, (ImmutableSvmParameterPoint<Float, P>) param, execService);
+			result = trainScaled(problem, (ImmutableSvmParameterPoint<Float, P>) param);//, execService);
 			}
 		return result;
 		}
 
 
 	private RegressionModel<P> trainScaled(OneClassProblem<L, P> problem,
-	                                       @NotNull ImmutableSvmParameterPoint<Float, P> param,
-	                                       final TreeExecutorService execService)
+	                                       @NotNull ImmutableSvmParameterPoint<Float, P> param)
+		//,final TreeExecutorService execService)
 		{
 		if (param.scalingModelLearner != null && param.scaleBinaryMachinesIndependently)
 			{

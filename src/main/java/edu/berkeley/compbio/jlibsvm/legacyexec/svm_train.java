@@ -1,7 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.legacyexec;
 
-import com.davidsoergel.dsutils.concurrent.DepthFirstThreadPoolExecutor;
-import com.davidsoergel.dsutils.concurrent.TreeExecutorService;
+import com.davidsoergel.dsutils.concurrent.Parallel;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
@@ -108,9 +107,9 @@ public class svm_train
 			}*/
 
 
-		TreeExecutorService execService = new DepthFirstThreadPoolExecutor();
+		//TreeExecutorService execService = new DepthFirstThreadPoolExecutor();
 
-		model = svm.train(problem, param, execService);
+		model = svm.train(problem, param); //, execService);
 
 // BAD not implemented
 //		model.save(model_file_name);
@@ -120,7 +119,7 @@ public class svm_train
 		if (cv == null && crossValidation)
 			{
 			// but if not, force it
-			cv = svm.performCrossValidation(problem, param, execService);
+			cv = svm.performCrossValidation(problem, param); //, execService);
 			}
 		if (cv != null)
 			{
@@ -134,7 +133,8 @@ public class svm_train
 
 		System.out.println("Finished in " + time + " secs");
 
-		execService.shutdown();
+		//	execService.shutdown();
+		Parallel.shutdown();
 		}
 
 	/*

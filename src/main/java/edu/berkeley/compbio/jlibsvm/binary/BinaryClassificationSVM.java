@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
-import com.davidsoergel.dsutils.concurrent.TreeExecutorService;
+import com.davidsoergel.dsutils.concurrent.Parallel;
+import com.google.common.base.Function;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
@@ -9,9 +10,7 @@ import edu.berkeley.compbio.jlibsvm.SvmException;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -29,18 +28,18 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 
 
 	public BinaryModel<L, P> train(@NotNull BinaryClassificationProblem<L, P> problem,
-	                               @NotNull ImmutableSvmParameter<L, P> param,
-	                               @NotNull final TreeExecutorService execService)
+	                               @NotNull ImmutableSvmParameter<L, P> param)
+		//,@NotNull final TreeExecutorService execService)
 		{
 		validateParam(param);
 		BinaryModel<L, P> result;
 		if (param instanceof ImmutableSvmParameterGrid)  //  either the problem was binary to start with, or param.gridsearchBinaryMachinesIndependently
 			{
-			result = trainGrid(problem, (ImmutableSvmParameterGrid<L, P>) param, execService);
+			result = trainGrid(problem, (ImmutableSvmParameterGrid<L, P>) param); //, execService);
 			}
 		else if (param.probability)  // this may already be a fold, but we have to sub-fold it to get probabilities
 			{
-			result = trainScaledWithCV(problem, (ImmutableSvmParameterPoint<L, P>) param, execService);
+			result = trainScaledWithCV(problem, (ImmutableSvmParameterPoint<L, P>) param); //, execService);
 			}
 		else
 			{
@@ -60,15 +59,26 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 
 
 	private BinaryModel<L, P> trainGrid(@NotNull final BinaryClassificationProblem<L, P> problem,
-	                                    @NotNull ImmutableSvmParameterGrid<L, P> param,
-	                                    @NotNull final TreeExecutorService execService)
+	                                    @NotNull ImmutableSvmParameterGrid<L, P> param)
+		//,  @NotNull final TreeExecutorService execService)
 		{
 		final GridTrainingResult gtresult = new GridTrainingResult();
 
-		Set<Runnable> gridTasks = new HashSet<Runnable>();
+
+		Parallel.forEach(param.getGridParams(), new Function<ImmutableSvmParameterPoint<L, P>, Void>()
+		{
+		public Void apply(final ImmutableSvmParameterPoint<L, P> gridParam)
+			{// note we must use the CV variant in order to know which parameter set is best
+			SvmBinaryCrossValidationResults<L, P> crossValidationResults =
+					performCrossValidation(problem, gridParam); //, execService);
+			gtresult.update(gridParam, crossValidationResults);
+			return null;
+			}
+		});
 
 		// no need for the iterator version here; the set of params doesn't require too much memory
-
+/*
+		Set<Runnable> gridTasks = new HashSet<Runnable>();
 		for (final ImmutableSvmParameterPoint<L, P> gridParam : param.getGridParams())
 			{
 			gridTasks.add(new Runnable()
@@ -77,19 +87,22 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 				{
 				// note we must use the CV variant in order to know which parameter set is best
 				SvmBinaryCrossValidationResults<L, P> crossValidationResults =
-						performCrossValidation(problem, gridParam, execService);
+						performCrossValidation(problem, gridParam); //, execService);
 				gtresult.update(gridParam, crossValidationResults);
 				}
 			});
 			}
 
 		execService.submitAndWaitForAll(gridTasks);
-
+*/
 		logger.info("Chose grid point: " + gtresult.bestParam);
 
 		// finally train once on all the data (including rescaling)
 		BinaryModel<L, P> result = trainScaled(problem, gtresult.bestParam);
-		result.crossValidationResults = gtresult.bestCrossValidationResults;
+		synchronized (gtresult)
+			{
+			result.crossValidationResults = gtresult.bestCrossValidationResults;
+			}
 		return result;
 		}
 
@@ -119,15 +132,15 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 	 * @return
 	 */
 	private BinaryModel<L, P> trainScaledWithCV(@NotNull BinaryClassificationProblem<L, P> problem,
-	                                            @NotNull ImmutableSvmParameterPoint<L, P> param,
-	                                            @NotNull final TreeExecutorService execService)
+	                                            @NotNull ImmutableSvmParameterPoint<L, P> param)
+		//,@NotNull final TreeExecutorService execService)
 		{
 		// if scaling each binary machine is enabled, then each fold will be independently scaled also; so we don't need to scale the whole dataset prior to CV
 
 		SvmBinaryCrossValidationResults<L, P> cv = null;
 		try
 			{
-			cv = performCrossValidation(problem, param, execService);
+			cv = performCrossValidation(problem, param); //, execService);
 			}
 		catch (SvmException e)
 			{
@@ -162,13 +175,13 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 		}
 */
 	public SvmBinaryCrossValidationResults<L, P> performCrossValidation(
-			@NotNull BinaryClassificationProblem<L, P> problem, @NotNull ImmutableSvmParameter<L, P> param,
-			@NotNull final TreeExecutorService execService)
+			@NotNull BinaryClassificationProblem<L, P> problem, @NotNull ImmutableSvmParameter<L, P> param)
+		//,	@NotNull final TreeExecutorService execService)
 		{
 		//there is no point in computing probabilities on these submodels (and that produces infinite recursion)
 		ImmutableSvmParameterPoint<L, P> noProbParam = (ImmutableSvmParameterPoint<L, P>) param.noProbabilityCopy();
 
-		final Map<P, Float> decisionValues = continuousCrossValidation(problem, noProbParam, execService);
+		final Map<P, Float> decisionValues = continuousCrossValidation(problem, noProbParam); //, execService);
 
 		// but the CV may be used to compute probabilities at this level, if requested
 		SvmBinaryCrossValidationResults<L, P> cv =

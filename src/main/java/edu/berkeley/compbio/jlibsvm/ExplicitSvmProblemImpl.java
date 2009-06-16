@@ -103,7 +103,7 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 
 	public Iterator<R> makeFolds(int numberOfFolds)
 		{
-		Set<R> result = new HashSet<R>();
+//		Set<R> result = new HashSet<R>();
 
 		List<P> points = new ArrayList<P>(getExamples().keySet());
 

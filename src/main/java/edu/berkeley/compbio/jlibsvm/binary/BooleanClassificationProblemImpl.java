@@ -118,7 +118,7 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 
 // --------------------- Interface SvmProblem ---------------------
 
-	public L getTargetValue(P point)
+	public synchronized L getTargetValue(P point)
 		{
 		if (booleanExamples.get(point))
 			{
@@ -138,7 +138,7 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 	// need to override this because of the examples == null hack
 	public Iterator<BinaryClassificationProblem<L, P>> makeFolds(int numberOfFolds)
 		{
-		Set<BinaryClassificationProblem<L, P>> result = new HashSet<BinaryClassificationProblem<L, P>>();
+//		Set<BinaryClassificationProblem<L, P>> result = new HashSet<BinaryClassificationProblem<L, P>>();
 
 		List<P> points = new ArrayList<P>(getBooleanExamples().keySet());
 
