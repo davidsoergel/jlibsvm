@@ -245,7 +245,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 		for (final BatchCluster<T> cluster : model.getLabels())
 			{
-			if (clusterFilter.isProhibited(cluster))
+			if (clusterFilter != null && clusterFilter.isProhibited(cluster))
 				//	if (cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)
 				//			.equals(disallowedLabel))
 				{
