@@ -47,5 +47,10 @@
     <orderEntry type="library" exported="" name="Maven: com.martiansoftware:JSAP:2.0a-ds1" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-collections:commons-collections:3.2" level="project" />
   </component>
+  <component name="copyright">
+    <Base>
+      <setting name="state" value="2" />
+    </Base>
+  </component>
 </module>
 
