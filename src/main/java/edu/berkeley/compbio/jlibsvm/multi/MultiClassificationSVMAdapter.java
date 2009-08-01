@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -226,7 +227,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		}
 
 
-	public void putResults(final HierarchicalTypedPropertyNode<String, Object> innerResults)
+	public void putResults(final HierarchicalTypedPropertyNode<String, Serializable> innerResults)
 		{
 		/*	resultsNode.addChild("trainingCpuSeconds", trainingStats.getCpuSeconds());
 		resultsNode.addChild("trainingUserSeconds", trainingStats.getUserSeconds());
