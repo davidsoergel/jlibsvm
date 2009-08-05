@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
 import com.davidsoergel.dsutils.concurrent.Parallel;
-import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
+import com.davidsoergel.dsutils.htpn.HierarchicalTypedPropertyNode;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.google.common.base.Function;
