@@ -227,7 +227,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		}
 
 
-	public void putResults(final HierarchicalTypedPropertyNode<String, Serializable> innerResults)
+	public void putResults(final HierarchicalTypedPropertyNode<String, Serializable, ?> innerResults)
 		{
 		/*	resultsNode.addChild("trainingCpuSeconds", trainingStats.getCpuSeconds());
 		resultsNode.addChild("trainingUserSeconds", trainingStats.getUserSeconds());
