@@ -39,6 +39,7 @@
     <orderEntry type="module" module-name="ml" exported="" />
     <orderEntry type="module" module-name="dsutils" exported="" />
     <orderEntry type="library" exported="" name="Maven: commons-lang:commons-lang:2.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: commons-logging:commons-logging:1.1.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: net.sourceforge.collections:collections-generic:4.01" level="project" />
     <orderEntry type="module" module-name="sequtils" exported="" />
     <orderEntry type="module" module-name="stats" exported="" />
