@@ -1,23 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project relativePaths="false" version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/projectCodeStyle.xml"
-              afterPath="$PROJECT_DIR$/.idea/projectCodeStyle.xml"/>
-      <change type="MODIFICATION"
-              beforePath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/MutableBinaryClassificationProblemImpl.java"
-              afterPath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/MutableBinaryClassificationProblemImpl.java"/>
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml"/>
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml"
-              afterPath="$PROJECT_DIR$/.idea/modules.xml"/>
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jlibsvm.iml" afterPath="$PROJECT_DIR$/jlibsvm.iml"/>
-      <change type="MODIFICATION"
-              beforePath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryModel.java"
-              afterPath="$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/binary/BinaryModel.java"/>
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml"/>
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml"
-              afterPath="$PROJECT_DIR$/.idea/workspace.xml"/>
-    </list>
+    <list default="true" readonly="true" name="Default" comment=""/>
     <ignored path="jlibsvm.iws"/>
     <ignored path=".idea/workspace.xml"/>
   </component>
@@ -257,21 +241,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MultiClassificationSVMAdapter.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="MultiClassificationSVMAdapter.java" pinned="false" current="true" current-in-tab="true">
         <entry
           file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVMAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="37" column="13" selection-start="1596" selection-end="1596" vertical-scroll-proportion="0.0">
-              <folding/>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MultiClassModel.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassModel.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="489" column="48" selection-start="15614" selection-end="15659"
-                   vertical-scroll-proportion="0.33333334">
+            <state line="37" column="13" selection-start="1596" selection-end="1596"
+                   vertical-scroll-proportion="0.095332675">
               <folding/>
             </state>
           </provider>
@@ -799,7 +774,7 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED"
                    visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false"/>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED"
-                   visible="true" weight="0.32604563" sideWeight="0.5" order="10" side_tool="false"/>
+                   visible="false" weight="0.32604563" sideWeight="0.5" order="10" side_tool="false"/>
       <window_info id="TestDox" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED"
                    visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false"/>
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED"
@@ -854,7 +829,7 @@
     <option name="PERFORM_CHECKOUT_IN_BACKGROUND" value="true"/>
     <option name="PERFORM_ADD_REMOVE_IN_BACKGROUND" value="true"/>
     <option name="FORCE_NON_EMPTY_COMMENT" value="false"/>
-    <option name="LAST_COMMIT_MESSAGE" value="Concurrency"/>
+    <option name="LAST_COMMIT_MESSAGE" value=""/>
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true"/>
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true"/>
     <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false"/>
@@ -1006,18 +981,19 @@
         </state>
       </provider>
     </entry>
-    <entry
-      file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVMAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="13" selection-start="1596" selection-end="1596" vertical-scroll-proportion="0.0">
-          <folding/>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassModel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="489" column="48" selection-start="15614" selection-end="15659"
                vertical-scroll-proportion="0.33333334">
+          <folding/>
+        </state>
+      </provider>
+    </entry>
+    <entry
+      file="file://$PROJECT_DIR$/src/main/java/edu/berkeley/compbio/jlibsvm/multi/MultiClassificationSVMAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="13" selection-start="1596" selection-end="1596"
+               vertical-scroll-proportion="0.095332675">
           <folding/>
         </state>
       </provider>
