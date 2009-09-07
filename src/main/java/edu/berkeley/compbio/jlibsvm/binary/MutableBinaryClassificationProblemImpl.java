@@ -35,6 +35,7 @@ public class MutableBinaryClassificationProblemImpl<L extends Comparable, P>
 		{
 		try
 			{
+			//** Should we look up a single label object per string instead of constructing a new one every time?  This depends on L.equals() working right, for instance...
 			addExample(point, (L) labelClass.getConstructor(String.class).newInstance(x.toString()));
 			}
 		catch (Exception e)

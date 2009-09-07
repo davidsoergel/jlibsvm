@@ -170,6 +170,24 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		return crossValidationResults.sigmoid.predict(predictValue(x));  // NPE if no sigmoid
 		}
 
+	public float getProbability(P x, L l)
+		{
+		if (l.equals(trueLabel))
+			{
+			return getTrueProbability(x);
+			}
+		else if (l.equals(falseLabel))
+			{
+			return 1f - getTrueProbability(x);
+			}
+		else
+			{
+			throw new SvmException(
+					"Can't compute probability: " + l + " is not one of the classes in this binary model (" + trueLabel
+					+ ", " + falseLabel + ")");
+			}
+		}
+
 	public Float predictValue(P x)
 		{
 		float sum = 0;

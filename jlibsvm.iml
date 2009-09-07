@@ -31,20 +31,26 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="ml" exported="" />
+    <orderEntry type="module" module-name="dsutils" exported="" />
+    <orderEntry type="module" module-name="sequtils" exported="" />
+    <orderEntry type="module" module-name="stats" exported="" />
+    <orderEntry type="module" module-name="phyloutils" exported="" />
+    <orderEntry type="module" module-name="runutils" exported="" />
     <orderEntry type="library" name="Maven: org.testng:testng:jdk15:5.9" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:3.8.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: log4j:log4j:1.2.13" level="project" />
     <orderEntry type="library" exported="" name="Maven: com.intellij:annotations:7.0.3" level="project" />
     <orderEntry type="library" exported="" name="Maven: com.google.collections:google-collections:1.0-rc2" level="project" />
-    <orderEntry type="module" module-name="ml" exported="" />
-    <orderEntry type="module" module-name="dsutils" exported="" />
+    <orderEntry type="library" exported="" name="Maven: com.davidsoergel:dsutils:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-lang:commons-lang:2.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-logging:commons-logging:1.1.1" level="project" />
     <orderEntry type="library" exported="" name="Maven: net.sourceforge.collections:collections-generic:4.01" level="project" />
-    <orderEntry type="module" module-name="sequtils" exported="" />
-    <orderEntry type="module" module-name="stats" exported="" />
-    <orderEntry type="module" module-name="phyloutils" exported="" />
-    <orderEntry type="module" module-name="runutils" exported="" />
+    <orderEntry type="library" exported="" name="Maven: edu.berkeley.compbio:ml:0.9-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: edu.berkeley.compbio:sequtils:0.9-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.davidsoergel:stats:0.9-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: edu.berkeley.compbio:phyloutils:0.9-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.davidsoergel:runutils:0.9-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="Maven: com.martiansoftware:JSAP:2.0a-ds1" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-collections:commons-collections:3.2" level="project" />
   </component>
