@@ -116,7 +116,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	public void add(final T sample)
 		{
-		final String label = sample.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+		final String label = sample.getImmutableWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
 
 		final BatchCluster<T> cluster = theClusterMap.get(label);
 		cluster.add(sample);
