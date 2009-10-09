@@ -8,8 +8,9 @@ import com.google.common.base.Function;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
-import edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.AbstractClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
+import edu.berkeley.compbio.ml.cluster.BatchClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
@@ -36,7 +37,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version $Id$
  */
 public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
-		extends AbstractBatchClusteringMethod<T, BatchCluster<T>> implements SupervisedClusteringMethod<T>
+		extends AbstractClusteringMethod<T, BatchCluster<T>> implements BatchClusteringMethod<T>,
+//		extends AbstractBatchClusteringMethod<T, BatchCluster<T>> implements
+                                                                        SupervisedClusteringMethod<T>
 	{
 // ------------------------------ FIELDS ------------------------------
 
@@ -114,7 +117,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		logger.info("Prepared " + trainingCount + " training samples");
 		}
 
-	public void add(final T sample)
+	private void add(final T sample)
 		{
 		final String label = sample.getImmutableWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
 
