@@ -1,8 +1,8 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
+import com.davidsoergel.conja.Parallel;
 import com.davidsoergel.dsutils.collections.UnorderedPair;
 import com.davidsoergel.dsutils.collections.UnorderedPairIterator;
-import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.google.common.base.Function;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;

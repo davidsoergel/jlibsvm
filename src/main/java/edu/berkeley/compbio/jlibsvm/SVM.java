@@ -1,6 +1,6 @@
 package edu.berkeley.compbio.jlibsvm;
 
-import com.davidsoergel.dsutils.concurrent.Parallel;
+import com.davidsoergel.conja.Parallel;
 import com.google.common.base.Function;
 import edu.berkeley.compbio.ml.CrossValidationResults;
 import org.apache.log4j.Logger;

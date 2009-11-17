@@ -1,6 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
-import com.davidsoergel.dsutils.concurrent.Parallel;
+import com.davidsoergel.conja.Parallel;
 import com.google.common.base.Function;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;

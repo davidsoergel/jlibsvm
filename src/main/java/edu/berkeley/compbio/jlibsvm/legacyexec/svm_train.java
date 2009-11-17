@@ -1,6 +1,6 @@
 package edu.berkeley.compbio.jlibsvm.legacyexec;
 
-import com.davidsoergel.dsutils.concurrent.Parallel;
+import com.davidsoergel.conja.Parallel;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
