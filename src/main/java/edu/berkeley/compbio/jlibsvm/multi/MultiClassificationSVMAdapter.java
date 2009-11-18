@@ -1,10 +1,10 @@
 package edu.berkeley.compbio.jlibsvm.multi;
 
+import com.davidsoergel.conja.Function;
 import com.davidsoergel.conja.Parallel;
 import com.davidsoergel.dsutils.tree.htpn.HierarchicalTypedPropertyNode;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
-import com.google.common.base.Function;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;

@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import com.davidsoergel.conja.Function;
 import com.davidsoergel.conja.Parallel;
-import com.google.common.base.Function;
 import edu.berkeley.compbio.ml.CrossValidationResults;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;

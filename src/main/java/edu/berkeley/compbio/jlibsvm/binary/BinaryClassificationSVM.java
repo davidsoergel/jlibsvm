@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
+import com.davidsoergel.conja.Function;
 import com.davidsoergel.conja.Parallel;
-import com.google.common.base.Function;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
