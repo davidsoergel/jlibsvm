@@ -31,14 +31,13 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.berkeley.compbio</groupId>
   <artifactId>jlibsvm</artifactId>
 
   <name>jlibsvm</name>
-  <version>0.9-SNAPSHOT</version>
+  <version>0.9</version>
   <url>http://dev.davidsoergel.com/jlibsvm</url>
   <description>Java port of the libsvm library for Support Vector Machines.
   </description>
@@ -60,8 +59,8 @@
 
 
   <scm>
-    <connection>scm:svn:http://svn.davidsoergel.com/repos/jlibsvm</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm</developerConnection>
+    <connection>scm:svn:http://svn.davidsoergel.com/repos/jlibsvm/tags/jlibsvm-0.9</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm/tags/jlibsvm-0.9</developerConnection>
   </scm>
 
 
