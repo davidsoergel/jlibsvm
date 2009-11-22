@@ -151,6 +151,38 @@ public class GaussianRBFKernel extends GammaKernel<SparseVector>
 				}
 			else
 				{
+				try
+					{
+					while (xIndex > yIndex)
+						{
+						// there is an entry for y but not for x at this index => x.value == 0
+
+						sum += (double) yValues[j] * (double) yValues[j];
+						j++;
+						yIndex = yIndexes[j];
+						}
+					}
+				catch (ArrayIndexOutOfBoundsException e)
+					{
+					yIndex = Integer.MAX_VALUE;
+					}
+
+				try
+					{
+					while (yIndex > xIndex)
+						{
+						// there is an entry for x but not for y at this index => y.value == 0
+
+						sum += (double) xValues[i] * (double) xValues[i];
+						i++;
+						xIndex = xIndexes[i];
+						}
+					}
+				catch (ArrayIndexOutOfBoundsException e)
+					{
+					xIndex = Integer.MAX_VALUE;
+					}
+				/*
 				while (xIndex > yIndex)
 					{
 					// there is an entry for y but not for x at this index => x.value == 0
@@ -181,7 +213,7 @@ public class GaussianRBFKernel extends GammaKernel<SparseVector>
 						{
 						xIndex = xIndexes[i];
 						}
-					}
+					}*/
 				}
 			}
 
