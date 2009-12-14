@@ -2,6 +2,7 @@ package edu.berkeley.compbio.jlibsvm.qmatrix;
 
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -11,7 +12,7 @@ public class BooleanInvertingKernelQMatrix<P> extends BasicKernelQMatrix<P>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public BooleanInvertingKernelQMatrix(KernelFunction<P> kernel, int numExamples, int maxCachedRank)
+	public BooleanInvertingKernelQMatrix(@NotNull KernelFunction<P> kernel, int numExamples, int maxCachedRank)
 		{
 		super(kernel, numExamples, maxCachedRank);
 		}

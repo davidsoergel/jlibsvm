@@ -2,6 +2,7 @@ package edu.berkeley.compbio.jlibsvm.qmatrix;
 
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -11,7 +12,7 @@ public class BasicKernelQMatrix<P> extends KernelQMatrix<P>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public BasicKernelQMatrix(KernelFunction<P> kernel, int numExamples, int maxCachedRank)
+	public BasicKernelQMatrix(@NotNull KernelFunction<P> kernel, int numExamples, int maxCachedRank)
 		{
 		super(kernel, numExamples, maxCachedRank);
 		}

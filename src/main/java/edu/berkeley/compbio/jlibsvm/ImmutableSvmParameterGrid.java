@@ -40,11 +40,20 @@ public class ImmutableSvmParameterGrid<L extends Comparable, P> extends Immutabl
 		public Builder(ImmutableSvmParameter.Builder copyFrom)
 			{
 			super(copyFrom);
+
+			//default
+			Cset = new HashSet<Float>();
+			Cset.add(1f);
 			}
 
 		public Builder(ImmutableSvmParameterGrid<L, P> copyFrom)
 			{
 			super(copyFrom);
+
+			//default
+			//Cset = new HashSet<Float>();
+			//Cset.add(1f);
+
 			//Cset = copyFrom.Cset;
 			//kernelSet = copyFrom.kernelSet;
 			gridParams = copyFrom.gridParams;
@@ -58,6 +67,16 @@ public class ImmutableSvmParameterGrid<L extends Comparable, P> extends Immutabl
 		public ImmutableSvmParameter<L, P> build()
 			{
 			ImmutableSvmParameterPoint.Builder<L, P> builder = ImmutableSvmParameterPoint.asBuilder(this);
+
+			if (Cset == null || Cset.isEmpty())
+				{
+				throw new SvmException("Can't build a grid with no C values");
+				}
+
+			if (kernelSet == null || kernelSet.isEmpty())
+				{
+				throw new SvmException("Can't build a grid with no kernels");
+				}
 
 			if (Cset.size() == 1 && kernelSet.size() == 1)
 				{

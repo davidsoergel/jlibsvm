@@ -15,7 +15,13 @@ public class ImmutableSvmParameterPoint<L extends Comparable, P> extends Immutab
 		{
 		super(copyFrom);
 		C = copyFrom.C;
+
 		kernel = copyFrom.kernel;
+
+		if (kernel == null)
+			{
+			throw new SvmException("Can't build a parameter set with no kernel");
+			}
 		}
 
 

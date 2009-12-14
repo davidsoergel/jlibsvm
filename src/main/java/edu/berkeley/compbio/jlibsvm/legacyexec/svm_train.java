@@ -228,7 +228,9 @@ public class svm_train
 					builder.cache_size = Float.parseFloat(argv[i]);
 					break;
 				case 'c':
+					// override the default
 					builder.Cset = new HashSet<Float>();
+
 					for (String s : argv[i].split(","))
 						{
 						builder.Cset.add(Float.parseFloat(s));

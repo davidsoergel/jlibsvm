@@ -2,6 +2,7 @@ package edu.berkeley.compbio.jlibsvm.qmatrix;
 
 import edu.berkeley.compbio.jlibsvm.SolutionVector;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,7 +22,7 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	KernelQMatrix(KernelFunction<P> kernel, int numExamples, int cacheRows)
+	KernelQMatrix(@NotNull KernelFunction<P> kernel, int numExamples, int cacheRows)
 		{
 		this.kernel = kernel;
 		this.cache = new RecentActivitySquareCache(numExamples, cacheRows);
@@ -133,9 +134,9 @@ public abstract class KernelQMatrix<P> implements QMatrix<P>
 		public String toString()
 			{
 			return "QMatrix hits = " + hits + ", misses = " + misses + ", widemisses = " + widemisses
-					+ ", diagonalhits = " + diagonalhits + ", diagonalmisses = " + diagonalmisses + ", rate = "
-					+ (float) (hits + diagonalhits) / (float) (hits + diagonalhits + misses + widemisses
-					+ diagonalmisses) + ", size = " + data.length;
+			       + ", diagonalhits = " + diagonalhits + ", diagonalmisses = " + diagonalmisses + ", rate = "
+			       + (float) (hits + diagonalhits) / (float) (hits + diagonalhits + misses + widemisses
+			                                                  + diagonalmisses) + ", size = " + data.length;
 			}
 
 // -------------------------- OTHER METHODS --------------------------

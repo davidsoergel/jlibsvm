@@ -3,7 +3,6 @@ package edu.berkeley.compbio.jlibsvm.legacyexec;
 
 import edu.berkeley.compbio.jlibsvm.ContinuousModel;
 import edu.berkeley.compbio.jlibsvm.DiscreteModel;
-import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.MutableSvmProblem;
 import edu.berkeley.compbio.jlibsvm.SVM;
@@ -15,7 +14,6 @@ import edu.berkeley.compbio.jlibsvm.binary.MutableBinaryClassificationProblemImp
 import edu.berkeley.compbio.jlibsvm.binary.Nu_SVC;
 import edu.berkeley.compbio.jlibsvm.kernel.GammaKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.GaussianRBFKernel;
-import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.kernel.LinearKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.PolynomialKernel;
 import edu.berkeley.compbio.jlibsvm.kernel.PrecomputedKernel;
@@ -70,7 +68,7 @@ public class svm_toy extends Applet
 	Vector<point> point_list = new Vector<point>();
 	byte current_value = 1;
 
-	ImmutableSvmParameter param;
+	ImmutableSvmParameterPoint param;
 
 
 // -------------------------- OTHER METHODS --------------------------
@@ -291,7 +289,7 @@ public class svm_toy extends Applet
 			return;
 			}
 
-		ImmutableSvmParameterPoint.Builder paramBuilder = new ImmutableSvmParameterPoint.Builder();
+		ImmutableSvmParameterPoint.Builder paramPointBuilder = new ImmutableSvmParameterPoint.Builder();
 
 		// default values
 		/*	param.svm_type = svm_parameter.C_SVC;
@@ -299,13 +297,13 @@ public class svm_toy extends Applet
 				param.degree = 3;
 				param.gamma = 0;
 				param.coef0 = 0;*/
-		paramBuilder.nu = 0.5f;
-		paramBuilder.cache_size = 40;
-		paramBuilder.C = 1;
-		paramBuilder.eps = 1e-3f;
-		paramBuilder.p = 0.1f;
-		paramBuilder.shrinking = true;
-		paramBuilder.probability = false;
+		paramPointBuilder.nu = 0.5f;
+		paramPointBuilder.cache_size = 40;
+		paramPointBuilder.C = 1;
+		paramPointBuilder.eps = 1e-3f;
+		paramPointBuilder.p = 0.1f;
+		paramPointBuilder.shrinking = true;
+		paramPointBuilder.probability = false;
 		//param.nr_weight = 0;
 		//param.weightLabel = new int[0];
 		//param.weight = new float[0];
@@ -354,61 +352,62 @@ public class svm_toy extends Applet
 					coef0 = Float.parseFloat(argv[i]);
 					break;
 				case 'n':
-					paramBuilder.nu = Float.parseFloat(argv[i]);
+					paramPointBuilder.nu = Float.parseFloat(argv[i]);
 					break;
 				case 'm':
-					paramBuilder.cache_size = Float.parseFloat(argv[i]);
+					paramPointBuilder.cache_size = Float.parseFloat(argv[i]);
 					break;
 				case 'c':
-					paramBuilder.C = Float.parseFloat(argv[i]);
+					paramPointBuilder.C = Float.parseFloat(argv[i]);
 					break;
 				case 'e':
-					paramBuilder.eps = Float.parseFloat(argv[i]);
+					paramPointBuilder.eps = Float.parseFloat(argv[i]);
 					break;
 				case 'p':
-					paramBuilder.p = Float.parseFloat(argv[i]);
+					paramPointBuilder.p = Float.parseFloat(argv[i]);
 					break;
 				case 'h':
-					paramBuilder.shrinking = Boolean.parseBoolean(argv[i]);
+					paramPointBuilder.shrinking = Boolean.parseBoolean(argv[i]);
 					break;
 				case 'b':
-					paramBuilder.probability = Boolean.parseBoolean(argv[i]);
+					paramPointBuilder.probability = Boolean.parseBoolean(argv[i]);
 					break;
 				case 'u':
-					paramBuilder.redistributeUnbalancedC = Boolean.parseBoolean(argv[i]);
+					paramPointBuilder.redistributeUnbalancedC = Boolean.parseBoolean(argv[i]);
 					break;
 				case 'w':
-					paramBuilder.putWeight(Integer.parseInt(argv[i - 1].substring(2)), Float.parseFloat(argv[i]));
+					paramPointBuilder.putWeight(Integer.parseInt(argv[i - 1].substring(2)), Float.parseFloat(argv[i]));
 					break;
 				default:
 					System.err.print("unknown option\n");
 				}
 			}
 
-		KernelFunction kernel;
+		//final KernelFunction kernel;
 		switch (kernel_type)
 			{
 			case svm_train.LINEAR:
-				kernel = new LinearKernel();
+				paramPointBuilder.kernel = new LinearKernel();
 				break;
 			case svm_train.POLY:
-				kernel = new PolynomialKernel(degree, gamma, coef0);
+				paramPointBuilder.kernel = new PolynomialKernel(degree, gamma, coef0);
 				break;
 			case svm_train.RBF:
-				kernel = new GaussianRBFKernel(gamma);
+				paramPointBuilder.kernel = new GaussianRBFKernel(gamma);
 				break;
 			case svm_train.SIGMOID:
-				kernel = new SigmoidKernel(gamma, coef0);
+				paramPointBuilder.kernel = new SigmoidKernel(gamma, coef0);
 				break;
 			case svm_train.PRECOMPUTED:
-				kernel = new PrecomputedKernel();
+				paramPointBuilder.kernel = new PrecomputedKernel();
 				break;
 			default:
 				throw new SvmException("Unknown kernel type: " + kernel_type);
 			}
 
+
 		SVM svm;
-		param = paramBuilder.build();
+		param = paramPointBuilder.build();
 		switch (svm_type)
 			{
 			case svm_train.C_SVC:
@@ -467,9 +466,9 @@ public class svm_toy extends Applet
 			}
 		else if (svm_type == svm_train.EPSILON_SVR || svm_type == svm_train.NU_SVR)
 			{
-			if (kernel instanceof GammaKernel && ((GammaKernel) kernel).getGamma() == 0f)
+			if (param.kernel instanceof GammaKernel && ((GammaKernel) param.kernel).getGamma() == 0f)
 				{
-				((GammaKernel) kernel).setGamma(1.0f);
+				((GammaKernel) param.kernel).setGamma(1.0f);
 				//gamma = 1;
 				}
 
@@ -511,7 +510,7 @@ public class svm_toy extends Applet
 			window_gc.setColor(colors[0]);
 			window_gc.drawLine(0, 0, 0, YLEN - 1);
 
-			int p = (int) (paramBuilder.p * YLEN);
+			int p = (int) (paramPointBuilder.p * YLEN);
 			for (int i = 1; i < XLEN; i++)
 				{
 				buffer_gc.setColor(colors[0]);
@@ -540,9 +539,9 @@ public class svm_toy extends Applet
 			}
 		else
 			{
-			if (kernel instanceof GammaKernel && ((GammaKernel) kernel).getGamma() == 0f)
+			if (param.kernel instanceof GammaKernel && ((GammaKernel) param.kernel).getGamma() == 0f)
 				{
-				((GammaKernel) kernel).setGamma(0.5f);
+				((GammaKernel) param.kernel).setGamma(0.5f);
 				//gamma = 0.5f;
 				}
 
