@@ -62,6 +62,10 @@ public class ImmutableSvmParameterGrid<L extends Comparable, P> extends Immutabl
 		public Builder()
 			{
 			super();
+
+			//default
+			Cset = new HashSet<Float>();
+			Cset.add(1f);
 			}
 
 		public ImmutableSvmParameter<L, P> build()
