@@ -89,6 +89,11 @@ public class BinaryClassificationProblemImpl<L extends Comparable, P>
 
 	public Map<P, Boolean> getBooleanExamples()
 		{
+		if (labelClass.equals(Boolean.class))
+			{
+			return (Map<P, Boolean>) examples;
+			}
+
 		setupLabels();
 
 		Map<P, Boolean> result = new HashMap<P, Boolean>(examples.size());
