@@ -37,8 +37,10 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 
 		for (Map.Entry<P, Boolean> example : examples.entrySet())
 			{
-			SolutionVector<P> sv = new SolutionVector<P>(example.getKey(), example.getValue(), linearTerm);
-			sv.id = problem.getId(example.getKey());
+			SolutionVector<P> sv =
+					new SolutionVector<P>(problem.getId(example.getKey()), example.getKey(), example.getValue(),
+					                      linearTerm);
+			//sv.id = problem.getId(example.getKey());
 			solutionVectors.add(sv);
 			}
 

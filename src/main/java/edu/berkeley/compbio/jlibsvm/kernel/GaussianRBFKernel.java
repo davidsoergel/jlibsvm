@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.jlibsvm.kernel;
 
 import edu.berkeley.compbio.jlibsvm.util.SparseVector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Properties;
 
@@ -103,7 +104,7 @@ public class GaussianRBFKernel extends GammaKernel<SparseVector>
 	 * @param y
 	 * @return
 	 */
-	private static final double explicitSumOptimized(final SparseVector x, final SparseVector y)
+	private static final double explicitSumOptimized(@NotNull final SparseVector x, @NotNull final SparseVector y)
 		{
 		double sum = 0;
 
@@ -233,6 +234,7 @@ public class GaussianRBFKernel extends GammaKernel<SparseVector>
 		}
 
 	// ------------------------ CANONICAL METHODS ------------------------
+
 	@Override
 	public String toString()
 		{

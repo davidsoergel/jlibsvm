@@ -74,8 +74,8 @@ public class OneClassSVC<L extends Comparable, P> extends RegressionSVM<P, OneCl
 
 			SolutionVector<P> sv;
 
-			sv = new SolutionVector<P>(example.getKey(), true, linearTerm, initAlpha);
-			sv.id = problem.getId(example.getKey());
+			sv = new SolutionVector<P>(problem.getId(example.getKey()), example.getKey(), true, linearTerm, initAlpha);
+			//sv.id = problem.getId(example.getKey());
 			c++;
 			solutionVectors.add(sv);
 			}

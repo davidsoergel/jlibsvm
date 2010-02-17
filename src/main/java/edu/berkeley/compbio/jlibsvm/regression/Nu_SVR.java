@@ -74,13 +74,15 @@ public class Nu_SVR<P, R extends RegressionProblem<P, R>> extends RegressionSVM<
 
 			SolutionVector<P> sv;
 
-			sv = new SolutionVector<P>(example.getKey(), true, -example.getValue(), initAlpha);
+			sv = new SolutionVector<P>(problem.getId(example.getKey()), example.getKey(), true, -example.getValue(),
+			                           initAlpha);
 			solutionVectors.add(sv);
-			sv.id = problem.getId(example.getKey());
+			//sv.id = problem.getId(example.getKey());
 
-			sv = new SolutionVector<P>(example.getKey(), false, example.getValue(), initAlpha);
+			sv = new SolutionVector<P>(-problem.getId(example.getKey()), example.getKey(), false, example.getValue(),
+			                           initAlpha);
 			solutionVectors.add(sv);
-			sv.id = -problem.getId(example.getKey());
+			//sv.id = -problem.getId(example.getKey());
 			}
 
 		QMatrix<P> qMatrix =

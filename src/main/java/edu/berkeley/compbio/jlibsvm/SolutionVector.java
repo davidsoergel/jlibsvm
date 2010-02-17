@@ -1,5 +1,7 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
@@ -16,8 +18,8 @@ public class SolutionVector<P> implements Comparable<SolutionVector>
 	/**
 	 * keep track of the sample id for mapping to ranks
 	 */
-	public int id;
-	public P point;
+	final public int id;
+	final public P point;
 	public boolean targetValue;
 	public double alpha;
 	public double G;
@@ -28,16 +30,17 @@ public class SolutionVector<P> implements Comparable<SolutionVector>
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public SolutionVector(P key, Boolean targetValue, float linearTerm)
+	public SolutionVector(int id, @NotNull P key, Boolean targetValue, float linearTerm)
 		{
+		this.id = id;
 		point = key;
 		this.linearTerm = linearTerm;
 		this.targetValue = targetValue;
 		}
 
-	public SolutionVector(P key, Boolean value, float linearTerm, float alpha)
+	public SolutionVector(int id, @NotNull P key, Boolean value, float linearTerm, float alpha)
 		{
-		this(key, value, linearTerm);
+		this(id, key, value, linearTerm);
 		this.alpha = alpha;
 		}
 
@@ -66,6 +69,7 @@ public class SolutionVector<P> implements Comparable<SolutionVector>
 		}
 
 	// PERF hack for speed
+
 	public int hashCode()
 		{
 		return id;
@@ -75,7 +79,7 @@ public class SolutionVector<P> implements Comparable<SolutionVector>
 	public String toString()
 		{
 		return "SolutionVector{" + "point=" + point + ", targetValue=" + targetValue + ", alpha=" + alpha
-				+ ", alphaStatus=" + alphaStatus + ", G=" + G + ", linearTerm=" + linearTerm + ", G_bar=" + G_bar + '}';
+		       + ", alphaStatus=" + alphaStatus + ", G=" + G + ", linearTerm=" + linearTerm + ", G_bar=" + G_bar + '}';
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------

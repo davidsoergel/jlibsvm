@@ -64,13 +64,15 @@ public class EpsilonSVR<P, R extends RegressionProblem<P, R>> extends Regression
 			{
 			SolutionVector<P> sv;
 
-			sv = new SolutionVector<P>(example.getKey(), true, param.p - example.getValue());
-			sv.id = problem.getId(example.getKey());
+			sv = new SolutionVector<P>(problem.getId(example.getKey()), example.getKey(), true,
+			                           param.p - example.getValue());
+			//	sv.id = problem.getId(example.getKey());
 
 			solutionVectors.add(sv);
 
-			sv = new SolutionVector<P>(example.getKey(), false, param.p + example.getValue());
-			sv.id = -problem.getId(example.getKey());
+			sv = new SolutionVector<P>(-problem.getId(example.getKey()), example.getKey(), false,
+			                           param.p + example.getValue());
+			//sv.id = -problem.getId(example.getKey());
 
 			solutionVectors.add(sv);
 			}

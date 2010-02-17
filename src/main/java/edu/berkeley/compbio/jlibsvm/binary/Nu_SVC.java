@@ -68,8 +68,10 @@ public class Nu_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, 
 				initAlpha = Math.min(1.0f, sumNeg);
 				sumNeg -= initAlpha;
 				}
-			SolutionVector<P> sv = new SolutionVector(entry.getKey(), entry.getValue(), linearTerm, initAlpha);
-			sv.id = problem.getId(entry.getKey());
+			SolutionVector<P> sv =
+					new SolutionVector(problem.getId(entry.getKey()), entry.getKey(), entry.getValue(), linearTerm,
+					                   initAlpha);
+			//sv.id = problem.getId(entry.getKey());
 
 			solutionVectors.add(sv);
 			}
