@@ -1,5 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Test All" type="TestNG" factoryName="TestNG" enabled="false" merge="false" sample_coverage="true" runner="emma">
+  <configuration default="false" name="Test All" type="TestNG" factoryName="TestNG">
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma" />
+    <extension name="snapshooter" />
     <module name="jlibsvm" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
@@ -16,10 +18,10 @@
     <option name="ANNOTATION_TYPE" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
-    <option name="ADDITIONAL_CLASS_PATH" />
     <option name="TEST_SEARCH_SCOPE">
       <value defaultName="moduleWithDependencies" />
     </option>
+    <option name="USE_DEFAULT_REPORTERS" value="false" />
     <option name="PROPERTIES_FILE" value="" />
     <envs />
     <properties />
@@ -39,8 +41,6 @@
     </RunnerSettings>
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Run" />
-    <method>
-      <option name="Make" value="true" />
-    </method>
+    <method />
   </configuration>
 </component>

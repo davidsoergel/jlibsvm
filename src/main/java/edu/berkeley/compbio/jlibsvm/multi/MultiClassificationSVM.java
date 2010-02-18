@@ -109,7 +109,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 		{
 		final GridTrainingResult gtresult = new GridTrainingResult();
 
-		Set<Runnable> gridTasks = new HashSet<Runnable>();
+//		Set<Runnable> gridTasks = new HashSet<Runnable>();
 
 		Collection<ImmutableSvmParameterPoint<L, P>> parameterPoints = param.getGridParams();
 
@@ -334,7 +334,7 @@ public class MultiClassificationSVM<L extends Comparable<L>, P> extends SVM<L, P
 			//Iterator<Runnable> allVsAllTaskIterator = new MappingIterator<Pair<L>, Runnable>(problem.getLabelPairs()){};
 
 
-			Set<Runnable> allVsAllTasks = new HashSet<Runnable>(numClassifiers);
+//			Set<Runnable> allVsAllTasks = new HashSet<Runnable>(numClassifiers);
 
 			// create and train all vs all classifiers
 

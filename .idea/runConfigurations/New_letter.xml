@@ -1,13 +1,16 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="New letter" type="Application" factoryName="Application" enabled="false" merge="false" sample_coverage="true" runner="emma">
-    <pattern>
-      <option name="PATTERN" value="com.davidsoergel.jlibsvm.*" />
-      <option name="ENABLED" value="true" />
-    </pattern>
-    <pattern>
-      <option name="PATTERN" value="libsvm.*" />
-      <option name="ENABLED" value="true" />
-    </pattern>
+  <configuration default="false" name="New letter" type="Application" factoryName="Application">
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma">
+      <pattern>
+        <option name="PATTERN" value="com.davidsoergel.jlibsvm.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+      <pattern>
+        <option name="PATTERN" value="libsvm.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <extension name="snapshooter" />
     <option name="MAIN_CLASS_NAME" value="edu.berkeley.compbio.jlibsvm.legacyexec.svm_train" />
     <option name="VM_PARAMETERS" value="-Xmx512m -ea" />
     <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 1,10,25,50,100,200 -g .01,.1,.25,.5,.75 -e .01 -v 5 -y 1 -z 1 -q 1 -m 500 -o None -a AllVsAll letter.scale" />
@@ -40,8 +43,6 @@
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Debug" />
     <ConfigurationWrapper RunnerId="Run" />
-    <method>
-      <option name="Make" value="true" />
-    </method>
+    <method />
   </configuration>
 </component>

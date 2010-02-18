@@ -9,6 +9,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * * An SVM problem consisting of a mapping of training examples to labels.
+ *
+ * The generic parameters are L, the label type; P, the type of objects to be classified, and R, the concrete type of the problem itself.
+
+ * An SVM problem
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */

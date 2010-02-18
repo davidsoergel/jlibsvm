@@ -3,6 +3,7 @@ package edu.berkeley.compbio.jlibsvm;
 import edu.berkeley.compbio.jlibsvm.binary.AlphaModel;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,16 +50,16 @@ public abstract class Solver<L extends Comparable, P>
 	boolean unshrink = false;
 	boolean shrinking;
 
-	protected List<SolutionVector<P>> allExamples;
+	protected final List<SolutionVector<P>> allExamples;
 	protected SolutionVector<P>[] active;
 	protected SolutionVector<P>[] inactive;
-	protected float Cp, Cn;
-	protected int numExamples;
+	protected final float Cp, Cn;
+	protected final int numExamples;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	protected Solver(QMatrix<P> Q, float Cp, float Cn, float eps, boolean shrinking)
+/*	protected Solver(QMatrix<P> Q, float Cp, float Cn, float eps, boolean shrinking)
 		{
 		if (eps <= 0)
 			{
@@ -70,12 +71,25 @@ public abstract class Solver<L extends Comparable, P>
 		this.Cn = Cn;
 		this.eps = eps;
 		this.shrinking = shrinking;
-		}
+		}*/
 
-	public Solver(List<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
+	public Solver(@NotNull List<SolutionVector<P>> solutionVectors, @NotNull QMatrix<P> Q, float Cp, float Cn, float eps,
 	              boolean shrinking)
 		{
-		this(Q, Cp, Cn, eps, shrinking);
+		//this(Q, Cp, Cn, eps, shrinking);
+
+		if (eps <= 0)
+			{
+			throw new SvmException("eps <= 0");
+			}
+
+		this.Q = Q;
+		this.Cp = Cp;
+		this.Cn = Cn;
+		this.eps = eps;
+		this.shrinking = shrinking;
+
+
 
 		this.allExamples = solutionVectors;
 
@@ -397,7 +411,7 @@ public abstract class Solver<L extends Comparable, P>
 				// i == svC.rank
 				active[i].G += Q_svA[i] * delta_alpha_i + Q_svB[i] * delta_alpha_j;
 				}
-// PERF test tradeoff
+	// PERF test tradeoff
 
 			/*
 			for (SolutionVector<P> svC : active)

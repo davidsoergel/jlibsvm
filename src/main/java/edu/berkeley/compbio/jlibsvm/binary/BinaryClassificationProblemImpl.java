@@ -54,7 +54,7 @@ public class BinaryClassificationProblemImpl<L extends Comparable, P>
 		}
 
 	public BinaryClassificationProblemImpl(Class labelClass, Map<P, L> examples, Map<P, Integer> exampleIds,
-	                                       ScalingModel<P> scalingModel, L trueLabel, L falseLabel)
+	                                       @NotNull ScalingModel<P> scalingModel, L trueLabel, L falseLabel)
 		{
 		super(examples, exampleIds, scalingModel);
 		this.trueLabel = trueLabel;

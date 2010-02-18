@@ -3,6 +3,7 @@ package edu.berkeley.compbio.jlibsvm;
 import edu.berkeley.compbio.jlibsvm.binary.AlphaModel;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.jlibsvm.qmatrix.QMatrix;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,12 +23,12 @@ public class Solver_NU<L extends Comparable, P> extends Solver<L, P>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	protected Solver_NU(QMatrix<P> Q, float Cp, float Cn, float eps, boolean shrinking)
+/*	protected Solver_NU(QMatrix<P> Q, float Cp, float Cn, float eps, boolean shrinking)
 		{
 		super(Q, Cp, Cn, eps, shrinking);
 		}
-
-	public Solver_NU(List<SolutionVector<P>> solutionVectors, QMatrix<P> Q, float Cp, float Cn, float eps,
+*/
+	public Solver_NU(@NotNull List<SolutionVector<P>> solutionVectors, @NotNull QMatrix<P> Q, float Cp, float Cn, float eps,
 	                 boolean shrinking)
 		{
 		super(solutionVectors, Q, Cp, Cn, eps, shrinking);

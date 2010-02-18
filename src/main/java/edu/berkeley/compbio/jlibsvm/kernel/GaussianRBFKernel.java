@@ -257,7 +257,7 @@ public class GaussianRBFKernel extends GammaKernel<SparseVector>
 
 // --------------------- Interface KernelFunction ---------------------
 
-	public double evaluate(SparseVector x, SparseVector y)
+	public double evaluate(@NotNull SparseVector x, @NotNull SparseVector y)
 		{
 		// try doing the internal stuff at double precision
 

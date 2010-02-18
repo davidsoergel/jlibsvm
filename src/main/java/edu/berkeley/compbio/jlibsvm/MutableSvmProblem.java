@@ -1,6 +1,8 @@
 package edu.berkeley.compbio.jlibsvm;
 
 /**
+ * An SVM problem to which training examples may be added.
+ *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */

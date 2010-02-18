@@ -124,8 +124,8 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		final BatchCluster<T> cluster = theClusterMap.get(label);
 		cluster.add(sample);
 
-		synchronized (trainingCount)
-			{
+	//	synchronized (trainingCount)
+	//		{
 			examples.put(sample, cluster);
 			exampleIds.put(sample, trainingCount.intValue());
 			trainingCount.incrementAndGet();
@@ -134,7 +134,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				{
 				logger.debug("Prepared " + trainingCount + " training samples");
 				}*/
-			}
+	//		}
 		}
 
 //	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,

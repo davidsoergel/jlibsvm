@@ -1,5 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Legacy mushrooms" type="Application" factoryName="Application" enabled="false" merge="false" sample_coverage="true" runner="emma">
+  <configuration default="false" name="Legacy mushrooms" type="Application" factoryName="Application">
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma" />
+    <extension name="snapshooter" />
     <option name="MAIN_CLASS_NAME" value="libsvm.svm_train" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="-s 0 -t 2 -c 100 -v 10 mushrooms.libsvm" />
@@ -32,8 +34,6 @@
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Debug" />
     <ConfigurationWrapper RunnerId="Run" />
-    <method>
-      <option name="Make" value="true" />
-    </method>
+    <method />
   </configuration>
 </component>
