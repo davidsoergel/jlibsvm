@@ -50,7 +50,7 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 	public float r;// for Solver_NU.  I wanted to factor this out as SolutionInfoNu, but that was too much hassle
 	public SvmBinaryCrossValidationResults<L, P> crossValidationResults;
 
-	public CrossValidationResults getCrossValidationResults()
+	public SvmBinaryCrossValidationResults<L, P> getCrossValidationResults()
 		{
 		return crossValidationResults;
 		}
@@ -241,6 +241,7 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		return new CrossValidationResults(i, tt, ft, tf, ff);
 		}
 */
+
 	public L predictLabel(float[] kvalues, int[] svIndexMap)
 		{
 		return predictValue(kvalues, svIndexMap) > 0 ? trueLabel : falseLabel;
