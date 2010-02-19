@@ -71,6 +71,7 @@ public abstract class BinaryClassificationSVM<L extends Comparable, P>
 			{// note we must use the CV variant in order to know which parameter set is best
 			SvmBinaryCrossValidationResults<L, P> crossValidationResults =
 					performCrossValidation(problem, gridParam); //, execService);
+			logger.info("CV results for grid point " + gridParam + ": " + crossValidationResults);
 			gtresult.update(gridParam, crossValidationResults);
 			return null;
 			}
