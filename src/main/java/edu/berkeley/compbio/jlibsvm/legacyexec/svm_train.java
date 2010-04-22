@@ -83,8 +83,15 @@ public class svm_train
 
 	public static void main(String argv[]) throws IOException
 		{
-		svm_train t = new svm_train();
-		t.run(argv);
+		try
+			{
+			svm_train t = new svm_train();
+			t.run(argv);
+			}
+		finally
+			{
+			Parallel.shutdown();
+			}
 		}
 
 	private void run(String argv[]) throws IOException
@@ -134,7 +141,6 @@ public class svm_train
 		System.out.println("Finished in " + time + " secs");
 
 		//	execService.shutdown();
-		Parallel.shutdown();
 		}
 
 	/*
