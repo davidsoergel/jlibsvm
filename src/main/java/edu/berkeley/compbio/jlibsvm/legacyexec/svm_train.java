@@ -1,6 +1,5 @@
 package edu.berkeley.compbio.jlibsvm.legacyexec;
 
-import com.davidsoergel.conja.Parallel;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterGrid;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
@@ -83,15 +82,15 @@ public class svm_train
 
 	public static void main(String argv[]) throws IOException
 		{
-		try
-			{
-			svm_train t = new svm_train();
-			t.run(argv);
-			}
-		finally
-			{
-			Parallel.shutdown();
-			}
+		//	try
+		//		{
+		svm_train t = new svm_train();
+		t.run(argv);
+		//		}
+		//	finally
+		//		{
+		//		Parallel.shutdown();
+		//		}
 		}
 
 	private void run(String argv[]) throws IOException
