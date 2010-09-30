@@ -139,6 +139,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		this.minVoteProportion = param.minVoteProportion;
 		}
 
+
 // --------------------- GETTER / SETTER METHODS ---------------------
 
 	@NotNull
@@ -558,6 +559,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 		}
 
 	// Method 2 from the multiclass_prob paper by Wu, Lin, and Weng
+
 	private float[] multiclassProbability(int k, float[][] r)
 		{
 		float[] p = new float[k];
@@ -813,6 +815,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
 			}
 
 		// --------------------------- CONSTRUCTORS ---------------------------
+
 		public SymmetricHashMap2d(SymmetricHashMap2d<K, V> copyFrom, Collection<K> excludeKeys)
 			{
 			//sizePerDimension = copyFrom.sizePerDimension;  // overkill since we're removing some

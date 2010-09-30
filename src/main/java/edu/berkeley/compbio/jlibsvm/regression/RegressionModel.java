@@ -8,6 +8,7 @@ import edu.berkeley.compbio.ml.CrossValidationResults;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -23,6 +24,17 @@ public class RegressionModel<P> extends AlphaModel<Float, P> implements Continuo
 	public float laplaceParameter = NO_LAPLACE_PARAMETER;
 
 	public float r;// for Solver_NU.  I wanted to factor this out as SolutionInfoNu, but that was too much hassle
+
+	public Collection<Float> getLabels()
+		{
+		return param.getLabels();
+		}
+
+	@Override
+	public String getKernelName()
+		{
+		return param.kernel.toString();
+		}
 
 
 	public RegressionCrossValidationResults crossValidationResults;

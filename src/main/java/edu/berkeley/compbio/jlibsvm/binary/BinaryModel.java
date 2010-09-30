@@ -8,7 +8,6 @@ import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
 import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
-import edu.berkeley.compbio.ml.CrossValidationResults;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,7 +62,14 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		{
 		return param.getLabels();
 		}
-// --------------------------- CONSTRUCTORS ---------------------------
+
+	@Override
+	public String getKernelName()
+		{
+		return param.kernel.toString();
+		}
+
+	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/*(public BinaryModel(Properties props, LabelParser<L> labelParser)
 		{

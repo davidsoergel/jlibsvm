@@ -106,21 +106,25 @@ public abstract class SolutionModel<L extends Comparable, P> extends SvmContext
 		{
 		// BAD broken with respect to grid search etc.
 
-		throw new NotImplementedException();
+		//throw new NotImplementedException();
 
-		/*
+
 		fp.writeBytes("svm_type " + svmType + "\n");
 
 
-		fp.writeBytes(param.kernel.toString());
+		fp.writeBytes(getKernelName()); //param.kernel.toString());
 
 		fp.writeBytes("label");
-		for (L i : param.getLabels()) //getWeights().keySet())  // note these are in insertion order
+		for (L i : getLabels()) //getWeights().keySet())  // note these are in insertion order
 			{
 			fp.writeBytes(" " + i);
 			}
 		fp.writeBytes("\n");
-		*/
+		}
+
+	public String getKernelName()
+		{
+		throw new NotImplementedException();
 		}
 
 	public Collection<L> getLabels()
