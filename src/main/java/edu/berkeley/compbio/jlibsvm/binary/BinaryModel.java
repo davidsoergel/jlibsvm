@@ -6,6 +6,7 @@ import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameterPoint;
 import edu.berkeley.compbio.jlibsvm.LabelParser;
 import edu.berkeley.compbio.jlibsvm.SvmException;
 import edu.berkeley.compbio.jlibsvm.kernel.KernelFunction;
+import edu.berkeley.compbio.jlibsvm.kernel.LinearKernel;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
 import edu.berkeley.compbio.jlibsvm.scaler.ScalingModel;
 import org.apache.log4j.Logger;
@@ -82,6 +83,27 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		super();
 		}
 
+/*	public BinaryModel(Properties props)
+			{
+			//super(null); //null, null);
+
+			ImmutableSvmParameterPoint.Builder<L, P> builder = new ImmutableSvmParameterPoint.Builder<L, P>();
+			try
+				{
+				//** test hack
+				builder.kernel = (KernelFunction<P>) new LinearKernel(); //props);
+
+			//	builder.kernel =
+			//			(KernelFunction) Class.forName(props.getProperty("kernel_type")).getConstructor(Properties.class)
+			//					.newInstance(props);
+				}
+			catch (Throwable e)
+				{
+				throw new SvmException(e);
+				}
+
+			param = builder.build();
+			}*/
 
 	public BinaryModel(Properties props, LabelParser<L> labelParser)
 		{
@@ -90,9 +112,11 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		ImmutableSvmParameterPoint.Builder<L, P> builder = new ImmutableSvmParameterPoint.Builder<L, P>();
 		try
 			{
-			builder.kernel =
-					(KernelFunction) Class.forName(props.getProperty("kernel_type")).getConstructor(Properties.class)
-							.newInstance(props);
+			//** test hack
+			builder.kernel = (KernelFunction<P>) new LinearKernel(); //props);
+			//builder.kernel =
+			//		(KernelFunction) Class.forName(props.getProperty("kernel_type")).getConstructor(Properties.class)
+			//				.newInstance(props);
 			}
 		catch (Throwable e)
 			{
@@ -112,6 +136,12 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 			builder.putWeight(labelParser.parse(st.nextToken()), null);
 			}
 
+		rho = Float.parseFloat(props.getProperty("rho"));
+		numSVs = Integer.parseInt(props.getProperty("total_sv"));
+//** test hack
+
+		trueLabel = (L) (Object) "true";
+		falseLabel = (L) (Object) "false";
 		param = builder.build();
 		}
 

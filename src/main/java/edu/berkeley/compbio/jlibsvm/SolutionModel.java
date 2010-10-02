@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.jlibsvm;
 
+import edu.berkeley.compbio.jlibsvm.binary.BinaryModel;
 import edu.berkeley.compbio.ml.CrossValidationResults;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -42,9 +43,22 @@ public abstract class SolutionModel<L extends Comparable, P> extends SvmContext
 			props.load(new StringBufferInputStream(readUpToSVs(fp)));
 
 			// first figure out which model type it is
-			Class c = Class.forName(props.getProperty("svm_type"));
+			//Class c = Class.forName(props.getProperty("svm_type"));
 
-			SolutionModel model = (SolutionModel) (c.getConstructor(Properties.class).newInstance(props));
+			//** quick hack
+			Class c = BinaryModel.class;
+			LabelParser<String> labelParser = new LabelParser<String>()
+			{
+			public String parse(final String s)
+				{
+				return s;
+				//if(s.equals("true")) return
+				}
+			};
+
+			SolutionModel model =
+					(SolutionModel) (c.getConstructor(Properties.class, LabelParser.class).newInstance(props,
+					                                                                                   labelParser));
 
 			model.readSupportVectors(fp);
 			fp.close();
@@ -66,7 +80,7 @@ public abstract class SolutionModel<L extends Comparable, P> extends SvmContext
 				{
 				break;
 				}
-			sb.append(l);
+			sb.append(l).append("\n");
 			}
 		return sb.toString();
 		}

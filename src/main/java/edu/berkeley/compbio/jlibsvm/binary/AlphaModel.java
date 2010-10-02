@@ -1,13 +1,17 @@
 package edu.berkeley.compbio.jlibsvm.binary;
 
+import com.davidsoergel.dsutils.DSArrayUtils;
 import edu.berkeley.compbio.jlibsvm.SolutionModel;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import edu.berkeley.compbio.jlibsvm.util.SparseVector;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -84,28 +88,39 @@ public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<
 
 	protected void readSupportVectors(BufferedReader reader) throws IOException
 		{
-		throw new NotImplementedException();
-		/*
+		//throw new NotImplementedException();
+		List<Double> alphaList = new ArrayList<Double>();
+		List<SparseVector> svList = new ArrayList<SparseVector>();
+
 		String line;
-		int lineNo = 0;
+		//int lineNo = 0;
 		while ((line = reader.readLine()) != null)
 			{
 			StringTokenizer st = new StringTokenizer(line, " \t\n\r\f:");
 
-			alpha[lineNo] = Float.parseFloat(st.nextToken());
+			//alphas[lineNo] = Float.parseFloat(st.nextToken());
+			alphaList.add(Double.parseDouble(st.nextToken()));
 
-			// ** SparseVector not generified here, bah
+			// ** Read directly into SparseVector instead of generic P... bah
 
 			int n = st.countTokens() / 2;
 			SparseVector p = new SparseVector(n);
-			supportVectors[lineNo] = p;
+			//supportVectors[lineNo] = p;
 			for (int j = 0; j < n; j++)
 				{
 				p.indexes[j] = Integer.parseInt(st.nextToken());
 				p.values[j] = Float.parseFloat(st.nextToken());
 				}
+			svList.add(p);
 			}
-			*/
+
+		alphas = DSArrayUtils.toPrimitiveArray(alphaList);
+		SVs = (P[]) svList.toArray(new SparseVector[0]);
+
+
+		numSVs = SVs.length;
+
+		supportVectors = null; // we read it directly to the compact representation
 		}
 
 	protected void writeSupportVectors(DataOutputStream fp) throws IOException
