@@ -10,7 +10,6 @@ import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
 import edu.berkeley.compbio.ml.cluster.AbstractClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
-import edu.berkeley.compbio.ml.cluster.BatchClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
@@ -19,6 +18,7 @@ import edu.berkeley.compbio.ml.cluster.ClusteringTestResults;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
+import edu.berkeley.compbio.ml.cluster.SampleInitializedBatchClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version $Id$
  */
 public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
-		extends AbstractClusteringMethod<T, BatchCluster<T>> implements BatchClusteringMethod<T>,
+		extends AbstractClusteringMethod<T, BatchCluster<T>> implements SampleInitializedBatchClusteringMethod<T>,
 //		extends AbstractBatchClusteringMethod<T, BatchCluster<T>> implements
                                                                         SupervisedClusteringMethod<T>
 	{
@@ -94,7 +94,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	final AtomicInteger trainingCount = new AtomicInteger(0);
 
-	public void addAll(
+	public void initializeWithSamples(
 			final ClusterableIterator<T> trainingIterator) //CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
 		{
 		//	Iterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
@@ -124,17 +124,17 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		final BatchCluster<T> cluster = theClusterMap.get(label);
 		cluster.add(sample);
 
-	//	synchronized (trainingCount)
-	//		{
-			examples.put(sample, cluster);
-			exampleIds.put(sample, trainingCount.intValue());
-			trainingCount.incrementAndGet();
+		//	synchronized (trainingCount)
+		//		{
+		examples.put(sample, cluster);
+		exampleIds.put(sample, trainingCount.intValue());
+		trainingCount.incrementAndGet();
 
 /*			if (trainingCount.intValue() % 1000 == 0)
 				{
 				logger.debug("Prepared " + trainingCount + " training samples");
 				}*/
-	//		}
+		//		}
 		}
 
 //	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
@@ -227,6 +227,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 */
 		removeEmptyClusters();
 		normalizeClusterLabelProbabilities();
+		doneLabellingClusters();
 		}
 
 
@@ -261,6 +262,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 
 	// -------------------------- OTHER METHODS --------------------------
+
 	@Override
 	public synchronized ClusteringTestResults test(final ClusterableIterator<T> theTestIterator,
 	                                               final DissimilarityMeasure<String> intraLabelDistances)
