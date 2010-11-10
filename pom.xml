@@ -115,7 +115,7 @@
     <dependency>
       <groupId>com.davidsoergel</groupId>
       <artifactId>dsutils</artifactId>
-      <version>1.03</version>
+      <version>1.04-SNAPSHOT</version>
     </dependency>
 
     <dependency>
