@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.davidsoergel:dsutils:1.04-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/davidsoergel/dsutils/1.04-SNAPSHOT/dsutils-1.04-SNAPSHOT.jar!/"/>
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/davidsoergel/dsutils/1.04-SNAPSHOT/dsutils-1.04-SNAPSHOT-javadoc.jar!/"/>
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/davidsoergel/dsutils/1.04-SNAPSHOT/dsutils-1.04-SNAPSHOT-sources.jar!/"/>
+    </SOURCES>
+  </library>
+</component>
