@@ -128,6 +128,7 @@ public abstract class ExplicitSvmProblemImpl<L extends Comparable, P, R extends 
 
 		Iterator<R> foldIterator = new MappingIterator<Set<P>, R>(heldOutPointSets.iterator())
 		{
+		@NotNull
 		public R function(Set<P> p)
 			{
 			return makeFold(p);

@@ -163,6 +163,7 @@ public class BooleanClassificationProblemImpl<L extends Comparable, P> extends B
 		Iterator<BinaryClassificationProblem<L, P>> foldIterator =
 				new MappingIterator<Set<P>, BinaryClassificationProblem<L, P>>(heldOutPointSets.iterator())
 				{
+				@NotNull
 				public BinaryClassificationProblem<L, P> function(Set<P> p)
 					{
 					return makeFold(p);
