@@ -68,7 +68,7 @@
   <distributionManagement>
     <site>
       <id>website</id>
-      <url>scpexe://dev.davidsoergel.com/home/build/mavensites/jlibsvm</url>
+      <url>scpexe://jenkins@dev.davidsoergel.com/home/build/mavensites/jlibsvm</url>
     </site>
   </distributionManagement>
 
