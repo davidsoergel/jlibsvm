@@ -116,7 +116,7 @@
 		<dependency>
 			<groupId>edu.berkeley.compbio</groupId>
 			<artifactId>ml</artifactId>
-			<version>0.911-SNAPSHOT</version>
+			<version>0.912-SNAPSHOT</version>
 		</dependency>
 		<!--<dependency>
           <groupId>org.javolution</groupId>
