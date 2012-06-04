@@ -30,159 +30,144 @@
   ~ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>edu.berkeley.compbio</groupId>
-    <artifactId>jlibsvm</artifactId>
-
-    <name>jlibsvm</name>
-    <version>0.91-SNAPSHOT</version>
-    <url>http://dev.davidsoergel.com/jlibsvm</url>
-    <description>Java port of the libsvm library for Support Vector Machines.
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>edu.berkeley.compbio</groupId>
+	<artifactId>jlibsvm</artifactId>
+	<name>jlibsvm</name>
+	<version>0.91-SNAPSHOT</version>
+	<url>http://dev.davidsoergel.com/jlibsvm</url>
+	<description>Java port of the libsvm library for Support Vector Machines.
     </description>
-
-    <parent>
-        <groupId>com.davidsoergel</groupId>
-        <artifactId>basepom</artifactId>
-        <version>0.98</version>
-    </parent>
-
-    <inceptionYear>2008</inceptionYear>
-
-    <packaging>jar</packaging>
-
-    <issueManagement>
-        <system>Trac</system>
-        <url>http://dev.davidsoergel.com/jlibsvm/</url>
-    </issueManagement>
-
-
-    <scm>
-        <connection>scm:svn:http://svn.davidsoergel.com/repos/jlibsvm</connection>
-        <developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm</developerConnection>
-    </scm>
-
-
-    <distributionManagement>
-        <site>
-            <id>website</id>
-            <url>scpexe://jenkins@dev.davidsoergel.com/home/build/mavensites/jlibsvm</url>
-        </site>
-    </distributionManagement>
-
-
-    <developers>
-        <developer>
-            <id>lorax</id>
-            <name>David Soergel</name>
-            <email>dev@davidsoergel.com</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-            <organization>University of California, Berkeley</organization>
-            <timezone>-8</timezone>
-        </developer>
-    </developers>
-
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <repositories>
-        <repository>
-            <id>dev.davidsoergel.com</id>
-            <url>http://dev.davidsoergel.com/nexus/content/groups/public/</url>
-        </repository>
-    </repositories>
-
-    <dependencies>
-
-        <dependency>
-            <groupId>com.google.collections</groupId>
-            <artifactId>google-collections</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.davidsoergel</groupId>
-            <artifactId>dsutils</artifactId>
-            <version>1.04-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.davidsoergel</groupId>
-            <artifactId>conja</artifactId>
-            <version>1.06-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>edu.berkeley.compbio</groupId>
-            <artifactId>ml</artifactId>
-            <version>0.911-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>annotations</artifactId>
-            <version>7.0.3</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!--<dependency>
+	<parent>
+		<groupId>com.davidsoergel</groupId>
+		<artifactId>basepom</artifactId>
+		<version>0.99-SNAPSHOT</version>
+	</parent>
+	<inceptionYear>2008</inceptionYear>
+	<packaging>jar</packaging>
+	<issueManagement>
+		<system>Trac</system>
+		<url>http://dev.davidsoergel.com/jlibsvm/</url>
+	</issueManagement>
+	<scm>
+		<connection>scm:svn:http://svn.davidsoergel.com/repos/jlibsvm</connection>
+		<developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm</developerConnection>
+	</scm>
+	<distributionManagement>
+		<site>
+			<id>website</id>
+			<url>scpexe://jenkins@dev.davidsoergel.com/home/build/mavensites/jlibsvm</url>
+		</site>
+	</distributionManagement>
+	<developers>
+		<developer>
+			<id>lorax</id>
+			<name>David Soergel</name>
+			<email>dev@davidsoergel.com</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<organization>University of California, Berkeley</organization>
+			<timezone>-8</timezone>
+		</developer>
+	</developers>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<repositories>
+		<repository>
+			<id>dev.davidsoergel.com</id>
+			<url>http://dev.davidsoergel.com/nexus/content/groups/public</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>dev.davidsoergel.com.snapshot</id>
+			<url>http://dev.davidsoergel.com/nexus/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>com.google.collections</groupId>
+			<artifactId>google-collections</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.davidsoergel</groupId>
+			<artifactId>dsutils</artifactId>
+			<version>1.04-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.davidsoergel</groupId>
+			<artifactId>conja</artifactId>
+			<version>1.06-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.berkeley.compbio</groupId>
+			<artifactId>ml</artifactId>
+			<version>0.911-SNAPSHOT</version>
+		</dependency>
+		<!--<dependency>
           <groupId>org.javolution</groupId>
           <artifactId>javolution</artifactId>
           <version>5.2.6</version>
         </dependency>-->
-    </dependencies>
-
-    <build>
-        <plugins>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>package</id>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>package</id>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-artifacts</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attach-artifact</goal>
+						</goals>
+						<configuration>
+							<artifacts>
+								<artifact>
+									<file>
                                         ${project.build.directory}/${project.artifactId}-${project.version}-distribution.tar.gz
                                     </file>
-                                    <type>tar.gz</type>
-                                    <!-- <classifier>bin</classifier> -->
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-
-    </build>
-
+									<type>tar.gz</type>
+									<!-- <classifier>bin</classifier> -->
+								</artifact>
+							</artifacts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
