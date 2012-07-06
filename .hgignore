@@ -1,0 +1,50 @@
+## hgignore-common
+syntax: glob
+
+#*#
+*.DS_Store
+*.class
+*.diff
+*.elc
+*.log
+*.pyc
+*~
+.*.swp
+.DS_Store
+.\#*
+.manager
+.svn
+class
+log
+semantic.cache
+unpack
+
+## 
+## hgignore-vcs
+CVS
+.cvsignore
+
+## 
+## ignore eclipse/idea/ensime
+.project
+.classpath
+.settings
+.distfiles
+.ensime
+
+## ignore sbt
+.lib/
+lib_managed/
+src_managed/
+target/
+project/boot/
+project/build/target/
+project/plugins/target/
+project/plugins/lib_managed/
+project/plugins/src_managed/
+
+
+
+
+
+

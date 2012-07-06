@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module MavenProjectsManager.isMavenModule="true" org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" relativePaths="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -12,17 +12,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Maven: edu.berkeley.compbio:ml:0.9-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="Maven: edu.berkeley.compbio:sequtils:0.9-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="Maven: edu.berkeley.compbio:phyloutils:0.9-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="Maven: commons-lang:commons-lang:2.1" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.davidsoergel:trees:1.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.davidsoergel:stats:0.9" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.davidsoergel:runutils:0.9" level="project" />
-    <orderEntry type="library" name="Maven: com.davidsoergel:dsutils:1.04-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.davidsoergel:conja:1.06-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.davidsoergel:stats:0.93-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.davidsoergel:runutils:0.91-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.google.collections:google-collections:1.0" level="project" />
     <orderEntry type="module" module-name="dsutils" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.5" level="project" />
@@ -30,15 +19,20 @@
     <orderEntry type="library" name="Maven: net.sourceforge.collections:collections-generic:4.01" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-log4j12:1.6.4" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.4" level="project" />
-    <orderEntry type="library" name="Maven: log4j:log4j:1.2.13" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.16" level="project" />
     <orderEntry type="library" name="Maven: com.intellij:annotations:7.0.3" level="project" />
     <orderEntry type="module" module-name="conja" />
-    <orderEntry type="library" name="Maven: edu.berkeley.compbio:ml:0.911-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="ml" />
     <orderEntry type="module" module-name="trees" />
     <orderEntry type="module" module-name="stats" />
     <orderEntry type="module" module-name="runutils" />
     <orderEntry type="library" name="Maven: com.martiansoftware:JSAP:2.0a-ds1" level="project" />
     <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.testng:testng:5.14.10" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.beanshell:bsh:2.0b4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.beust:jcommander:1.12" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.yaml:snakeyaml:1.6" level="project" />
   </component>
   <component name="copyright">
     <Base>

@@ -114,7 +114,7 @@ public abstract class AlphaModel<L extends Comparable, P> extends SolutionModel<
 			svList.add(p);
 			}
 
-		alphas = DSArrayUtils.toPrimitiveArray(alphaList);
+		alphas = DSArrayUtils.toPrimitiveDoubleArray(alphaList);
 		SVs = (P[]) svList.toArray(new SparseVector[0]);
 
 
