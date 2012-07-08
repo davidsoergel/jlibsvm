@@ -50,10 +50,11 @@
 		<system>Trac</system>
 		<url>http://dev.davidsoergel.com/jlibsvm/</url>
 	</issueManagement>
-	<scm>
-		<connection>scm:svn:http://svn.davidsoergel.com/repos/jlibsvm</connection>
-		<developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/jlibsvm</developerConnection>
-	</scm>
+    <scm>
+        <connection>scm:hg:https://hg.davidsoergel.com/jlibsvm</connection>
+        <developerConnection>scm:hg:ssh://dev.davidsoergel.com//home/hg/jlibsvm</developerConnection>
+        <url>http://hg.davidsoergel.com/jlibsvm</url>
+    </scm>
 	<distributionManagement>
 		<site>
 			<id>website</id>
