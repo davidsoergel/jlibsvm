@@ -42,7 +42,7 @@
 	<parent>
 		<groupId>com.davidsoergel</groupId>
 		<artifactId>basepom</artifactId>
-		<version>0.99-SNAPSHOT</version>
+		<version>1.0</version>
 	</parent>
 	<inceptionYear>2008</inceptionYear>
 	<packaging>jar</packaging>
@@ -106,17 +106,17 @@
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>dsutils</artifactId>
-			<version>1.04-SNAPSHOT</version>
+			<version>1.05</version>
 		</dependency>
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>conja</artifactId>
-			<version>1.06-SNAPSHOT</version>
+			<version>1.06</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.berkeley.compbio</groupId>
 			<artifactId>ml</artifactId>
-			<version>0.912-SNAPSHOT</version>
+			<version>0.92</version>
 		</dependency>
 		<!--<dependency>
           <groupId>org.javolution</groupId>
