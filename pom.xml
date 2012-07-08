@@ -35,7 +35,7 @@
 	<groupId>edu.berkeley.compbio</groupId>
 	<artifactId>jlibsvm</artifactId>
 	<name>jlibsvm</name>
-	<version>0.91</version>
+	<version>0.92-SNAPSHOT</version>
 	<url>http://dev.davidsoergel.com/jlibsvm</url>
 	<description>Java port of the libsvm library for Support Vector Machines.
     </description>
