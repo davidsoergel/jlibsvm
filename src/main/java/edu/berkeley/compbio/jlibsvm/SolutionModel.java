@@ -45,7 +45,7 @@ public abstract class SolutionModel<L extends Comparable, P> extends SvmContext
 			// first figure out which model type it is
 			//Class c = Class.forName(props.getProperty("svm_type"));
 
-			//** quick hack
+			// BAD quick hack
 			Class c = BinaryModel.class;
 			LabelParser<String> labelParser = new LabelParser<String>()
 			{

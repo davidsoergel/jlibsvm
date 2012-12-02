@@ -112,11 +112,11 @@ public class BinaryModel<L extends Comparable, P> extends AlphaModel<L, P>
 		ImmutableSvmParameterPoint.Builder<L, P> builder = new ImmutableSvmParameterPoint.Builder<L, P>();
 		try
 			{
-			//** test hack
-			builder.kernel = (KernelFunction<P>) new LinearKernel(); //props);
-			//builder.kernel =
-			//		(KernelFunction) Class.forName(props.getProperty("kernel_type")).getConstructor(Properties.class)
-			//				.newInstance(props);
+			//BAD test hack
+			//builder.kernel = (KernelFunction<P>) new LinearKernel(); //props);
+			builder.kernel =
+					(KernelFunction) Class.forName(props.getProperty("kernel_type")).getConstructor(Properties.class)
+							.newInstance(props);
 			}
 		catch (Throwable e)
 			{

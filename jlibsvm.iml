@@ -23,6 +23,11 @@
     <orderEntry type="library" name="Maven: com.intellij:annotations:7.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.davidsoergel:conja:1.06" level="project" />
     <orderEntry type="library" name="Maven: edu.berkeley.compbio:ml:0.92" level="project" />
+    <orderEntry type="library" name="Maven: com.davidsoergel:trees:1.03" level="project" />
+    <orderEntry type="library" name="Maven: com.davidsoergel:stats:0.93" level="project" />
+    <orderEntry type="library" name="Maven: com.davidsoergel:runutils:0.91" level="project" />
+    <orderEntry type="library" name="Maven: com.martiansoftware:JSAP:2.0a-ds1" level="project" />
+    <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.testng:testng:5.14.10" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.beanshell:bsh:2.0b4" level="project" />

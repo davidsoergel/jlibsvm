@@ -42,7 +42,7 @@
 	<parent>
 		<groupId>com.davidsoergel</groupId>
 		<artifactId>basepom</artifactId>
-		<version>1.0</version>
+		<version>1.01</version>
 	</parent>
 	<inceptionYear>2008</inceptionYear>
 	<packaging>jar</packaging>

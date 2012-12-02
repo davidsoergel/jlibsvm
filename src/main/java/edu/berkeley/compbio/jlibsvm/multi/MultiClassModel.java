@@ -619,7 +619,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
     }
 
     protected void readSupportVectors(BufferedReader fp) {
-        //** Implement support vector I/O
+        //BAD Implement support vector I/O
         throw new UnsupportedOperationException();
     }
 
@@ -627,7 +627,7 @@ public class MultiClassModel<L extends Comparable, P> extends SolutionModel<L, P
         fp.writeBytes("SV\n");
         fp.writeBytes("Saving multi-class support vectors is not implemented yet");
 
-        //** Implement support vector I/O
+        //BAD Implement support vector I/O
         // the original format is a spaghetti
     }
 
