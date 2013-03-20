@@ -45,7 +45,7 @@ public class C_SVC<L extends Comparable, P> extends BinaryClassificationSVM<L, P
 			}
 
 		QMatrix<P> qMatrix =
-				new BooleanInvertingKernelQMatrix<P>(param.kernel, problem.getNumExamples(), param.getCacheRows());
+				new BooleanInvertingKernelQMatrix<P>(param.kernel, solutionVectors.size(), param.getCacheRows());
 
 		BinarySolver<L, P> s = new BinarySolver<L, P>(solutionVectors, qMatrix, Cp, Cn, param.eps, param.shrinking);
 
