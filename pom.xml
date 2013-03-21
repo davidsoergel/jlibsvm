@@ -112,12 +112,12 @@
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>conja</artifactId>
-			<version>1.06</version>
+			<version>1.061</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.berkeley.compbio</groupId>
 			<artifactId>ml</artifactId>
-			<version>0.92</version>
+			<version>0.921</version>
 		</dependency>
 		<!--<dependency>
           <groupId>org.javolution</groupId>
