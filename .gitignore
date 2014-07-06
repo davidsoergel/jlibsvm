@@ -1,0 +1,82 @@
+syntax: glob
+
+
+## General temp files
+
+*.DS_Store
+*.class
+*.diff
+*.elc
+*.log
+*.ser
+*.pyc
+*~
+.*.swp
+.\#*
+.manager
+class
+log
+*.cache
+unpack
+*-tmp
+tmp-*
+*.orig
+
+
+## CVS, SVN, HG
+
+CVS
+.cvsignore
+.svn
+.hg
+.hgignore
+
+
+## sbt
+
+.sbtopts
+.cache/
+.history/
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins.sbt
+project/build/target/
+project/plugins/project/
+project/plugins/target/
+project/plugins/lib_managed/
+project/plugins/src_managed/
+
+
+# Eclipse config files
+.project
+.classpath
+.settings
+.distfiles
+.scala_dependencies
+
+
+# Intellij IDEA files
+.idea
+*.iml
+*.ipr
+*.iws
+
+
+# ensime (emacs scala mode)
+.ensime*
+
+
+# Files related to Play build or usage
+logs
+
+# more IDE and editors
+nbproject
+eclipse
+.amateras
+.settings
+.classpath
+.project
