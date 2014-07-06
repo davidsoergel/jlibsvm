@@ -7,7 +7,7 @@ _Efficient training of Support Vector Machines in Java_
  * Provides **idiomatic Java** class structure and APIs (unlike the Java version provided by LIBSVM, which is transliterated C code).
  * Easy to **add new kernels**, in addition to the five standard ones provided by LIBSVM.
  * On the mathematical side, jlibsvm performs **exactly the same computations as LIBSVM**, including shrinking and all the fancy stuff described in the [LIBSVM implementation docs](http://www.csie.ntu.edu.tw/~cjlin/papers/libsvm.pdf).
- * **Optimized kernel implementations** run faster, particularly when input vectors are sparse.  For instance, on the [http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html#mushrooms mushrooms] dataset, jlibsvm trained ~25% faster than LIBSVM (java version) with an RBF kernel and ~40% faster with a linear kernel.  (The C version of LIBSVM is still faster, though).
+ * **Optimized kernel implementations** run faster, particularly when input vectors are sparse.  For instance, on the [mushrooms](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html#mushrooms) dataset, jlibsvm trained ~25% faster than LIBSVM (java version) with an RBF kernel and ~40% faster with a linear kernel.  (The C version of LIBSVM is still faster, though).
  * **Multithreaded training** to take advantage of modern multi-core machines (using [Conja](http://github.com/davidsoergel/conja)).
  * **Integrated scaling and normalization** so you don't have to explicitly preprocess your data.
  * **Integrated grid search** for optimal kernel parameters.
@@ -29,7 +29,7 @@ Sorry, I haven't really had a chance to write any docs.  Have a look at the sour
 
  1. instantiate the [KernelFunction](http://davidsoergel.github.io/jlibsvm/apidocs/edu/berkeley/compbio/jlibsvm/kernel/KernelFunction.html) that you want
  2. set up some parameters in a new [SvmParameter](http://davidsoergel.github.io/jlibsvm/apidocs/edu/berkeley/compbio/jlibsvm/SvmParameter.html) object
- 3. instantiate a concrete subclass of [http://davidsoergel.github.io/jlibsvm/apidocs/edu/berkeley/compbio/jlibsvm/SvmProblem.html SvmProblem] (binary, multiclass, or regression), and populate it with training data
+ 3. instantiate a concrete subclass of [SvmProblem](http://davidsoergel.github.io/jlibsvm/apidocs/edu/berkeley/compbio/jlibsvm/SvmProblem.html) (binary, multiclass, or regression), and populate it with training data
  4. instantiate a concrete subclass of [SVM](http://davidsoergel.github.io/jlibsvm/apidocs/edu/berkeley/compbio/jlibsvm/SVM.html), choosing a type appropriate for your problem
  5. Call `SVM.train(problem)` to yield a [SolutionModel](http://davidsoergel.github.io/jlibsvm/apidocs/edu/berkeley/compbio/jlibsvm/SolutionModel.html), which can be used to make predictions
 
