@@ -1,0 +1,11 @@
+edu.berkeley.compbio.jlibsvm
+edu.berkeley.compbio.jlibsvm.binary
+edu.berkeley.compbio.jlibsvm.kernel
+edu.berkeley.compbio.jlibsvm.labelinverter
+edu.berkeley.compbio.jlibsvm.legacyexec
+edu.berkeley.compbio.jlibsvm.multi
+edu.berkeley.compbio.jlibsvm.oneclass
+edu.berkeley.compbio.jlibsvm.qmatrix
+edu.berkeley.compbio.jlibsvm.regression
+edu.berkeley.compbio.jlibsvm.scaler
+edu.berkeley.compbio.jlibsvm.util
