@@ -25,7 +25,7 @@ Documentation
 
  * [API docs](http://davidsoergel.github.io/jlibsvm/)
  
-Sorry, I haven't really had a chance to write any docs.  Have a look at the sources for the command-line programs in the [legacyexec](legacyexec) package to see how jlibsvm gets called.  Very briefly, you'll need to:
+Sorry, I haven't really had a chance to write any docs.  Have a look at the sources for the command-line programs in the [legacyexec](src/main/java/edu/berkeley/compbio/jlibsvm/legacyexec) package to see how jlibsvm gets called.  Very briefly, you'll need to:
 
  1. instantiate the [KernelFunction](http://davidsoergel.github.io/jlibsvm/apidocs/edu/berkeley/compbio/jlibsvm/kernel/KernelFunction.html) that you want
  2. set up some parameters in a new [SvmParameter](http://davidsoergel.github.io/jlibsvm/apidocs/edu/berkeley/compbio/jlibsvm/SvmParameter.html) object
