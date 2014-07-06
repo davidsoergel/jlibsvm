@@ -59,7 +59,7 @@ Download
 	<dependency>
 		<groupId>edu.berkeley.compbio</groupId>
 		<artifactId>jlibsvm</artifactId>
-		<version>0.902</version>
+		<version>0.911</version>
 	</dependency>
 </dependencies>
 ```
