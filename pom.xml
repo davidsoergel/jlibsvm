@@ -79,7 +79,7 @@
 	<repositories>
 		<repository>
 			<id>dev.davidsoergel.com</id>
-			<url>http://dev.davidsoergel.com/nexus/content/groups/public</url>
+			<url>https://dev.davidsoergel.com/nexus/content/groups/public</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -89,7 +89,7 @@
 		</repository>
 		<repository>
 			<id>dev.davidsoergel.com.snapshot</id>
-			<url>http://dev.davidsoergel.com/nexus/content/repositories/snapshots</url>
+			<url>https://dev.davidsoergel.com/nexus/content/repositories/snapshots</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
